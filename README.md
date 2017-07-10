@@ -1,6 +1,7 @@
 # waifu2x - SnowShell
 This is GUI Shell for waifu2x-converter-cpp(https://github.com/tanakamura/waifu2x-converter-cpp). <br/>
-SnowShell used C++ and Win32API. You can use this to make your image better.
+You can use this to make your image better. <br/>
+SnowShell used C++ and Win32API. 
 
 # Usage
 Just drag & drop your image file in to shell!
