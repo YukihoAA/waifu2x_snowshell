@@ -297,7 +297,7 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	if (SnowSetting::getConfirm() == CONFIRM_SHOW) {
 		int x, y;
 		GetImageSize(fileName, &x, &y);
-		if(x*y>100000 && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO|MB_ICONEXCLAMATION) == IDNO)
+		if(x*y>100000 && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_TOPMOST) == IDNO)
 		return FALSE;
 	}
 
