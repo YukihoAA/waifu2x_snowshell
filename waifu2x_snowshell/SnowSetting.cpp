@@ -498,6 +498,11 @@ int SnowSetting::getLang()
 	return Singletone->Lang;
 }
 
+wstring SnowSetting::getLangName()
+{
+	return LangFile[getLang()];
+}
+
 void SnowSetting::setNoise(int Noise)
 {
 	if (Singletone == nullptr)

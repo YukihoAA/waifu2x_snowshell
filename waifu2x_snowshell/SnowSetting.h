@@ -89,6 +89,7 @@ public:
 	static int getExport();
 	static int getConfirm();
 	static int getLang();
+	static wstring getLangName();
 
 	static void setNoise(int Noise);
 	static void setScale(int Scale);

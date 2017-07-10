@@ -64,6 +64,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HMENU hMenu;
 	static HFONT hFont;
 	static HBITMAP hBGBitmap;
+	static wstring *UIText[5];
 	HBITMAP hBitmap;
 	HFONT hOldFont;
 	HBITMAP hOldBitmap;
@@ -72,7 +73,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hdc, hBitDC, hMemDC;
 	RECT rt;
-	static wstring *UIText[5];
+	wstring LangName;
 
 	switch (uMsg) {
 	case WM_CREATE:
@@ -82,7 +83,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		hFont = CreateFont(35, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, OUT_OUTLINE_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_MODERN, L"Malgun Gothic");
 		SetMenu(hWnd, hMenu);
 		SnowSetting::loadMenuString(hMenu);
-		hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+		LangName = SnowSetting::getLangName();
+		if (LangName.find(L"Korean") != wstring::npos)
+			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP2));
+		else if (LangName.find(L"Japanese") != wstring::npos)
+			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP3));
+		else
+			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 		DragAcceptFiles(hWnd, TRUE);
 		return TRUE;
 	case WM_INITMENU:
@@ -198,6 +205,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			hMenu=LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
 			SnowSetting::loadMenuString(hMenu);
 			SetMenu(hWnd, hMenu);
+			DeleteObject(hBGBitmap);
+			LangName = SnowSetting::getLangName();
+			if (LangName.find(L"Korean") != wstring::npos)
+				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP2));
+			else if (LangName.find(L"Japanese") != wstring::npos)
+				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP3));
+			else
+				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 			InvalidateRect(hWnd, NULL, TRUE);
 		}
 		return FALSE;

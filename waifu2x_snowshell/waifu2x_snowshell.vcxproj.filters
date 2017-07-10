@@ -54,6 +54,12 @@
     <Image Include="ICON.ico">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="BG_Korean.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="BG_Japanese.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Lang\Korean.ini" />
