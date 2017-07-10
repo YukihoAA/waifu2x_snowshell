@@ -18,7 +18,7 @@ SnowSetting::SnowSetting()
 	WCHAR path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, path);
 	CurrPath = path;
-	NewPath = CurrPath + L"\\output";
+	NewPath = L"\\output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
 	CONVERTER_x64_EXE = CurrPath + L"\\waifu2x-converter\\waifu2x-converter_x64.exe";
@@ -456,8 +456,9 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 	}
 	else {
 		int last=ExpName.find_last_of(L'\\');
-		ExpName = NewPath + ExpName.substr(last);
+		ExpName = ExpName.substr(0, last) + NewPath + ExpName.substr(last);
 		ss << L"-o \"" << ExpName << L"\"";
+		CreateDirectory(NewPath.c_str() , NULL);
 	}
 
 	return ss.str();
