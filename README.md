@@ -1,1 +1,1 @@
-# waifu2x_snowshell
+# waifu2x - SnowShell
