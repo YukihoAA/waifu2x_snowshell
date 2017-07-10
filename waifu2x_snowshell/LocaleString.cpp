@@ -47,5 +47,7 @@
  wstring STRING_TEXT_EXPORT_SAME = L"출력 폴더 - 같은 폴더";
  wstring STRING_TEXT_EXPORT_NEW = L"출력 폴더 - \"output\" 폴더";
 
- wstring STRING_TEXT_CONFIRM_SHOW = L"안내창 - 보여주기";
- wstring STRING_TEXT_CONFIRM_SKIP = L"안내창 - 보여주지 않기";
+ wstring STRING_TEXT_CONFIRM_SHOW = L"확인창 - 보여주기";
+ wstring STRING_TEXT_CONFIRM_SKIP = L"확인창 - 보여주지 않기";
+ wstring STRING_TEXT_CONFIRM_TITLE = L"확인";
+ wstring STRING_TEXT_CONFIRM_MESSAGE = L"큰 이미지 파일은\n작업에 많은 시간이 소요될 수 있습니다.\n작업을 진행하시겠습니까?";

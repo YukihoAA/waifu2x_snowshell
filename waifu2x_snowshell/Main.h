@@ -19,3 +19,4 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void prtTextBorder(HDC hdc, int x, int y, LPCWSTR str, int c, COLORREF borderColor, int borderSize, COLORREF textColor = NULL);
+bool GetImageSize(LPCWSTR fn, int *x, int *y);

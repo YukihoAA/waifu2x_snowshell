@@ -255,6 +255,19 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning       Hide", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CONFIRM_SKIP = buf;
 
+	Key = L"STRING_TEXT_CONFIRM_TITLE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONFIRM_TITLE = buf;
+
+	Key = L"STRING_TEXT_CONFIRM_MESSAGE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Large image will require high spec.\nDo you want to continue?", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONFIRM_MESSAGE = buf;
+	int nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
+	while (nl != wstring::npos) {
+		STRING_TEXT_CONFIRM_MESSAGE.replace(nl, 2, L"\n");
+		nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
+	}
+
 }
 
 bool SnowSetting::loadSetting()
@@ -444,7 +457,7 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 	else {
 		int last=ExpName.find_last_of(L'\\');
 		ExpName = NewPath + ExpName.substr(last);
-		ss << L"-o " << ExpName << L"\"";
+		ss << L"-o \"" << ExpName << L"\"";
 	}
 
 	return ss.str();
@@ -482,7 +495,7 @@ int SnowSetting::getExport()
 	return Singletone->Export;
 }
 
-int SnowSetting::getConfirm()
+BOOL SnowSetting::getConfirm()
 {
 	if (Singletone == nullptr)
 		Init();
@@ -547,13 +560,10 @@ void SnowSetting::setExport(int Export)
 	Singletone->Export = Export;
 }
 
-void SnowSetting::setConfirm(int Confirm)
+void SnowSetting::setConfirm(BOOL Confirm)
 {
 	if (Singletone == nullptr)
 		Init();
-
-	if (Confirm > CONFIRM_MAX || Confirm < 0)
-		Confirm = 0;
 
 	Singletone->Confirm = Confirm;
 }
@@ -714,13 +724,10 @@ wstring * SnowSetting::getExportText()
 
 wstring * SnowSetting::getConfirmText()
 {
-	switch (getConfirm()) {
-	case CONFIRM_SHOW:
+	if (getConfirm() == CONFIRM_SHOW)
 		return &STRING_TEXT_CONFIRM_SHOW;
-	case CONFIRM_SKIP:
+	else
 		return &STRING_TEXT_CONFIRM_SKIP;
-	}
-	return nullptr;
 }
 
 wstring itos(int n) {

@@ -54,3 +54,5 @@ extern wstring STRING_TEXT_EXPORT_NEW;
 
 extern wstring STRING_TEXT_CONFIRM_SHOW;
 extern wstring STRING_TEXT_CONFIRM_SKIP;
+extern wstring STRING_TEXT_CONFIRM_TITLE;
+extern wstring STRING_TEXT_CONFIRM_MESSAGE;

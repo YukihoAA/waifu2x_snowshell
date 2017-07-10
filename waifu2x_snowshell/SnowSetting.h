@@ -87,7 +87,7 @@ public:
 	static int getScale();
 	static int getCPU();
 	static int getExport();
-	static int getConfirm();
+	static BOOL getConfirm();
 	static int getLang();
 	static wstring getLangName();
 
@@ -95,7 +95,7 @@ public:
 	static void setScale(int Scale);
 	static void setCPU(int CPU);
 	static void setExport(int Export);
-	static void setConfirm(int Confirm);
+	static void setConfirm(BOOL Confirm);
 	static void setLang(int Lang);
 
 	static void checkMenuAll(HMENU hMenu);
