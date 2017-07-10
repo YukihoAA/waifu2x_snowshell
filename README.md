@@ -4,7 +4,7 @@ You can use this to make your image better. <br/>
 SnowShell used C++ and Win32API. 
 
 # Usage
-Just drag & drop your image file in to shell!
+Just drag & drop your image file in to shell! <br/>
 To change your conversion setting, select option at menubar.
 
 # License
