@@ -60,6 +60,18 @@
     <Image Include="BG_Japanese.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="Bitmap\BG.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Bitmap\BG_Korean.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Bitmap\BG_Japanese.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Bitmap\ICON.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Lang\Korean.ini" />
