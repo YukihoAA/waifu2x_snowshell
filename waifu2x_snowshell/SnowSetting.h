@@ -17,7 +17,7 @@ using namespace std;
 #define NOISE_LOW 1
 #define NOISE_HIGH 2
 
-#define NOISE_MAX 2
+#define NOISE_MAX 3
 
 
 #define SCALE_x1_0 0

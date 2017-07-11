@@ -164,7 +164,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case MENU_NOISE_NONE:
 		case MENU_NOISE_LOW:
 		case MENU_NOISE_HIGH:
-			SnowSetting::checkNoise(hMenu, LOWORD(wParam) - MENU_NOISE_NONE);
+		case MENU_NOISE_MAX:
+			if (LOWORD(wParam) == MENU_NOISE_MAX) {
+				SnowSetting::checkNoise(hMenu, NOISE_MAX);
+			}
+			else
+				SnowSetting::checkNoise(hMenu, LOWORD(wParam) - MENU_NOISE_NONE);
 			UIText[0]=SnowSetting::getNoiseText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;

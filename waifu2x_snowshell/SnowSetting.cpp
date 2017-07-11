@@ -136,6 +136,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"High", buf, 200, LangFileName.c_str());
 	STRING_MENU_NOISE_HIGH = buf;
 
+	Key = L"STRING_MENU_NOISE_MAX";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Max", buf, 200, LangFileName.c_str());
+	STRING_MENU_NOISE_MAX = buf;
+
 
 	Section = L"Scale";
 
@@ -206,6 +210,10 @@ void SnowSetting::loadLocale()
 	Key = L"STRING_TEXT_NOISE_HIGH";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    High", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_HIGH = buf;
+
+	Key = L"STRING_TEXT_NOISE_MAX";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    Max", buf, 200, LangFileName.c_str());
+	STRING_TEXT_NOISE_MAX = buf;
 
 
 	Key = L"STRING_TEXT_SCALE_x1_0";
@@ -360,6 +368,7 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, MENU_NOISE_NONE, MF_BYCOMMAND | MF_STRING, MENU_NOISE_NONE, STRING_MENU_NOISE_NONE.c_str());
 	ModifyMenu(hMenu, MENU_NOISE_LOW, MF_BYCOMMAND | MF_STRING, MENU_NOISE_LOW, STRING_MENU_NOISE_LOW.c_str());
 	ModifyMenu(hMenu, MENU_NOISE_HIGH, MF_BYCOMMAND | MF_STRING, MENU_NOISE_HIGH, STRING_MENU_NOISE_HIGH.c_str());
+	ModifyMenu(hMenu, MENU_NOISE_MAX, MF_BYCOMMAND | MF_STRING, MENU_NOISE_MAX, STRING_MENU_NOISE_MAX.c_str());
 
 	ModifyMenu(hMenu, MENU_SCALE_x1_0, MF_BYCOMMAND | MF_STRING, MENU_SCALE_x1_0, STRING_MENU_SCALE_x1_0.c_str());
 	ModifyMenu(hMenu, MENU_SCALE_x1_5, MF_BYCOMMAND | MF_STRING, MENU_SCALE_x1_5, STRING_MENU_SCALE_x1_5.c_str());
@@ -443,6 +452,10 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 	case NOISE_HIGH:
 		ss << L"--noise_level 2 ";
 		ExpName += L"_noise2";
+		break;
+	case NOISE_MAX:
+		ss << L"--noise_level 3 ";
+		ExpName += L"_noise3";
 		break;
 	default:
 		break;
@@ -680,6 +693,8 @@ wstring * SnowSetting::getNoiseText()
 		return &STRING_TEXT_NOISE_LOW;
 	case NOISE_HIGH:
 		return &STRING_TEXT_NOISE_HIGH;
+	case NOISE_MAX:
+		return &STRING_TEXT_NOISE_MAX;
 	}
 	return nullptr;
 }
