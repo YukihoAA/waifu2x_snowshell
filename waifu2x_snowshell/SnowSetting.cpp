@@ -456,9 +456,9 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 	}
 	else {
 		int last=ExpName.find_last_of(L'\\');
+		CreateDirectory((ExpName.substr(0, last) + NewPath).c_str(), NULL);
 		ExpName = ExpName.substr(0, last) + NewPath + ExpName.substr(last);
 		ss << L"-o \"" << ExpName << L"\"";
-		CreateDirectory(NewPath.c_str() , NULL);
 	}
 
 	return ss.str();
