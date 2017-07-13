@@ -30,8 +30,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	g_hInst = hInstance;
 
+	// OpenCV 3.2 does not supports x86 system.
 	if (IsWow64Process(GetCurrentProcess(), &bIsWow64))
 		is64bit = TRUE;
+	else {
+		MessageBox(NULL, L"SnowShell v1.1 does not supports x86 system anymore.\nPlease use SnowShell v1.0 instead.\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
+	}
 	/*
 	SystemParametersInfo(SPI_SETFONTSMOOTHING,
 		TRUE,
@@ -46,18 +50,19 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 		(PVOID)1600,
 		SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);*/
 
+	if (is64bit) {
 
+		hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.1", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
-	hWnd=CreateWindow(lpszClass, L"waifu2x - SnowShell v1.0", WS_OVERLAPPED|WS_CAPTION|WS_SYSMENU|WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+		ShowWindow(hWnd, nCmdShow);
 
-	ShowWindow(hWnd, nCmdShow);
-
-	while (GetMessage(&msg, NULL, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
+		while (GetMessage(&msg, NULL, 0, 0)) {
+			TranslateMessage(&msg);
+			DispatchMessage(&msg);
+		}
+		return (int)msg.wParam;
 	}
-	
-	return (int)msg.wParam;
+	return 0;
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
@@ -326,11 +331,6 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	}
 	else if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
 		si.lpFile = SnowSetting::CONVERTER_x64_EXE.c_str();
-		ShellExecuteEx(&si);
-		WaitForSingleObject(si.hProcess, INFINITE);
-	}
-	else if (FileExists(SnowSetting::CONVERTER_x86_EXE.c_str())) {
-		si.lpFile = SnowSetting::CONVERTER_x86_EXE.c_str();
 		ShellExecuteEx(&si);
 		WaitForSingleObject(si.hProcess, INFINITE);
 	}
