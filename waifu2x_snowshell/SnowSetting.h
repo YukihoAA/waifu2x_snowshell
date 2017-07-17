@@ -75,6 +75,7 @@ public:
 	static wstring NewPath;
 	static wstring CurrPath;
 	static wstring CONVERTER_x64_EXE;
+	static wstring CONVERTER_x86_EXE;
 
 	static SnowSetting *Init();
 	static bool loadSetting();

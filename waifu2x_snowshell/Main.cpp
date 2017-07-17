@@ -334,6 +334,11 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 		ShellExecuteEx(&si);
 		WaitForSingleObject(si.hProcess, INFINITE);
 	}
+	else if (FileExists(SnowSetting::CONVERTER_x86_EXE.c_str())) {
+		si.lpFile = SnowSetting::CONVERTER_x86_EXE.c_str();
+		ShellExecuteEx(&si);
+		WaitForSingleObject(si.hProcess, INFINITE);
+	}
 	else
 		return FALSE;
 	return TRUE;
