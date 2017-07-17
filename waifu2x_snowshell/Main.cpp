@@ -34,25 +34,12 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	if (IsWow64Process(GetCurrentProcess(), &bIsWow64))
 		is64bit = TRUE;
 	else {
-		MessageBox(NULL, L"SnowShell v1.1 does not supports x86 system anymore.\nPlease use SnowShell v1.0 instead.\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
+		MessageBox(NULL, L"SnowShell does not supports x86 system\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
 	}
-	/*
-	SystemParametersInfo(SPI_SETFONTSMOOTHING,
-		TRUE,
-		0,
-		SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
-	SystemParametersInfo(SPI_SETFONTSMOOTHINGTYPE,
-		0,
-		(PVOID)FE_FONTSMOOTHINGCLEARTYPE,
-		SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);
-	SystemParametersInfo(SPI_SETFONTSMOOTHINGCONTRAST,
-		0,
-		(PVOID)1600,
-		SPIF_UPDATEINIFILE | SPIF_SENDCHANGE);*/
 
 	if (is64bit) {
 
-		hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.1", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+		hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.2", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 		ShowWindow(hWnd, nCmdShow);
 

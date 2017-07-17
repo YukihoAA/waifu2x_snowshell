@@ -20,15 +20,15 @@ SnowSetting::SnowSetting()
 	NewPath = L"\\output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
-	CONVERTER_x64_EXE = CurrPath + L"\\waifu2x-converter\\waifu2x-converter_x64.exe";
+	CONVERTER_x64_EXE = CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe";
 	CoreNum = thread::hardware_concurrency();
 
-	Noise = 0;
-	Scale = 0;
+	Noise = 1;
+	Scale = 2;
 	CPU = 0;
 	Export = 0;
 	Confirm = 0;
-	Lang = 0;
+	Lang = 1;
 }
 
 SnowSetting::~SnowSetting()
@@ -285,10 +285,10 @@ bool SnowSetting::loadSetting()
 	wstring Key, Value;
 
 	Key = L"Noise";
-	setNoise(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+	setNoise(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 1, INIPath.c_str()));
 
 	Key = L"Scale";
-	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 2, INIPath.c_str()));
 
 	Key = L"CPU";
 	setCPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
@@ -313,7 +313,7 @@ bool SnowSetting::loadSetting()
 				break;
 			}
 		if (langsel == -1)
-			langsel = 0;
+			langsel = 1;
 	}
 	setLang(langsel);
 	loadLocale();
@@ -397,7 +397,7 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 
 	int dotPos = ExpName.find_last_of(L".");
 
-	wstring ext = ExpName.substr(dotPos);
+	wstring ext = L".png";	// waifu2x's result is always png file.
 
 	ExpName=ExpName.substr(0, dotPos) + L"_waifu2x";
 
