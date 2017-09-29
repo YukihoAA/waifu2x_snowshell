@@ -8,9 +8,9 @@ wstring SnowSetting::INIPath;
 wstring SnowSetting::CONVERTER_x64_EXE;
 int SnowSetting::CoreNum;
 
-const int SnowSetting::LangNum = 3;
-wstring SnowSetting::LangName[3] = { L"한국어", L"English", L"日本語" };
-wstring SnowSetting::LangFile[3] = { L"Korean.ini", L"English.ini", L"Japanese.ini" };
+const int SnowSetting::LangNum = 4;
+wstring SnowSetting::LangName[4] = { L"한국어", L"English", L"日本語", L"中文" };
+wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini" };
 
 SnowSetting::SnowSetting()
 {
@@ -268,7 +268,7 @@ void SnowSetting::loadLocale()
 	Key = L"STRING_TEXT_CONFIRM_MESSAGE";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Large image will require high spec.\nDo you want to continue?", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CONFIRM_MESSAGE = buf;
-	int nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
+	size_t nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
 	while (nl != wstring::npos) {
 		STRING_TEXT_CONFIRM_MESSAGE.replace(nl, 2, L"\n");
 		nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
@@ -395,7 +395,7 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 
 	ExpName = inputFile;
 
-	int dotPos = ExpName.find_last_of(L".");
+	size_t dotPos = ExpName.find_last_of(L".");
 
 	wstring ext = L".png";	// waifu2x's result is always png file.
 
@@ -466,7 +466,7 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 		ss << L"-o \"" << ExpName << L"\"";
 	}
 	else {
-		int last=ExpName.find_last_of(L'\\');
+		size_t last=ExpName.find_last_of(L'\\');
 		CreateDirectory((ExpName.substr(0, last) + NewPath).c_str(), NULL);
 		ExpName = ExpName.substr(0, last) + NewPath + ExpName.substr(last);
 		ss << L"-o \"" << ExpName << L"\"";
@@ -763,7 +763,8 @@ BOOL FileExists(LPCWSTR file) {
 }
 
 int contain(wstring str, wstring find) {
-	int index=0, count=0;
+	int count = 0;
+	size_t index = 0; 
 	while ((index = str.find(find, index+1))!= std::string::npos) {
 		count++;
 	}

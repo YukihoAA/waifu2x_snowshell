@@ -138,6 +138,7 @@
     <Image Include="ICON.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Lang\Chinese.ini" />
     <None Include="Lang\Japanese.ini" />
     <None Include="Lang\Korean.ini" />
   </ItemGroup>

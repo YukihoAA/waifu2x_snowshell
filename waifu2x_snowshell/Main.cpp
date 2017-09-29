@@ -195,6 +195,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case MENU_LANG_KO:
 		case MENU_LANG_EN:
 		case MENU_LANG_JP:
+		case MENU_LANG_CN:
 			SnowSetting::checkLang(hMenu, LOWORD(wParam) - MENU_LANG_KO);
 			SnowSetting::getTexts(&UIText);
 			SetMenu(hWnd, NULL);
@@ -236,7 +237,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		DeleteDC(hBitDC);
 
 		for (int i = 0; i<5; i++)
-			prtTextBorder(hMemDC, 4, 133 + 33 * i, UIText[i]->c_str(), UIText[i]->length(), RGB(0x21, 0x21, 0x21), 2);
+			prtTextBorder(hMemDC, 4, 133 + 33 * i, UIText[i]->c_str(), (int) UIText[i]->length(), RGB(0x21, 0x21, 0x21), 2);
 
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, hMemDC, 0, 0, SRCCOPY);
 
