@@ -61,6 +61,7 @@ void SnowSetting::loadLocale()
 		HRSRC hSrc=NULL;
 		if (LangFileName.find(L"Korean") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG1), L"LANG");
 		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG2), L"LANG");
+		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG3), L"LANG");
 		else{
 			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
 			setLang(1);
