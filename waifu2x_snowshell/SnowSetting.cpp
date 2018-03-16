@@ -1,5 +1,7 @@
 ﻿#include "Main.h"
 
+#define SETTING_VER_MINIMUM 1
+
 SnowSetting *SnowSetting::Singletone;
 wstring SnowSetting::NewPath;
 wstring SnowSetting::CurrPath;
@@ -16,6 +18,7 @@ SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, path);
+	AddFontResource(L"font.ttf");
 	CurrPath = path;
 	NewPath = L"\\output";
 	INIPath = CurrPath + L"\\config.ini";
@@ -33,6 +36,7 @@ SnowSetting::SnowSetting()
 
 SnowSetting::~SnowSetting()
 {
+	RemoveFontResource(L"font.ttf");
 	saveSetting();
 }
 
@@ -77,6 +81,16 @@ void SnowSetting::loadLocale()
 			if(hFile!=NULL)
 				CloseHandle(hFile);
 		}
+	}
+	Section = L"SnowShell";
+
+	Key = L"INT_SETTING_VER";
+	INT_SETTING_VER = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), 0, LangFileName.c_str());
+
+	if (INT_SETTING_VER < SETTING_VER_MINIMUM && LangFileName.find(L"English") == std::string::npos) {
+		DeleteFile(LangFileName.c_str());
+		loadSetting();
+		return;
 	}
 
 	Section = L"Menu";
@@ -198,6 +212,13 @@ void SnowSetting::loadLocale()
 
 	Section = L"Text";
 
+	Key = L"INT_TEXT_TAB";
+	INT_TEXT_TAB = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), 30, LangFileName.c_str());
+
+	Key = L"STRING_TEXT_NOISE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise", buf, 200, LangFileName.c_str());
+	STRING_TEXT_NOISE = buf;
+
 	Key = L"STRING_TEXT_NOISE_NONE";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    None", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_NONE = buf;
@@ -214,6 +235,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    Max", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_MAX = buf;
 
+
+	Key = L"STRING_TEXT_SCALE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale", buf, 200, LangFileName.c_str());
+	STRING_TEXT_SCALE = buf;
 
 	Key = L"STRING_TEXT_SCALE_x1_0";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale   x1.0", buf, 200, LangFileName.c_str());
@@ -232,6 +257,10 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_SCALE_x2_0 = buf;
 
 
+	Key = L"STRING_TEXT_CPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CPU = buf;
+
 	Key = L"STRING_TEXT_CPU_MID";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num  Half", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CPU_MID = buf;
@@ -245,6 +274,10 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_CPU_FULL = buf;
 
 
+	Key = L"STRING_TEXT_EXPORT";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export dir", buf, 200, LangFileName.c_str());
+	STRING_TEXT_EXPORT = buf;
+
 	Key = L"STRING_TEXT_EXPORT_SAME";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export dir     Same folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_SAME = buf;
@@ -253,6 +286,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export dir     \"output\" folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_NEW = buf;
 
+
+	Key = L"STRING_TEXT_CONFIRM";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONFIRM = buf;
 
 	Key = L"STRING_TEXT_CONFIRM_SHOW";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning       Show", buf, 200, LangFileName.c_str());

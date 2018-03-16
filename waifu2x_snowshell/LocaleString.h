@@ -5,6 +5,9 @@
 
 using namespace std;
 
+
+extern int INT_SETTING_VER;
+
 extern wstring STRING_MENU_FILE;
 extern wstring STRING_MENU_NOISE;
 extern wstring STRING_MENU_SCALE;
@@ -37,23 +40,29 @@ extern wstring STRING_MENU_CONFIRM_SHOW;
 extern wstring STRING_MENU_CONFIRM_SKIP;
 
 
+extern int INT_TEXT_TAB;
+extern wstring STRING_TEXT_NOISE;
 extern wstring STRING_TEXT_NOISE_NONE;
 extern wstring STRING_TEXT_NOISE_LOW;
 extern wstring STRING_TEXT_NOISE_HIGH;
 extern wstring STRING_TEXT_NOISE_MAX;
 
+extern wstring STRING_TEXT_SCALE;
 extern wstring STRING_TEXT_SCALE_x1_0;
 extern wstring STRING_TEXT_SCALE_x1_5;
 extern wstring STRING_TEXT_SCALE_x1_6;
 extern wstring STRING_TEXT_SCALE_x2_0;
 
+extern wstring STRING_TEXT_CPU;
 extern wstring STRING_TEXT_CPU_MID;
 extern wstring STRING_TEXT_CPU_HIGH;
 extern wstring STRING_TEXT_CPU_FULL;
 
+extern wstring STRING_TEXT_EXPORT;
 extern wstring STRING_TEXT_EXPORT_SAME;
 extern wstring STRING_TEXT_EXPORT_NEW;
 
+extern wstring STRING_TEXT_CONFIRM;
 extern wstring STRING_TEXT_CONFIRM_SHOW;
 extern wstring STRING_TEXT_CONFIRM_SKIP;
 extern wstring STRING_TEXT_CONFIRM_TITLE;
