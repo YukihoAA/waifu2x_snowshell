@@ -453,7 +453,7 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 		ss << L"-j " << (int) CoreNum/2 << L" ";
 		break;
 	case CPU_FULL:
-		ss << L"-j " << CoreNum << L" ";
+		//ss << L"-j " << CoreNum << L" ";
 		break;
 	case CPU_HIGH:
 	default:
