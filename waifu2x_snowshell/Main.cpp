@@ -39,7 +39,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	if (is64bit) {
 
-		hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.3", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+		hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.4", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 		ShowWindow(hWnd, nCmdShow);
 
@@ -327,7 +327,13 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	si.lpDirectory = lpDir;
 	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
 
-	if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
+	if (is64bit && FileExists(SnowSetting::CONVERTER_CAFFE_EXE.c_str()) && SnowSetting::getCPU() == CPU_FULL) {
+		si.lpFile = SnowSetting::CONVERTER_CAFFE_EXE.c_str();
+		ShellExecuteEx(&si);
+		WaitForSingleObject(si.hProcess, INFINITE);
+	
+	}
+	else if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
 		si.lpFile = SnowSetting::CONVERTER_x64_EXE.c_str();
 		ShellExecuteEx(&si);
 		WaitForSingleObject(si.hProcess, INFINITE);

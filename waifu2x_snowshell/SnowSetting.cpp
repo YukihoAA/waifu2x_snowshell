@@ -8,6 +8,7 @@ wstring SnowSetting::CurrPath;
 wstring SnowSetting::LangPath;
 wstring SnowSetting::INIPath;
 wstring SnowSetting::CONVERTER_x64_EXE;
+wstring SnowSetting::CONVERTER_CAFFE_EXE;
 int SnowSetting::CoreNum;
 
 const int SnowSetting::LangNum = 4;
@@ -24,6 +25,7 @@ SnowSetting::SnowSetting()
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
 	CONVERTER_x64_EXE = CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe";
+	CONVERTER_CAFFE_EXE = CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe";
 	CoreNum = thread::hardware_concurrency();
 
 	Noise = 1;
