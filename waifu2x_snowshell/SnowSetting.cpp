@@ -441,7 +441,9 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 
 	ss << L"-i \"" << inputFile << L"\" ";
 
-	//TODO: need to check dir or not (if input is dir, .png should not added)
+	// if input is dir, .png should not added
+	if (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(inputFile))
+		ext = L"";
 
 	if (getNoise() == NOISE_NONE)
 		ss << "-m scale ";

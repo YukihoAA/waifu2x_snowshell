@@ -293,6 +293,18 @@ LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 
 BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 
+	if (!FileExists(fileName)) {
+		return FALSE;
+	}
+	// if input is directory
+	/*else if (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(fileName)) {
+		wstring fnStr = fileName;
+		size_t last = fnStr.find_last_of(L'\\');
+		//CreateDirectory(fnStr.substr(last).c_str(), NULL);
+
+		//TODO: need to build folder name and Find all files to convert
+	}*/
+
 	if (SnowSetting::getConfirm() == CONFIRM_SHOW) {
 		int x, y;
 		GetImageSize(fileName, &x, &y);
@@ -315,10 +327,7 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	si.lpDirectory = lpDir;
 	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
 
-	if (!FileExists(fileName)) {
-		return FALSE;
-	}
-	else if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
+	if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
 		si.lpFile = SnowSetting::CONVERTER_x64_EXE.c_str();
 		ShellExecuteEx(&si);
 		WaitForSingleObject(si.hProcess, INFINITE);
