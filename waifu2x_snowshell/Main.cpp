@@ -308,7 +308,7 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	if (SnowSetting::getConfirm() == CONFIRM_SHOW) {
 		int x, y;
 		GetImageSize(fileName, &x, &y);
-		if(x*y>100000 && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_TOPMOST) == IDNO)
+		if(x*y>100000 && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 		return FALSE;
 	}
 
@@ -329,9 +329,10 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 
 	if (is64bit && FileExists(SnowSetting::CONVERTER_CAFFE_EXE.c_str()) && SnowSetting::getCPU() == CPU_FULL) {
 		si.lpFile = SnowSetting::CONVERTER_CAFFE_EXE.c_str();
+		lstrcat(param, L" --tta 1");
+		si.nShow = SW_SHOW;
 		ShellExecuteEx(&si);
 		WaitForSingleObject(si.hProcess, INFINITE);
-	
 	}
 	else if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
 		si.lpFile = SnowSetting::CONVERTER_x64_EXE.c_str();
