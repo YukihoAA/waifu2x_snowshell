@@ -1,8 +1,9 @@
 # waifu2x - SnowShell
-![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) <br />
 This is GUI Shell for waifu2x-converter-cpp(https://github.com/tanakamura/waifu2x-converter-cpp). <br/>
 You can use this to make your image better. <br/>
 SnowShell used C++ and Win32API. 
+
+![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) <br />
 
 # Usage
 Just drag & drop your image files (or folder) in to Snowshell! (multiple image supports) <br/>
