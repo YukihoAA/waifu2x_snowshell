@@ -10,10 +10,12 @@ wstring SnowSetting::INIPath;
 wstring SnowSetting::CONVERTER_x64_EXE;
 wstring SnowSetting::CONVERTER_CAFFE_EXE;
 int SnowSetting::CoreNum;
+bool SnowSetting::IsCudaAvailable;
 
 const int SnowSetting::LangNum = 4;
 wstring SnowSetting::LangName[4] = { L"한국어", L"English", L"日本語", L"中文" };
 wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini" };
+
 
 SnowSetting::SnowSetting()
 {
@@ -27,6 +29,7 @@ SnowSetting::SnowSetting()
 	CONVERTER_x64_EXE = CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe";
 	CONVERTER_CAFFE_EXE = CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe";
 	CoreNum = thread::hardware_concurrency();
+	IsCudaAvailable = checkCuda();
 
 	Noise = 1;
 	Scale = 2;
@@ -49,6 +52,65 @@ SnowSetting *SnowSetting::Init()
 		loadSetting();
 	}
 	return Singletone;
+}
+
+bool SnowSetting::checkCuda() {
+	bool cuda = false;
+	HANDLE hRead, hWrite;
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	WCHAR param[MAX_PATH] = L"";
+	const static size_t bufferSize = 128;
+
+	if (!FileExists(CONVERTER_x64_EXE.c_str()) && FileExists(CONVERTER_CAFFE_EXE.c_str()))
+		return true;
+
+	CreatePipe(&hRead, &hWrite, nullptr, bufferSize);
+	SetHandleInformation(hWrite, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
+
+	memset(&si, 0, sizeof(STARTUPINFO));
+
+	si.cb = sizeof(si);
+	si.hStdOutput = hWrite;
+	si.hStdError = hWrite;
+	si.dwFlags = STARTF_USESTDHANDLES;
+
+	lstrcpy(param, CONVERTER_x64_EXE.c_str());
+	lstrcat(param, L" --list-processor");
+
+	BOOL isExecuted = CreateProcess(nullptr, param, nullptr, nullptr, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, nullptr, CurrPath.c_str(), &si, &pi);
+
+	if (isExecuted)
+	{
+		CloseHandle(hWrite);
+
+		DWORD len;
+		char s[bufferSize] = "";
+		string st;
+
+		ReadFile(hRead, s, bufferSize-1, &len, 0);
+		st = s;
+		size_t firstLF = st.find_first_of('\n');
+
+		if(firstLF != string::npos)
+			st[firstLF] = '\0';
+
+		if(st.find_last_of('=') != string::npos)
+			CoreNum = atoi(st.substr(st.find_last_of('=')+1).c_str());
+
+		if (st.find("CUDA") != string::npos)
+			cuda = true;
+
+		CloseHandle(hRead);
+		CloseHandle(pi.hProcess);
+		CloseHandle(pi.hThread);
+	}
+
+	return cuda;
+}
+
+bool SnowSetting::getCudaAvailable() {
+	return IsCudaAvailable;
 }
 
 void SnowSetting::loadLocale()

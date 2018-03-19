@@ -327,7 +327,7 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	si.lpDirectory = lpDir;
 	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
 
-	if (is64bit && FileExists(SnowSetting::CONVERTER_CAFFE_EXE.c_str()) && SnowSetting::getCPU() == CPU_FULL) {
+	if (is64bit && FileExists(SnowSetting::CONVERTER_CAFFE_EXE.c_str()) && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable()) {
 		si.lpFile = SnowSetting::CONVERTER_CAFFE_EXE.c_str();
 		lstrcat(param, L" --tta 1");
 		ShellExecuteEx(&si);

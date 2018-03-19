@@ -58,6 +58,7 @@ private:
 	static wstring INIPath;
 	static int CoreNum;
 	const static int LangNum;
+	static bool IsCudaAvailable;
 
 	int Noise;
 	int Scale;
@@ -78,6 +79,8 @@ public:
 	static wstring CONVERTER_CAFFE_EXE;
 
 	static SnowSetting *Init();
+	static bool checkCuda();
+	static bool getCudaAvailable();
 	static bool loadSetting();
 	static bool saveSetting();
 	static void loadMenuString(HMENU hMenu);
