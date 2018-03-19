@@ -435,11 +435,13 @@ wstring SnowSetting::BuildParam(LPCWSTR inputFile)
 
 	size_t dotPos = ExpName.find_last_of(L".");
 
-	wstring ext = L".png";	// waifu2x's result is always png file.
+	wstring ext = L".png";	// output format: png
 
 	ExpName=ExpName.substr(0, dotPos) + L"_waifu2x";
 
 	ss << L"-i \"" << inputFile << L"\" ";
+
+	//TODO: need to check dir or not (if input is dir, .png should not added)
 
 	if (getNoise() == NOISE_NONE)
 		ss << "-m scale ";
