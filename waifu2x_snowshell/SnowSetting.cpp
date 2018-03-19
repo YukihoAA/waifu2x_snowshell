@@ -18,7 +18,7 @@ SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, path);
-	AddFontResource(L"font.ttf");
+	//AddFontResource(L"font.ttf");
 	CurrPath = path;
 	NewPath = L"\\output";
 	INIPath = CurrPath + L"\\config.ini";
@@ -28,7 +28,7 @@ SnowSetting::SnowSetting()
 
 	Noise = 1;
 	Scale = 2;
-	CPU = 0;
+	CPU = 2;
 	Export = 0;
 	Confirm = 0;
 	Lang = 1;
@@ -36,7 +36,7 @@ SnowSetting::SnowSetting()
 
 SnowSetting::~SnowSetting()
 {
-	RemoveFontResource(L"font.ttf");
+	//RemoveFontResource(L"font.ttf");
 	saveSetting();
 }
 
@@ -329,7 +329,7 @@ bool SnowSetting::loadSetting()
 	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 2, INIPath.c_str()));
 
 	Key = L"CPU";
-	setCPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+	setCPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 2, INIPath.c_str()));
 
 	Key = L"Export";
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
