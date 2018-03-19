@@ -330,7 +330,6 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 	if (is64bit && FileExists(SnowSetting::CONVERTER_CAFFE_EXE.c_str()) && SnowSetting::getCPU() == CPU_FULL) {
 		si.lpFile = SnowSetting::CONVERTER_CAFFE_EXE.c_str();
 		lstrcat(param, L" --tta 1");
-		si.nShow = SW_SHOW;
 		ShellExecuteEx(&si);
 		WaitForSingleObject(si.hProcess, INFINITE);
 	}
