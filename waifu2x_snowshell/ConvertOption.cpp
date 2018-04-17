@@ -15,6 +15,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->IsTTAEnabled = ttaEnabled;
 	this->InputFilePath = inputFile;
 	this->OutputFolderName = OutputFolderName;
+	this->CoreNum = 0;
 }
 
 void ConvertOption::setNoiseLevel(int noiseLevel) {

@@ -7,6 +7,7 @@ Converter::Converter() {
 	this->Is64bitOnly = true;
 	this->IsCudaOnly = false;
 	this->TTA = false;
+	this->IsCPU = false;
 }
 
 Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bool tta) {
@@ -18,6 +19,7 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 		this->Is64bitOnly = is64bitOnly;
 		this->IsCudaOnly = isCudaOnly;
 		this->TTA = tta;
+		this->IsCPU = false;
 		checkAvailable();
 	}
 }
@@ -32,6 +34,10 @@ bool Converter::checkAvailable() {
 	return this->Available;
 }
 
+void Converter::setCPU(bool isCPU) {
+	this->IsCPU = isCPU;
+}
+
 void Converter::setAvailable(bool available) {
 	this->Available = available;
 }
@@ -42,6 +48,10 @@ void Converter::setExePath(std::wstring exePath) {
 
 void Converter::setWorkingDir(std::wstring workingDir) {
 	this->WorkingDir = workingDir;
+}
+
+bool Converter::getCPU() {
+	return this->IsCPU;
 }
 
 bool Converter::getAvailable() {
@@ -98,6 +108,11 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 	{
 		ParamStream << L"--tta 1 ";
 		ExportNameStream << L"_tta_1";
+	}
+
+	// set core num
+	if (IsCPU && convertOption->getCoreNum() > 0 ) {
+		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
 	}
 
 	ExportName = ExportNameStream.str();

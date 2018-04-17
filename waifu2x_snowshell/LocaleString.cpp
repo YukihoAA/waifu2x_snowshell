@@ -35,7 +35,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_MENU_CONFIRM_SKIP = L"보여주지 않기";
 
 
- int INT_TEXT_TAB = 30;
+ int INT_TEXT_TAB = 11;
 
  wstring STRING_TEXT_NOISE = L"노이즈 감소";
  wstring STRING_TEXT_NOISE_NONE = L"노이즈 감소 - 없음";
