@@ -77,7 +77,7 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 	ParamStream << L"-i \"" << convertOption->getInputFilePath() << L"\" ";
 
 	// set convert mode
-	if (convertOption->getNoiseLevel() == ConvertOption::NOISE_NONE) {
+	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"-m scale ";
 	}
 	else if (convertOption->getScaleRatio() == L"1.0")
@@ -86,21 +86,19 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 		ParamStream << L"-m noise_scale ";
 
 	// set noise_level
-	if (convertOption->getNoiseLevel() != ConvertOption::NOISE_NONE) {
+	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
 		ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
 	}
 
 	// set scale_ratio
-	if (convertOption->getScaleRatio() != L"1.0" || convertOption->getNoiseLevel() == ConvertOption::NOISE_NONE){
+	if (convertOption->getScaleRatio() != L"1.0"){
 		ParamStream << L"--scale_ratio ";
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
 		last = convertOption->getScaleRatio().find_last_of(L'.');
 		if (last != std::wstring::npos)
 			ExportNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
-		else
-			ExportNameStream << L"_scale_x1_0";
 	}
 
 	// set tta mode

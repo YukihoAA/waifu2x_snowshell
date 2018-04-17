@@ -300,14 +300,6 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 	if (!FileExists(fileName)) {
 		return FALSE;
 	}
-	// if input is directory
-	/*else if (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(fileName)) {
-		wstring fnStr = fileName;
-		size_t last = fnStr.find_last_of(L'\\');
-		//CreateDirectory(fnStr.substr(last).c_str(), NULL);
-
-		//TODO: need to build folder name and Find all files to convert
-	}*/
 
 	if (SnowSetting::getConfirm() == CONFIRM_SHOW && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 		return FALSE;
@@ -332,6 +324,29 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 	}
 	convertOption->setTTAEnabled(true);
 
+
+	// if input is directory
+	/*if (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(fileName)) {
+		std::wstringstream FolderNameStream;
+		FolderNameStream << fileName << L"_waifu2x";
+
+		// set noise_level
+		if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
+			FolderNameStream << L"_noise" << convertOption->getNoiseLevel();
+		}
+
+		// set scale_ratio
+		if (convertOption->getScaleRatio() != L"1.0") {
+
+			size_t last = convertOption->getScaleRatio().find_last_of(L'.');
+			if (last != std::wstring::npos)
+				FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
+		}
+		convertOption->setOutputFolderName(FolderNameStream.str());
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+
+		//TODO: Find all files to convert
+	}*/
 
 	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
 		return SnowSetting::CONVERTER_CAFFE.Execute(hWnd, convertOption);

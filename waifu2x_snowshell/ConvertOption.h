@@ -12,14 +12,14 @@ private:
 	std::wstring OutputFolderName;
 
 public:
-	const static int	NOISE_NONE = 0;
-	const static int	NOISE_LOW = 1;
-	const static int	NOISE_HIGH = 2;
-	const static int	NOISE_VERY_HIGH = 3;
+	const static int	CO_NOISE_NONE = 0;
+	const static int	CO_NOISE_LOW = 1;
+	const static int	CO_NOISE_HIGH = 2;
+	const static int	CO_NOISE_VERY_HIGH = 3;
 
 public:
 	ConvertOption();
-	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = true, std::wstring OutputFolderName = L"");
+	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::CO_NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = true, std::wstring OutputFolderName = L"");
 	void setNoiseLevel(int noiseLevel);
 	void setScaleRatio(std::wstring scaleRatio);
 	void setTTAEnabled(bool ttaEnabled);
