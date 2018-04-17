@@ -6,6 +6,8 @@
 #include "resource.h"
 #include "MenuItem.h"
 #include "SnowSetting.h"
+#include "ConvertOption.h"
+#include "Converter.h"
 
 using namespace std;
 
@@ -15,7 +17,7 @@ using namespace std;
 extern HINSTANCE g_hInst;
 extern BOOL is64bit;
 
-BOOL Execute(HWND hWnd, LPCWSTR fileName);
+BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void prtTextBorder(HDC hdc, int x, int y, LPCWSTR str, int c, COLORREF borderColor, int borderSize, COLORREF textColor = NULL);

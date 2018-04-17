@@ -113,11 +113,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="ConvertOption.cpp" />
     <ClCompile Include="LocaleString.cpp" />
     <ClCompile Include="SnowSetting.cpp" />
     <ClCompile Include="Main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Converter.h" />
+    <ClInclude Include="ConvertOption.h" />
     <ClInclude Include="LocaleString.h" />
     <ClInclude Include="Main.h" />
     <ClInclude Include="MenuItem.h" />

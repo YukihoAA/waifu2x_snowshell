@@ -9,6 +9,7 @@
 
 #include "LocaleString.h"
 #include "MenuItem.h"
+#include "Converter.h"
 
 using namespace std;
 
@@ -75,8 +76,9 @@ protected:
 public:
 	static wstring NewPath;
 	static wstring CurrPath;
-	static wstring CONVERTER_x64_EXE;
-	static wstring CONVERTER_CAFFE_EXE;
+	static Converter CONVERTER_CPP_x86;
+	static Converter CONVERTER_CPP_x64;
+	static Converter CONVERTER_CAFFE;
 
 	static SnowSetting *Init();
 	static bool checkCuda();
@@ -84,7 +86,6 @@ public:
 	static bool loadSetting();
 	static bool saveSetting();
 	static void loadMenuString(HMENU hMenu);
-	static wstring BuildParam(LPCWSTR inputFile);
 
 	static int getNoise();
 	static int getScale();
@@ -120,4 +121,5 @@ public:
 
 wstring itos(int n);
 BOOL FileExists(LPCWSTR file);
+BOOL IsDirectory(LPCWSTR path);
 int contain(wstring str, wstring find);

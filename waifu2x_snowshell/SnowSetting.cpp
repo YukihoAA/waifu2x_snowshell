@@ -7,8 +7,9 @@ wstring SnowSetting::NewPath;
 wstring SnowSetting::CurrPath;
 wstring SnowSetting::LangPath;
 wstring SnowSetting::INIPath;
-wstring SnowSetting::CONVERTER_x64_EXE;
-wstring SnowSetting::CONVERTER_CAFFE_EXE;
+Converter SnowSetting::CONVERTER_CPP_x86;
+Converter SnowSetting::CONVERTER_CPP_x64;
+Converter SnowSetting::CONVERTER_CAFFE;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCudaAvailable;
 
@@ -26,8 +27,9 @@ SnowSetting::SnowSetting()
 	NewPath = L"\\output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
-	CONVERTER_x64_EXE = CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe";
-	CONVERTER_CAFFE_EXE = CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe";
+	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter\\waifu2x-converter_x86.exe", false);
+	CONVERTER_CPP_x64 = Converter(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
+	CONVERTER_CAFFE = Converter(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe", true, true, true);
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 
@@ -62,7 +64,7 @@ bool SnowSetting::checkCuda() {
 	WCHAR param[MAX_PATH] = L"";
 	const static size_t bufferSize = 128;
 
-	if (!FileExists(CONVERTER_x64_EXE.c_str()) && FileExists(CONVERTER_CAFFE_EXE.c_str()))
+	if (!FileExists(CONVERTER_CPP_x64.getExePath().c_str()) && FileExists(CONVERTER_CAFFE.getExePath().c_str()))
 		return true;
 
 	CreatePipe(&hRead, &hWrite, nullptr, bufferSize);
@@ -75,7 +77,7 @@ bool SnowSetting::checkCuda() {
 	si.hStdError = hWrite;
 	si.dwFlags = STARTF_USESTDHANDLES;
 
-	lstrcpy(param, CONVERTER_x64_EXE.c_str());
+	lstrcpy(param, CONVERTER_CPP_x64.getExePath().c_str());
 	lstrcat(param, L" --list-processor");
 
 	BOOL isExecuted = CreateProcess(nullptr, param, nullptr, nullptr, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, nullptr, CurrPath.c_str(), &si, &pi);
@@ -486,101 +488,6 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, MENU_CONFIRM_SKIP, MF_BYCOMMAND | MF_STRING, MENU_CONFIRM_SKIP, STRING_MENU_CONFIRM_SKIP.c_str());
 }
 
-wstring SnowSetting::BuildParam(LPCWSTR inputFile)
-{
-	if (Singletone == nullptr)
-		Init();
-
-	wstringstream ss;
-
-	wstring ExpName;
-
-	ExpName = inputFile;
-
-	size_t dotPos = ExpName.find_last_of(L".");
-
-	wstring ext = L".png";	// output format: png
-
-	ExpName=ExpName.substr(0, dotPos) + L"_waifu2x";
-
-	ss << L"-i \"" << inputFile << L"\" ";
-
-	// if input is dir, .png should not added
-	if (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(inputFile))
-		ext = L"";
-
-	if (getNoise() == NOISE_NONE)
-		ss << "-m scale ";
-	else if (getScale() == SCALE_x1_0)
-		ss << L"-m noise ";
-	else
-		ss << L"-m noise_scale ";
-
-	switch (getCPU()) {
-	case CPU_MID:
-		ss << L"-j " << (int) CoreNum/2 << L" ";
-		break;
-	case CPU_FULL:
-		//ss << L"-j " << CoreNum << L" ";
-		break;
-	case CPU_HIGH:
-	default:
-		ss << L"-j " << CoreNum-1 << L" ";
-		break;
-	}
-
-	switch (getScale()) {
-	case SCALE_x1_0:
-		if (getNoise() == NOISE_NONE)
-			ss << L"--scale_ratio 1.0 ";
-		break;
-	case SCALE_x1_5:
-		ss << L"--scale_ratio 1.5 ";
-		ExpName += L"_scale_x1_5";
-		break;
-	case SCALE_x1_6:
-		ss << L"--scale_ratio 1.6 ";
-		ExpName += L"_scale_x1_6";
-		break;
-	case SCALE_x2_0:
-		ss << L"--scale_ratio 2.0 ";
-		ExpName += L"_scale_x2_0";
-		break;
-	}
-
-	switch (getNoise()) {
-	case NOISE_LOW:
-		ss << L"--noise_level 1 ";
-		ExpName += L"_noise1";
-		break;
-	case NOISE_HIGH:
-		ss << L"--noise_level 2 ";
-		ExpName += L"_noise2";
-		break;
-	case NOISE_MAX:
-		ss << L"--noise_level 3 ";
-		ExpName += L"_noise3";
-		break;
-	default:
-		break;
-	}
-
-	ExpName += ext;
-
-	if (getExport() == EXPORT_SAME)
-	{
-		ss << L"-o \"" << ExpName << L"\"";
-	}
-	else {
-		size_t last=ExpName.find_last_of(L'\\');
-		CreateDirectory((ExpName.substr(0, last) + NewPath).c_str(), NULL);
-		ExpName = ExpName.substr(0, last) + NewPath + ExpName.substr(last);
-		ss << L"-o \"" << ExpName << L"\"";
-	}
-
-	return ss.str();
-}
-
 int SnowSetting::getNoise()
 {
 	if (Singletone == nullptr)
@@ -866,6 +773,10 @@ BOOL FileExists(LPCWSTR file) {
 		FindClose(handle);
 	}
 	return found;
+}
+
+BOOL IsDirectory(LPCWSTR path) {
+	return FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(path);
 }
 
 int contain(wstring str, wstring find) {

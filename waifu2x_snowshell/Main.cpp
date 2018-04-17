@@ -66,6 +66,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	HDC hdc, hBitDC, hMemDC;
 	RECT rt;
 	wstring LangName;
+	ConvertOption convertOption;
 
 	switch (uMsg) {
 	case WM_CREATE:
@@ -116,7 +117,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			}
 
 			for (unsigned i = 0; i < dragFiles.size(); i++) {
-				Execute(hWnd, dragFiles.at(i).c_str());
+				Execute(hWnd, &convertOption, dragFiles.at(i).c_str());
 			}
 
 			DragAcceptFiles(hWnd, TRUE);
@@ -137,7 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				ofn.lpstrFilter = lpstrFilter;
 
 				if (GetOpenFileName(&ofn) != NULL) {
-					Execute(hWnd, ofn.lpstrFile);
+					Execute(hWnd, &convertOption, ofn.lpstrFile);
 				}
 			}
 			return TRUE;
@@ -291,7 +292,7 @@ LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-BOOL Execute(HWND hWnd, LPCWSTR fileName) {
+BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 
 	if (!FileExists(fileName)) {
 		return FALSE;
@@ -312,32 +313,31 @@ BOOL Execute(HWND hWnd, LPCWSTR fileName) {
 		return FALSE;
 	}
 
-	SHELLEXECUTEINFO si;
-	WCHAR param[MAX_PATH]=L"";
-	WCHAR lpDir[MAX_PATH] = L"";
-	lstrcpyW(param, SnowSetting::BuildParam(fileName).c_str());
-	lstrcpyW(lpDir, (SnowSetting::CurrPath + L"\\waifu2x-converter").c_str());
-
-	memset(&si, 0, sizeof(SHELLEXECUTEINFO));
-	si.cbSize=sizeof(SHELLEXECUTEINFO);
-	si.nShow = SW_SHOW;
-	si.lpVerb = L"open";
-	si.lpParameters = param;
-	si.hwnd = hWnd;
-	si.lpDirectory = lpDir;
-	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-
-	if (is64bit && FileExists(SnowSetting::CONVERTER_CAFFE_EXE.c_str()) && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable()) {
-		si.lpFile = SnowSetting::CONVERTER_CAFFE_EXE.c_str();
-		lstrcat(param, L" --tta 1");
-		ShellExecuteEx(&si);
-		WaitForSingleObject(si.hProcess, INFINITE);
+	convertOption->setInputFilePath(fileName);
+	convertOption->setNoiseLevel(SnowSetting::getNoise());
+	if(SnowSetting::getExport())
+	convertOption->setOutputFolderName(SnowSetting::NewPath);
+	switch (SnowSetting::getScale()) {
+	case SCALE_x1_0:
+		convertOption->setScaleRatio(L"1.0");
+		break;
+	case SCALE_x1_5:
+		convertOption->setScaleRatio(L"1.5");
+		break;
+	case SCALE_x1_6:
+		convertOption->setScaleRatio(L"1.6");
+		break;
+	case SCALE_x2_0:
+		convertOption->setScaleRatio(L"2.0");
+		break;
 	}
-	else if (is64bit && FileExists(SnowSetting::CONVERTER_x64_EXE.c_str())) {
-		si.lpFile = SnowSetting::CONVERTER_x64_EXE.c_str();
-		ShellExecuteEx(&si);
-		WaitForSingleObject(si.hProcess, INFINITE);
-	}
+	convertOption->setTTAEnabled(true);
+
+
+	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
+		return SnowSetting::CONVERTER_CAFFE.Execute(hWnd, convertOption);
+	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
+		return SnowSetting::CONVERTER_CPP_x64.Execute(hWnd, convertOption);
 	else
 		return FALSE;
 	return TRUE;
