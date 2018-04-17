@@ -8,7 +8,6 @@ LPWSTR lpszClassCredit = L"CreditWindow";
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	HWND hWnd;
 	MSG msg;
-	BOOL bIsWow64;
 	LPWSTR lpszClass = L"SnowShell";
 
 	WNDCLASS wc;
@@ -31,7 +30,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	g_hInst = hInstance;
 
 	// OpenCV 3.1 and later version does not supports x86 system.
-	if (IsWow64Process(GetCurrentProcess(), &bIsWow64))
+	if (IsWow64Process(GetCurrentProcess(), &is64bit))
 		is64bit = TRUE;
 	else {
 		MessageBox(NULL, L"SnowShell does not supports x86 system\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
@@ -338,6 +337,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 		return SnowSetting::CONVERTER_CAFFE.Execute(hWnd, convertOption);
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
 		return SnowSetting::CONVERTER_CPP_x64.Execute(hWnd, convertOption);
+	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable())
+		return SnowSetting::CONVERTER_CPP_x86.Execute(hWnd, convertOption);
 	else
 		return FALSE;
 	return TRUE;
