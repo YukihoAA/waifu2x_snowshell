@@ -74,5 +74,6 @@
     <None Include="Lang\Korean.ini" />
     <None Include="Lang\Japanese.ini" />
     <None Include="Lang\Chinese.ini" />
+    <None Include="Lang\English.ini" />
   </ItemGroup>
 </Project>

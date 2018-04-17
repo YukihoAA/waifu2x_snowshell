@@ -124,12 +124,13 @@ void SnowSetting::loadLocale()
 	wstring Key, Value, Section;
 	wstring LangFileName = LangPath + L"\\" + LangFile[getLang()];
 
-	if (!FileExists(LangFileName.c_str()) && LangFileName.find(L"English") == std::string::npos) {
+	if (!FileExists(LangFileName.c_str())) {
 		CreateDirectory(L"Lang", NULL);
 		HRSRC hSrc=NULL;
 		if (LangFileName.find(L"Korean") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_KO), L"LANG");
 		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_JP), L"LANG");
 		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_CN), L"LANG");
+		else if (LangFileName.find(L"English") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_EN), L"LANG");
 		else{
 			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
 			setLang(1);
@@ -151,7 +152,7 @@ void SnowSetting::loadLocale()
 	Key = L"INT_SETTING_VER";
 	INT_SETTING_VER = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), 0, LangFileName.c_str());
 
-	if (INT_SETTING_VER < SETTING_VER_MINIMUM && LangFileName.find(L"English") == std::string::npos) {
+	if (INT_SETTING_VER < SETTING_VER_MINIMUM) {
 		DeleteFile(LangFileName.c_str());
 		loadSetting();
 		return;
@@ -187,7 +188,7 @@ void SnowSetting::loadLocale()
 	Section = L"File";
 
 	Key = L"STRING_MENU_FILE_IMAGE_SEL";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Select image And execute", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Select Image And Execute", buf, 200, LangFileName.c_str());
 	STRING_MENU_FILE_IMAGE_SEL = buf;
 
 	Key = L"STRING_MENU_FILE_CREDIT";
@@ -255,22 +256,22 @@ void SnowSetting::loadLocale()
 	Section = L"Export";
 
 	Key = L"STRING_MENU_EXPORT_SAME";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Same folder of input file", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Same Folder of Input File", buf, 200, LangFileName.c_str());
 	STRING_MENU_EXPORT_SAME = buf;
 
 	Key = L"STRING_MENU_EXPORT_NEW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"\"output\" folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"\"output\" Folder", buf, 200, LangFileName.c_str());
 	STRING_MENU_EXPORT_NEW = buf;
 
 
 	Section = L"Confirm";
 
 	Key = L"STRING_MENU_CONFIRM_SHOW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Show warning", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Show Warning", buf, 200, LangFileName.c_str());
 	STRING_MENU_CONFIRM_SHOW = buf;
 
 	Key = L"STRING_MENU_CONFIRM_SKIP";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Hide warning", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Hide Warning", buf, 200, LangFileName.c_str());
 	STRING_MENU_CONFIRM_SKIP = buf;
 
 
@@ -330,7 +331,7 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_CPU_MID = buf;
 
 	Key = L"STRING_TEXT_CPU_HIGH";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num  Almost all", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num  Almost All", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CPU_HIGH = buf;
 
 	Key = L"STRING_TEXT_CPU_FULL";
@@ -339,15 +340,15 @@ void SnowSetting::loadLocale()
 
 
 	Key = L"STRING_TEXT_EXPORT";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export dir", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT = buf;
 
 	Key = L"STRING_TEXT_EXPORT_SAME";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export dir     Same folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir     Same Folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_SAME = buf;
 
 	Key = L"STRING_TEXT_EXPORT_NEW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export dir     \"output\" folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir     \"output\" Folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_NEW = buf;
 
 
