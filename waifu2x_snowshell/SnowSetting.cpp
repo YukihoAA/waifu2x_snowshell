@@ -27,7 +27,7 @@ SnowSetting::SnowSetting()
 	NewPath = L"\\output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
-	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter\\waifu2x-converter_x86.exe", false);
+	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter-x86\\waifu2x-converter_x86.exe", false);
 	CONVERTER_CPP_x64 = Converter(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
 	CONVERTER_CAFFE = Converter(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe", true, true, true);
 	CoreNum = thread::hardware_concurrency();

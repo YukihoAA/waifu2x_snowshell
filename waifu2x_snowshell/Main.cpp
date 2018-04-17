@@ -30,11 +30,11 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	g_hInst = hInstance;
 
 	// OpenCV 3.1 and later version does not supports x86 system.
-	if (IsWow64Process(GetCurrentProcess(), &is64bit))
-		is64bit = TRUE;
-	else {
-		MessageBox(NULL, L"SnowShell does not supports x86 system\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
-	}
+	IsWow64Process(GetCurrentProcess(), &is64bit);
+
+	// if(!is64bit)
+	// MessageBox(NULL, L"SnowShell does not supports x86 system\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
+	
 
 	if (is64bit) {
 
@@ -337,8 +337,11 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 		return SnowSetting::CONVERTER_CAFFE.Execute(hWnd, convertOption);
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
 		return SnowSetting::CONVERTER_CPP_x64.Execute(hWnd, convertOption);
-	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable())
+	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable()) {
+		if (SnowSetting::getNoise()>NOISE_HIGH)
+			convertOption->setNoiseLevel(NOISE_HIGH);
 		return SnowSetting::CONVERTER_CPP_x86.Execute(hWnd, convertOption);
+	}
 	else
 		return FALSE;
 	return TRUE;
