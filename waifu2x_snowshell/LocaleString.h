@@ -22,7 +22,7 @@ extern wstring STRING_MENU_FILE_CREDIT;
 extern wstring STRING_MENU_NOISE_NONE;
 extern wstring STRING_MENU_NOISE_LOW;
 extern wstring STRING_MENU_NOISE_HIGH;
-extern wstring STRING_MENU_NOISE_MAX;
+extern wstring STRING_MENU_NOISE_VERY_HIGH;
 
 extern wstring STRING_MENU_SCALE_x1_0;
 extern wstring STRING_MENU_SCALE_x1_5;
@@ -45,7 +45,7 @@ extern wstring STRING_TEXT_NOISE;
 extern wstring STRING_TEXT_NOISE_NONE;
 extern wstring STRING_TEXT_NOISE_LOW;
 extern wstring STRING_TEXT_NOISE_HIGH;
-extern wstring STRING_TEXT_NOISE_MAX;
+extern wstring STRING_TEXT_NOISE_VERY_HIGH;
 
 extern wstring STRING_TEXT_SCALE;
 extern wstring STRING_TEXT_SCALE_x1_0;

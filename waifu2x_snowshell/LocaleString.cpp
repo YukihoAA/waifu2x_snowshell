@@ -17,7 +17,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_MENU_NOISE_NONE = L"없음";
  wstring STRING_MENU_NOISE_LOW = L"낮음";
  wstring STRING_MENU_NOISE_HIGH = L"높음";
- wstring STRING_MENU_NOISE_MAX = L"최대";
+ wstring STRING_MENU_NOISE_VERY_HIGH = L"최대";
 
  wstring STRING_MENU_SCALE_x1_0 = L"x1.0";
  wstring STRING_MENU_SCALE_x1_5 = L"x1.5";
@@ -41,7 +41,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_TEXT_NOISE_NONE = L"노이즈 감소 - 없음";
  wstring STRING_TEXT_NOISE_LOW = L"노이즈 감소 - 낮음";
  wstring STRING_TEXT_NOISE_HIGH = L"노이즈 감소 - 높음";
- wstring STRING_TEXT_NOISE_MAX = L"노이즈 감소 - 최대";
+ wstring STRING_TEXT_NOISE_VERY_HIGH = L"노이즈 감소 - 최대";
 
  wstring STRING_TEXT_SCALE = L"확대 비율";
  wstring STRING_TEXT_SCALE_x1_0 = L"확대 비율 - x1.0";

@@ -16,6 +16,7 @@ using namespace std;
 #define NOISE_NONE 0
 #define NOISE_LOW 1
 #define NOISE_HIGH 2
+#define NOISE_VERY_HIGH 3
 
 #define NOISE_MAX 3
 
@@ -110,7 +111,7 @@ public:
 	static void checkConfirm(HMENU hMenu, int sel = -1);
 	static void checkLang(HMENU hMenu, int sel = -1);
 
-	static void getTexts(wstring*(*UIText)[5]);
+	static void getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]);
 	static wstring* getNoiseText();
 	static wstring* getScaleText();
 	static wstring* getCPUText();

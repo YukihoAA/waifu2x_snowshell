@@ -57,6 +57,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HFONT hFont;
 	static HBITMAP hBGBitmap;
 	static wstring *UIText[5];
+	static wstring *UITitleText[5];
 	HBITMAP hBitmap;
 	HFONT hOldFont;
 	HBITMAP hOldBitmap;
@@ -71,7 +72,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_CREATE:
 		SnowSetting::Init();
-		SnowSetting::getTexts(&UIText);
+		SnowSetting::getTexts(&UITitleText, &UIText);
 		hMenu = LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
 		hFont = CreateFont(35, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, OUT_OUTLINE_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_MODERN, L"Malgun Gothic");
 		//hFont = CreateFont(35, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, OUT_OUTLINE_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_MODERN, L"210 Sonyeoilgi R");
@@ -160,7 +161,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_NOISE_HIGH:
 		case ID_MENU_NOISE_VERY_HIGH:
 			if (LOWORD(wParam) >= ID_MENU_NOISE_VERY_HIGH) {
-				SnowSetting::checkNoise(hMenu, NOISE_MAX);
+				SnowSetting::checkNoise(hMenu, NOISE_VERY_HIGH);
 			}
 			else
 				SnowSetting::checkNoise(hMenu, LOWORD(wParam) - ID_MENU_NOISE_NONE);
@@ -199,7 +200,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_LANG_JP:
 		case ID_MENU_LANG_CN:
 			SnowSetting::checkLang(hMenu, LOWORD(wParam) - ID_MENU_LANG_KO);
-			SnowSetting::getTexts(&UIText);
+			SnowSetting::getTexts(&UITitleText, &UIText);
 			SetMenu(hWnd, NULL);
 			DestroyMenu(hMenu);
 			hMenu=LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
@@ -239,7 +240,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		DeleteDC(hBitDC);
 
 		for (int i = 0; i<5; i++)
-			prtTextBorder(hMemDC, 4, 133 + 33 * i, UIText[i]->c_str(), (int) UIText[i]->length(), RGB(0x21, 0x21, 0x21), 2);
+			prtTextBorder(hMemDC, 7, 133 + 33 * i, UITitleText[i]->c_str(), (int)UITitleText[i]->length(), RGB(0x21, 0x21, 0x21), 2);
+
+		for (int i = 0; i<5; i++)
+			prtTextBorder(hMemDC, (int)(INT_TEXT_TAB * 12.5 + 7), 133 + 33 * i, UIText[i]->c_str(), (int) UIText[i]->length(), RGB(0x21, 0x21, 0x21), 2);
 
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, hMemDC, 0, 0, SRCCOPY);
 

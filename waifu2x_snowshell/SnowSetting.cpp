@@ -1,6 +1,6 @@
 ﻿#include "Main.h"
 
-#define SETTING_VER_MINIMUM 1
+#define SETTING_VER_MINIMUM 2
 
 SnowSetting *SnowSetting::Singletone;
 wstring SnowSetting::NewPath;
@@ -214,9 +214,9 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"High", buf, 200, LangFileName.c_str());
 	STRING_MENU_NOISE_HIGH = buf;
 
-	Key = L"STRING_MENU_NOISE_MAX";
+	Key = L"STRING_MENU_NOISE_VERY_HIGH";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Max", buf, 200, LangFileName.c_str());
-	STRING_MENU_NOISE_MAX = buf;
+	STRING_MENU_NOISE_VERY_HIGH = buf;
 
 
 	Section = L"Scale";
@@ -296,9 +296,9 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    High", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_HIGH = buf;
 
-	Key = L"STRING_TEXT_NOISE_MAX";
+	Key = L"STRING_TEXT_NOISE_VERY_HIGH";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    Max", buf, 200, LangFileName.c_str());
-	STRING_TEXT_NOISE_MAX = buf;
+	STRING_TEXT_NOISE_VERY_HIGH = buf;
 
 
 	Key = L"STRING_TEXT_SCALE";
@@ -469,7 +469,7 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, ID_MENU_NOISE_NONE, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_NONE, STRING_MENU_NOISE_NONE.c_str());
 	ModifyMenu(hMenu, ID_MENU_NOISE_LOW, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_LOW, STRING_MENU_NOISE_LOW.c_str());
 	ModifyMenu(hMenu, ID_MENU_NOISE_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_HIGH, STRING_MENU_NOISE_HIGH.c_str());
-	ModifyMenu(hMenu, ID_MENU_NOISE_VERY_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_VERY_HIGH, STRING_MENU_NOISE_MAX.c_str());
+	ModifyMenu(hMenu, ID_MENU_NOISE_VERY_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_VERY_HIGH, STRING_MENU_NOISE_VERY_HIGH.c_str());
 
 	ModifyMenu(hMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_0, STRING_MENU_SCALE_x1_0.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_5, STRING_MENU_SCALE_x1_5.c_str());
@@ -686,7 +686,13 @@ void SnowSetting::checkLang(HMENU hMenu, int sel)
 	CheckMenuItem(hSubMenu, getLang(), MF_BYPOSITION | MF_CHECKED);
 }
 
-void SnowSetting::getTexts(wstring*(*UIText)[5]) {
+void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
+	(*UITitleText)[0] = &STRING_TEXT_NOISE;
+	(*UITitleText)[1] = &STRING_TEXT_SCALE;
+	(*UITitleText)[2] = &STRING_TEXT_CPU;
+	(*UITitleText)[3] = &STRING_TEXT_EXPORT;
+	(*UITitleText)[4] = &STRING_TEXT_CONFIRM;
+
 	(*UIText)[0] = getNoiseText();
 	(*UIText)[1] = getScaleText();
 	(*UIText)[2] = getCPUText();
@@ -703,8 +709,8 @@ wstring * SnowSetting::getNoiseText()
 		return &STRING_TEXT_NOISE_LOW;
 	case NOISE_HIGH:
 		return &STRING_TEXT_NOISE_HIGH;
-	case NOISE_MAX:
-		return &STRING_TEXT_NOISE_MAX;
+	case NOISE_VERY_HIGH:
+		return &STRING_TEXT_NOISE_VERY_HIGH;
 	}
 	return nullptr;
 }

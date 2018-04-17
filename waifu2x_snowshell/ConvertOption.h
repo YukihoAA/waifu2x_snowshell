@@ -5,6 +5,7 @@
 class ConvertOption {
 private:
 	int NoiseLevel;	// 0:none, 1:low, 2:high, 3:very high
+	int CoreNum;	// Enable Only in CPU
 	bool IsTTAEnabled;
 	std::wstring ScaleRatio;
 	std::wstring InputFilePath;
@@ -24,10 +25,12 @@ public:
 	void setTTAEnabled(bool ttaEnabled);
 	void setInputFilePath(std::wstring inputFile);
 	void setOutputFolderName(std::wstring OutputFolderName);
+	void setCoreNum(int coreNum);
 	int getNoiseLevel();
 	std::wstring getScaleRatio();
 	bool getTTAEnabled();
 	std::wstring getInputFilePath();
 	std::wstring getOutputFolderName();
+	int getCoreNum();
 
 };
