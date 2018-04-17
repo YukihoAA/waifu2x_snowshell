@@ -4,15 +4,15 @@
 #include <vector>
 
 #include "resource.h"
-#include "MenuItem.h"
 #include "SnowSetting.h"
 #include "ConvertOption.h"
 #include "Converter.h"
 
 using namespace std;
 
-#undef MAX_PATH
-#define MAX_PATH SHRT_MAX
+#ifndef MAX_PATH
+	#define MAX_PATH SHRT_MAX
+#endif
 
 extern HINSTANCE g_hInst;
 extern BOOL is64bit;
@@ -21,4 +21,3 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 void prtTextBorder(HDC hdc, int x, int y, LPCWSTR str, int c, COLORREF borderColor, int borderSize, COLORREF textColor = NULL);
-bool GetImageSize(LPCWSTR fn, int *x, int *y);

@@ -67,7 +67,7 @@ bool SnowSetting::checkCuda() {
 	if (!FileExists(CONVERTER_CPP_x64.getExePath().c_str()) && FileExists(CONVERTER_CAFFE.getExePath().c_str()))
 		return true;
 
-	CreatePipe(&hRead, &hWrite, nullptr, bufferSize);
+	CreatePipe(&hRead, &hWrite, NULL, bufferSize);
 	SetHandleInformation(hWrite, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
 
 	memset(&si, 0, sizeof(STARTUPINFO));
@@ -80,7 +80,7 @@ bool SnowSetting::checkCuda() {
 	lstrcpy(param, CONVERTER_CPP_x64.getExePath().c_str());
 	lstrcat(param, L" --list-processor");
 
-	BOOL isExecuted = CreateProcess(nullptr, param, nullptr, nullptr, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, nullptr, CurrPath.c_str(), &si, &pi);
+	BOOL isExecuted = CreateProcess(NULL, param, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, CurrPath.c_str(), &si, &pi);
 
 	if (isExecuted)
 	{
@@ -124,14 +124,12 @@ void SnowSetting::loadLocale()
 	wstring Key, Value, Section;
 	wstring LangFileName = LangPath + L"\\" + LangFile[getLang()];
 
-	//MessageBox(NULL, LangFileName.c_str(), L"", MB_OK);
-
 	if (!FileExists(LangFileName.c_str()) && LangFileName.find(L"English") == std::string::npos) {
 		CreateDirectory(L"Lang", NULL);
 		HRSRC hSrc=NULL;
-		if (LangFileName.find(L"Korean") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG1), L"LANG");
-		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG2), L"LANG");
-		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG3), L"LANG");
+		if (LangFileName.find(L"Korean") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_KO), L"LANG");
+		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_JP), L"LANG");
+		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_CN), L"LANG");
 		else{
 			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
 			setLang(1);
@@ -463,29 +461,29 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, 4, MF_BYPOSITION | MF_STRING, 4, STRING_MENU_EXPORT.c_str());
 	ModifyMenu(hMenu, 5, MF_BYPOSITION | MF_STRING, 5, STRING_MENU_CONFIRM.c_str());
 
-	ModifyMenu(hMenu, MENU_FILE_IMAGE_SEL, MF_BYCOMMAND | MF_STRING, MENU_FILE_IMAGE_SEL, STRING_MENU_FILE_IMAGE_SEL.c_str());
-	ModifyMenu(hMenu, MENU_FILE_CREDIT, MF_BYCOMMAND | MF_STRING, MENU_FILE_CREDIT, STRING_MENU_FILE_CREDIT.c_str());
-	ModifyMenu(hMenu, MENU_FILE_QUIT, MF_BYCOMMAND | MF_STRING, MENU_FILE_QUIT, STRING_MENU_FILE_QUIT.c_str());
+	ModifyMenu(hMenu, ID_MENU_FILE_IMGSEL, MF_BYCOMMAND | MF_STRING, ID_MENU_FILE_IMGSEL, STRING_MENU_FILE_IMAGE_SEL.c_str());
+	ModifyMenu(hMenu, ID_MENU_FILE_CREDIT, MF_BYCOMMAND | MF_STRING, ID_MENU_FILE_CREDIT, STRING_MENU_FILE_CREDIT.c_str());
+	ModifyMenu(hMenu, ID_MENU_FILE_QUIT, MF_BYCOMMAND | MF_STRING, ID_MENU_FILE_QUIT, STRING_MENU_FILE_QUIT.c_str());
 
-	ModifyMenu(hMenu, MENU_NOISE_NONE, MF_BYCOMMAND | MF_STRING, MENU_NOISE_NONE, STRING_MENU_NOISE_NONE.c_str());
-	ModifyMenu(hMenu, MENU_NOISE_LOW, MF_BYCOMMAND | MF_STRING, MENU_NOISE_LOW, STRING_MENU_NOISE_LOW.c_str());
-	ModifyMenu(hMenu, MENU_NOISE_HIGH, MF_BYCOMMAND | MF_STRING, MENU_NOISE_HIGH, STRING_MENU_NOISE_HIGH.c_str());
-	ModifyMenu(hMenu, MENU_NOISE_MAX, MF_BYCOMMAND | MF_STRING, MENU_NOISE_MAX, STRING_MENU_NOISE_MAX.c_str());
+	ModifyMenu(hMenu, ID_MENU_NOISE_NONE, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_NONE, STRING_MENU_NOISE_NONE.c_str());
+	ModifyMenu(hMenu, ID_MENU_NOISE_LOW, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_LOW, STRING_MENU_NOISE_LOW.c_str());
+	ModifyMenu(hMenu, ID_MENU_NOISE_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_HIGH, STRING_MENU_NOISE_HIGH.c_str());
+	ModifyMenu(hMenu, ID_MENU_NOISE_VERY_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_VERY_HIGH, STRING_MENU_NOISE_MAX.c_str());
 
-	ModifyMenu(hMenu, MENU_SCALE_x1_0, MF_BYCOMMAND | MF_STRING, MENU_SCALE_x1_0, STRING_MENU_SCALE_x1_0.c_str());
-	ModifyMenu(hMenu, MENU_SCALE_x1_5, MF_BYCOMMAND | MF_STRING, MENU_SCALE_x1_5, STRING_MENU_SCALE_x1_5.c_str());
-	ModifyMenu(hMenu, MENU_SCALE_x1_6, MF_BYCOMMAND | MF_STRING, MENU_SCALE_x1_6, STRING_MENU_SCALE_x1_6.c_str());
-	ModifyMenu(hMenu, MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
+	ModifyMenu(hMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_0, STRING_MENU_SCALE_x1_0.c_str());
+	ModifyMenu(hMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_5, STRING_MENU_SCALE_x1_5.c_str());
+	ModifyMenu(hMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_6, STRING_MENU_SCALE_x1_6.c_str());
+	ModifyMenu(hMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
 
-	ModifyMenu(hMenu, MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
-	ModifyMenu(hMenu, MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
-	ModifyMenu(hMenu, MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
+	ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
+	ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
+	ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
 
-	ModifyMenu(hMenu, MENU_EXPORT_SAME, MF_BYCOMMAND | MF_STRING, MENU_EXPORT_SAME, STRING_MENU_EXPORT_SAME.c_str());
-	ModifyMenu(hMenu, MENU_EXPORT_NEW, MF_BYCOMMAND | MF_STRING, MENU_EXPORT_NEW, STRING_MENU_EXPORT_NEW.c_str());
+	ModifyMenu(hMenu, ID_MENU_EXPORT_SAME, MF_BYCOMMAND | MF_STRING, ID_MENU_EXPORT_SAME, STRING_MENU_EXPORT_SAME.c_str());
+	ModifyMenu(hMenu, ID_MENU_EXPORT_NEW, MF_BYCOMMAND | MF_STRING, ID_MENU_EXPORT_NEW, STRING_MENU_EXPORT_NEW.c_str());
 
-	ModifyMenu(hMenu, MENU_CONFIRM_SHOW, MF_BYCOMMAND | MF_STRING, MENU_CONFIRM_SHOW, STRING_MENU_CONFIRM_SHOW.c_str());
-	ModifyMenu(hMenu, MENU_CONFIRM_SKIP, MF_BYCOMMAND | MF_STRING, MENU_CONFIRM_SKIP, STRING_MENU_CONFIRM_SKIP.c_str());
+	ModifyMenu(hMenu, ID_MENU_CONFIRM_SHOW, MF_BYCOMMAND | MF_STRING, ID_MENU_CONFIRM_SHOW, STRING_MENU_CONFIRM_SHOW.c_str());
+	ModifyMenu(hMenu, ID_MENU_CONFIRM_HIDE, MF_BYCOMMAND | MF_STRING, ID_MENU_CONFIRM_HIDE, STRING_MENU_CONFIRM_SKIP.c_str());
 }
 
 int SnowSetting::getNoise()

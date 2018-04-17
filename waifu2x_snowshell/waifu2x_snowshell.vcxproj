@@ -124,7 +124,6 @@
     <ClInclude Include="ConvertOption.h" />
     <ClInclude Include="LocaleString.h" />
     <ClInclude Include="Main.h" />
-    <ClInclude Include="MenuItem.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="SnowSetting.h" />
   </ItemGroup>
@@ -132,14 +131,10 @@
     <ResourceCompile Include="waifu2x_snowshell.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="BG.bmp" />
-    <Image Include="BG_Japanese.bmp" />
-    <Image Include="BG_Korean.bmp" />
     <Image Include="Bitmap\BG.bmp" />
     <Image Include="Bitmap\BG_Japanese.bmp" />
     <Image Include="Bitmap\BG_Korean.bmp" />
     <Image Include="Bitmap\ICON.ico" />
-    <Image Include="ICON.ico" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Lang\Chinese.ini" />

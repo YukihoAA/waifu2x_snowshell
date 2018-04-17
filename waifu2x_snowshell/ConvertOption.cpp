@@ -2,7 +2,7 @@
 
 ConvertOption::ConvertOption() {
 	NoiseLevel = 0;
-	ScaleRatio = 1.0;
+	ScaleRatio = L"1.0";
 	IsTTAEnabled = false;
 	InputFilePath = L"";
 	OutputFolderName = L"";

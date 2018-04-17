@@ -30,7 +30,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 
 	g_hInst = hInstance;
 
-	// OpenCV 3.2 does not supports x86 system.
+	// OpenCV 3.1 and later version does not supports x86 system.
 	if (IsWow64Process(GetCurrentProcess(), &bIsWow64))
 		is64bit = TRUE;
 	else {
@@ -125,7 +125,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return TRUE;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case MENU_FILE_IMAGE_SEL: {
+		case ID_MENU_FILE_IMGSEL: {
 				OPENFILENAME ofn;
 				WCHAR lpwstrFile[MAX_PATH]=L"";
 				WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.jpg;*.jpeg;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.tiff;*.bmp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pam\0All Files\0*.*";
@@ -142,7 +142,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				}
 			}
 			return TRUE;
-		case MENU_FILE_CREDIT: {
+		case ID_MENU_FILE_CREDIT: {
 				HWND desktop = GetDesktopWindow();
 				GetWindowRect(desktop, &rt);
 				//ShowWindow(CreateWindow(lpszClassCredit, L"waifu2x - SnowShell v1.0", WS_POPUP | WS_BORDER, (rt.right - 200) / 2, (rt.bottom - 100) / 2, 300, 150, NULL, NULL, g_hInst, NULL), TRUE);
@@ -152,53 +152,53 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 					MessageBox(hWnd, L"Creator: Yuki (yukiho5048@naver.com)\n\nTwitter: https://twitter.com/YukihoAA\nGitHub: https://github.com/YukihoAA\n", L"Credit", MB_OK);
 			}
 			return TRUE;
-		case MENU_FILE_QUIT:
+		case ID_MENU_FILE_QUIT:
 			SendMessage(hWnd, WM_CLOSE, 0, 0);
 			return TRUE;
-		case MENU_NOISE_NONE:
-		case MENU_NOISE_LOW:
-		case MENU_NOISE_HIGH:
-		case MENU_NOISE_MAX:
-			if (LOWORD(wParam) == MENU_NOISE_MAX) {
+		case ID_MENU_NOISE_NONE:
+		case ID_MENU_NOISE_LOW:
+		case ID_MENU_NOISE_HIGH:
+		case ID_MENU_NOISE_VERY_HIGH:
+			if (LOWORD(wParam) >= ID_MENU_NOISE_VERY_HIGH) {
 				SnowSetting::checkNoise(hMenu, NOISE_MAX);
 			}
 			else
-				SnowSetting::checkNoise(hMenu, LOWORD(wParam) - MENU_NOISE_NONE);
+				SnowSetting::checkNoise(hMenu, LOWORD(wParam) - ID_MENU_NOISE_NONE);
 			UIText[0]=SnowSetting::getNoiseText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case MENU_SCALE_x1_0:
-		case MENU_SCALE_x1_5:
-		case MENU_SCALE_x1_6:
-		case MENU_SCALE_x2_0:
-			SnowSetting::checkScale(hMenu, LOWORD(wParam) - MENU_SCALE_x1_0);
+		case ID_MENU_SCALE_x1_0:
+		case ID_MENU_SCALE_x1_5:
+		case ID_MENU_SCALE_x1_6:
+		case ID_MENU_SCALE_x2_0:
+			SnowSetting::checkScale(hMenu, LOWORD(wParam) - ID_MENU_SCALE_x1_0);
 			UIText[1] = SnowSetting::getScaleText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case MENU_CPU_MID:
-		case MENU_CPU_HIGH:
-		case MENU_CPU_FULL:
-			SnowSetting::checkCPU(hMenu, LOWORD(wParam) - MENU_CPU_MID);
+		case ID_MENU_CPU_MID:
+		case ID_MENU_CPU_HIGH:
+		case ID_MENU_CPU_FULL:
+			SnowSetting::checkCPU(hMenu, LOWORD(wParam) - ID_MENU_CPU_MID);
 			UIText[2] = SnowSetting::getCPUText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case MENU_EXPORT_SAME:
-		case MENU_EXPORT_NEW:
-			SnowSetting::checkExport(hMenu, LOWORD(wParam) - MENU_EXPORT_SAME);
+		case ID_MENU_EXPORT_SAME:
+		case ID_MENU_EXPORT_NEW:
+			SnowSetting::checkExport(hMenu, LOWORD(wParam) - ID_MENU_EXPORT_SAME);
 			UIText[3] = SnowSetting::getExportText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case MENU_CONFIRM_SHOW:
-		case MENU_CONFIRM_SKIP:
-			SnowSetting::checkConfirm(hMenu, LOWORD(wParam) - MENU_CONFIRM_SHOW);
+		case ID_MENU_CONFIRM_SHOW:
+		case ID_MENU_CONFIRM_HIDE:
+			SnowSetting::checkConfirm(hMenu, LOWORD(wParam) - ID_MENU_CONFIRM_SHOW);
 			UIText[4] = SnowSetting::getConfirmText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case MENU_LANG_KO:
-		case MENU_LANG_EN:
-		case MENU_LANG_JP:
-		case MENU_LANG_CN:
-			SnowSetting::checkLang(hMenu, LOWORD(wParam) - MENU_LANG_KO);
+		case ID_MENU_LANG_KO:
+		case ID_MENU_LANG_EN:
+		case ID_MENU_LANG_JP:
+		case ID_MENU_LANG_CN:
+			SnowSetting::checkLang(hMenu, LOWORD(wParam) - ID_MENU_LANG_KO);
 			SnowSetting::getTexts(&UIText);
 			SetMenu(hWnd, NULL);
 			DestroyMenu(hMenu);
@@ -306,12 +306,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 		//TODO: need to build folder name and Find all files to convert
 	}*/
 
-	if (SnowSetting::getConfirm() == CONFIRM_SHOW) {
-		int x, y;
-		GetImageSize(fileName, &x, &y);
-		if(x*y>100000 && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
+	if (SnowSetting::getConfirm() == CONFIRM_SHOW && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 		return FALSE;
-	}
 
 	convertOption->setInputFilePath(fileName);
 	convertOption->setNoiseLevel(SnowSetting::getNoise());
@@ -354,80 +350,4 @@ void prtTextBorder(HDC hdc, int x, int y, LPCWSTR str, int c, COLORREF borderCol
 			TextOut(hdc, x+i, y+j, str, c);
 	SetTextColor(hdc, OldColor);
 	TextOut(hdc, x, y, str, c);
-}
-
-// orig code from: https://stackoverflow.com/questions/10111784/get-image-resolution-from-image-file#comment12969712_10111784
-bool GetImageSize(LPCWSTR fn, int *x, int *y)
-{
-	FILE *f;
-	_wfopen_s(&f, fn, L"rb");
-	*x = 0, *y = 0;
-
-	if (f == 0) return false;
-
-	fseek(f, 0, SEEK_END);
-	long len = ftell(f);
-	fseek(f, 0, SEEK_SET);
-
-	if (len<24) {
-		fclose(f);
-		return false;
-	}
-
-	// Strategy:
-	// reading GIF dimensions requires the first 10 bytes of the file
-	// reading PNG dimensions requires the first 24 bytes of the file
-	// reading JPEG dimensions requires scanning through jpeg chunks
-	// In all formats, the file is at least 24 bytes big, so we'll read that always
-	unsigned char buf[24]; fread(buf, 1, 24, f);
-
-
-	// For JPEGs, we need to read the first 12 bytes of each chunk.
-	// We'll read those 12 bytes at buf+2...buf+14, i.e. overwriting the existing buf.
-	if ((buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF && buf[3] == 0xE0 && buf[6] == 'J' && buf[7] == 'F' && buf[8] == 'I' && buf[9] == 'F') ||
-		(buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF && buf[3] == 0xE1 && buf[6] == 'E' && buf[7] == 'x' && buf[8] == 'i' && buf[9] == 'f'))
-	{
-		long pos = 2;
-		while (buf[2] == 0xFF)
-		{
-			if (buf[3] == 0xC0 || buf[3] == 0xC1 || buf[3] == 0xC2 || buf[3] == 0xC3 || buf[3] == 0xC9 || buf[3] == 0xCA || buf[3] == 0xCB)
-				break;
-
-			pos += 2 + (buf[4] << 8) + buf[5];
-			if (pos + 12>len) break;
-			fseek(f, pos, SEEK_SET);
-			fread(buf + 2, 1, 12, f);
-		}
-	}
-
-
-	fclose(f);
-
-	// JPEG: (first two bytes of buf are first two bytes of the jpeg file; rest of buf is the DCT frame
-	if (buf[0] == 0xFF && buf[1] == 0xD8 && buf[2] == 0xFF)
-	{
-		*y = (buf[7] << 8) + buf[8];
-		*x = (buf[9] << 8) + buf[10];
-
-		return true;
-	}
-
-	// GIF: first three bytes say "GIF", next three give version number. Then dimensions
-	if (buf[0] == 'G' && buf[1] == 'I' && buf[2] == 'F')
-	{
-		*x = buf[6] + (buf[7] << 8);
-		*y = buf[8] + (buf[9] << 8);
-		return true;
-	}
-
-	// PNG: the first frame is by definition an IHDR frame, which gives dimensions
-	if (buf[0] == 0x89 && buf[1] == 'P' && buf[2] == 'N' && buf[3] == 'G' && buf[4] == 0x0D && buf[5] == 0x0A && buf[6] == 0x1A && buf[7] == 0x0A && buf[12] == 'I' && buf[13] == 'H' && buf[14] == 'D' && buf[15] == 'R')
-	{
-		*x = (buf[16] << 24) + (buf[17] << 16) + (buf[18] << 8) + (buf[19] << 0);
-		*y = (buf[20] << 24) + (buf[21] << 16) + (buf[22] << 8) + (buf[23] << 0);
-
-		return true;
-	}
-
-	return false;
 }

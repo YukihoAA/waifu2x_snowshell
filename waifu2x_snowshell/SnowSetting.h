@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include "LocaleString.h"
-#include "MenuItem.h"
 #include "Converter.h"
 
 using namespace std;

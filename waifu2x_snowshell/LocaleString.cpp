@@ -36,6 +36,7 @@ int INT_SETTING_VER = 0;
 
 
  int INT_TEXT_TAB = 30;
+
  wstring STRING_TEXT_NOISE = L"노이즈 감소";
  wstring STRING_TEXT_NOISE_NONE = L"노이즈 감소 - 없음";
  wstring STRING_TEXT_NOISE_LOW = L"노이즈 감소 - 낮음";
