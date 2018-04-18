@@ -11,11 +11,11 @@ Converter::Converter() {
 }
 
 Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bool tta) {
-	if(exePath.empty())
+	if (exePath.empty())
 		this->Available = false;
 	else {
 		this->ExePath = exePath;
-		this->WorkingDir = exePath.substr(0,exePath.find_last_of('\\'));
+		this->WorkingDir = exePath.substr(0, exePath.find_last_of('\\'));
 		this->Is64bitOnly = is64bitOnly;
 		this->IsCudaOnly = isCudaOnly;
 		this->TTA = tta;
@@ -28,7 +28,7 @@ bool Converter::checkAvailable() {
 	if (Is64bitOnly) {
 		BOOL bIsWow64;
 		IsWow64Process(GetCurrentProcess(), &bIsWow64);
-		this->Available &= bIsWow64==TRUE;
+		this->Available &= bIsWow64 == TRUE;
 	}
 	this->Available = FileExists(ExePath.c_str());
 	return this->Available;
@@ -92,7 +92,7 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 	}
 
 	// set scale_ratio
-	if (convertOption->getScaleRatio() != L"1.0"){
+	if (convertOption->getScaleRatio() != L"1.0") {
 		ParamStream << L"--scale_ratio ";
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
@@ -109,14 +109,14 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 	}
 
 	// set core num
-	if (IsCPU && convertOption->getCoreNum() > 0 ) {
+	if (IsCPU && convertOption->getCoreNum() > 0) {
 		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
 	}
 
 	ExportName = ExportNameStream.str();
 
 
-	if(!IsDirectory(convertOption->getInputFilePath().c_str()))
+	if (!IsDirectory(convertOption->getInputFilePath().c_str()))
 		ExportName += L".png";
 
 	if (convertOption->getOutputFolderName() != L"") {
@@ -126,7 +126,7 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 		CreateDirectory((ExportName.substr(0, last) + convertOption->getOutputFolderName()).c_str(), NULL);
 		ExportName = ExportName.substr(0, last) + convertOption->getOutputFolderName() + ExportName.substr(last);
 	}
-	
+
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	SHELLEXECUTEINFO si;

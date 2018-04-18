@@ -90,15 +90,15 @@ bool SnowSetting::checkCuda() {
 		char s[bufferSize] = "";
 		string st;
 
-		ReadFile(hRead, s, bufferSize-1, &len, 0);
+		ReadFile(hRead, s, bufferSize - 1, &len, 0);
 		st = s;
 		size_t firstLF = st.find_first_of('\n');
 
-		if(firstLF != string::npos)
+		if (firstLF != string::npos)
 			st[firstLF] = '\0';
 
-		if(st.find_last_of('=') != string::npos)
-			CoreNum = atoi(st.substr(st.find_last_of('=')+1).c_str());
+		if (st.find_last_of('=') != string::npos)
+			CoreNum = atoi(st.substr(st.find_last_of('=') + 1).c_str());
 
 		if (st.find("CUDA") != string::npos)
 			cuda = true;
@@ -126,12 +126,12 @@ void SnowSetting::loadLocale()
 
 	if (!FileExists(LangFileName.c_str())) {
 		CreateDirectory(L"Lang", NULL);
-		HRSRC hSrc=NULL;
-		if (LangFileName.find(L"Korean") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_KO), L"LANG");
-		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc=FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_JP), L"LANG");
+		HRSRC hSrc = NULL;
+		if (LangFileName.find(L"Korean") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_KO), L"LANG");
+		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_JP), L"LANG");
 		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_CN), L"LANG");
 		else if (LangFileName.find(L"English") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_EN), L"LANG");
-		else{
+		else {
 			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
 			setLang(1);
 		}
@@ -143,7 +143,7 @@ void SnowSetting::loadLocale()
 			DWORD dwWritten = 0;
 
 			WriteFile(hFile, memRes, sizeRes, &dwWritten, NULL);
-			if(hFile!=NULL)
+			if (hFile != NULL)
 				CloseHandle(hFile);
 		}
 	}
@@ -383,7 +383,7 @@ bool SnowSetting::loadSetting()
 {
 	if (Singletone == nullptr)
 		Init();
-	
+
 	wstring Section = L"SnowShell";
 	wstring Key, Value;
 
@@ -409,7 +409,7 @@ bool SnowSetting::loadSetting()
 	if (langsel == -1) {
 		WCHAR buf[40];
 		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, buf, 40);
-		for(int i=0; i<LangNum; i++)
+		for (int i = 0; i < LangNum; i++)
 			if (LangFile[i].find(buf) >= 0)
 			{
 				langsel = i;
@@ -604,7 +604,7 @@ void SnowSetting::setLang(int Lang)
 	loadLocale();
 }
 
-void SnowSetting::checkMenuAll (HMENU hMenu)
+void SnowSetting::checkMenuAll(HMENU hMenu)
 {
 	checkNoise(hMenu);
 	checkScale(hMenu);
@@ -621,7 +621,7 @@ void SnowSetting::checkNoise(HMENU hMenu, int sel)
 	if (sel != -1)
 		setNoise(sel);
 
-	for (int i = 0; i<=NOISE_MAX; i++)
+	for (int i = 0; i <= NOISE_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getNoise(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -633,7 +633,7 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 	if (sel != -1)
 		setScale(sel);
 
-	for (int i = 0; i<=SCALE_MAX; i++)
+	for (int i = 0; i <= SCALE_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getScale(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -645,7 +645,7 @@ void SnowSetting::checkCPU(HMENU hMenu, int sel)
 	if (sel != -1)
 		setCPU(sel);
 
-	for (int i = 0; i<=CPU_MAX; i++)
+	for (int i = 0; i <= CPU_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getCPU(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -657,7 +657,7 @@ void SnowSetting::checkExport(HMENU hMenu, int sel)
 	if (sel != -1)
 		setExport(sel);
 
-	for (int i = 0; i<=EXPORT_MAX; i++)
+	for (int i = 0; i <= EXPORT_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getExport(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -669,7 +669,7 @@ void SnowSetting::checkConfirm(HMENU hMenu, int sel)
 	if (sel != -1)
 		setConfirm(sel);
 
-	for (int i = 0; i<=CONFIRM_MAX; i++)
+	for (int i = 0; i <= CONFIRM_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getConfirm(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -681,7 +681,7 @@ void SnowSetting::checkLang(HMENU hMenu, int sel)
 	if (sel != -1)
 		setLang(sel);
 
-	for (int i = 0; i< LangNum; i++)
+	for (int i = 0; i < LangNum; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getLang(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -786,8 +786,8 @@ BOOL IsDirectory(LPCWSTR path) {
 
 int contain(wstring str, wstring find) {
 	int count = 0;
-	size_t index = 0; 
-	while ((index = str.find(find, index+1))!= std::string::npos) {
+	size_t index = 0;
+	while ((index = str.find(find, index + 1)) != std::string::npos) {
 		count++;
 	}
 	return count;
