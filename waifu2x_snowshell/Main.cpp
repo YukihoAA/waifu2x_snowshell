@@ -85,6 +85,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_INITMENU:
 		SnowSetting::checkMenuAll(hMenu);
 		return TRUE;
+	case WM_KEYDOWN:
+		switch (wParam) {
+		case VK_SPACE:
+			if (SnowSetting::CurrentConverter != nullptr)
+				SnowSetting::CurrentConverter->emptyQueue();
+			return TRUE;
+		}
+		return FALSE;
 	case WM_DROPFILES: {
 		DragAcceptFiles(hWnd, FALSE);
 
@@ -345,16 +353,17 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 	}*/
 
 	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
-		return SnowSetting::CONVERTER_CAFFE.execute(hWnd, convertOption);
+		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
-		return SnowSetting::CONVERTER_CPP_x64.execute(hWnd, convertOption);
+		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x64;
 	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable()) {
 		if (SnowSetting::getNoise() > NOISE_HIGH)
 			convertOption->setNoiseLevel(NOISE_HIGH);
-		return SnowSetting::CONVERTER_CPP_x86.execute(hWnd, convertOption);
+		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x86;
 	}
 	else
 		return FALSE;
+	SnowSetting::CurrentConverter->addQueue(convertOption);
 	return TRUE;
 }
 

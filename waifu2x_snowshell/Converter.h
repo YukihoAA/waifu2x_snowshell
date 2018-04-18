@@ -4,13 +4,11 @@
 #include <string>
 #include <sstream>
 #include <queue>
-#include <thread>
 
 #include "ConvertOption.h"
 
 extern BOOL FileExists(LPCWSTR file);
 extern BOOL IsDirectory(LPCWSTR path);
-extern void ConvertPorc(void *arg);
 
 class Converter {
 private:
@@ -21,8 +19,12 @@ private:
 	bool TTA;
 	std::wstring ExePath;
 	std::wstring WorkingDir;
-	std::queue<ConvertOption> convertQueue;
-	std::thread* pConvertThread;
+	HANDLE hConvertThread;
+	HANDLE hConvertProcess;
+
+protected:
+	std::queue<ConvertOption> ConvertQueue;
+	static DWORD WINAPI ConvertPorc(PVOID lParam);
 
 public:
 	Converter();
@@ -36,7 +38,7 @@ public:
 	bool getAvailable();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();
-	bool execute(HWND hWnd, ConvertOption *convertOption);
+	bool execute(ConvertOption *convertOption);
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();
 

@@ -8,6 +8,8 @@ Converter::Converter() {
 	this->IsCudaOnly = false;
 	this->TTA = false;
 	this->IsCPU = false;
+	this->hConvertThread = nullptr;
+	this->hConvertProcess = nullptr;
 }
 
 Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bool tta) {
@@ -20,6 +22,8 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 		this->IsCudaOnly = isCudaOnly;
 		this->TTA = tta;
 		this->IsCPU = false;
+		this->hConvertThread = nullptr;
+		this->hConvertProcess = nullptr;
 		checkAvailable();
 	}
 }
@@ -66,7 +70,7 @@ std::wstring Converter::getWorkingDir() {
 	return this->WorkingDir;
 }
 
-bool Converter::execute(HWND hWnd, ConvertOption *convertOption) {
+bool Converter::execute(ConvertOption *convertOption) {
 	size_t last;
 	std::wstring ExportName;
 	std::wstringstream ExportNameStream;
@@ -140,26 +144,45 @@ bool Converter::execute(HWND hWnd, ConvertOption *convertOption) {
 	si.nShow = SW_SHOW;
 	si.lpVerb = L"open";
 	si.lpParameters = param;
-	si.hwnd = hWnd;
+	si.hwnd = NULL;
 	si.lpDirectory = lpDir;
 	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
 	si.lpFile = ExePath.c_str();
 	if (ShellExecuteExW(&si) == FALSE)
 		return false;
-	else
-		WaitForSingleObject(si.hProcess, INFINITE);
+	else {
+		DWORD ExitCode;
+		hConvertProcess = si.hProcess;
+		WaitForSingleObject(hConvertProcess, INFINITE);
+		GetExitCodeProcess(hConvertProcess, &ExitCode);
+		if (ExitCode == STILL_ACTIVE)
+			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = nullptr;
+	}
 	return true;
 }
 
 void Converter::addQueue(ConvertOption *convertOption) {
-	convertQueue.push(*convertOption);
+	ConvertQueue.push(*convertOption);
+	if (hConvertThread == nullptr)
+		hConvertThread = CreateThread(nullptr, 0, Converter::ConvertPorc, this, 0, nullptr);
 }
 
 void Converter::emptyQueue() {
-	while(!convertQueue.empty())
-		convertQueue.pop();
+	while (!ConvertQueue.empty())
+		ConvertQueue.pop();
+	TerminateThread(hConvertThread, 1);
+	TerminateProcess(hConvertProcess, 1);
+	hConvertThread = nullptr;
 }
 
-void ConvertPorc(void *arg) {
+DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
+	Converter* This = (Converter*)lParam;
 
+	while (!This->ConvertQueue.empty()) {
+		This->execute(&This->ConvertQueue.front());
+		This->ConvertQueue.pop();
+	}
+	This->hConvertThread = nullptr;
+	ExitThread(0);
 }

@@ -10,6 +10,7 @@ wstring SnowSetting::INIPath;
 Converter SnowSetting::CONVERTER_CPP_x86;
 Converter SnowSetting::CONVERTER_CPP_x64;
 Converter SnowSetting::CONVERTER_CAFFE;
+Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCudaAvailable;
 

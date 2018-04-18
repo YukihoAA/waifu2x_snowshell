@@ -79,6 +79,7 @@ public:
 	static Converter CONVERTER_CPP_x86;
 	static Converter CONVERTER_CPP_x64;
 	static Converter CONVERTER_CAFFE;
+	static Converter* CurrentConverter;
 
 	static SnowSetting *Init();
 	static bool checkCuda();
