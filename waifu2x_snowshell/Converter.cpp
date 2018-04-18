@@ -66,7 +66,7 @@ std::wstring Converter::getWorkingDir() {
 	return this->WorkingDir;
 }
 
-bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
+bool Converter::execute(HWND hWnd, ConvertOption *convertOption) {
 	size_t last;
 	std::wstring ExportName;
 	std::wstringstream ExportNameStream;
@@ -149,4 +149,17 @@ bool Converter::Execute(HWND hWnd, ConvertOption *convertOption) {
 	else
 		WaitForSingleObject(si.hProcess, INFINITE);
 	return true;
+}
+
+void Converter::addQueue(ConvertOption *convertOption) {
+	convertQueue.push(*convertOption);
+}
+
+void Converter::emptyQueue() {
+	while(!convertQueue.empty())
+		convertQueue.pop();
+}
+
+void ConvertPorc(void *arg) {
+
 }

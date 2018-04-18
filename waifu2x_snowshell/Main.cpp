@@ -345,13 +345,13 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 	}*/
 
 	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
-		return SnowSetting::CONVERTER_CAFFE.Execute(hWnd, convertOption);
+		return SnowSetting::CONVERTER_CAFFE.execute(hWnd, convertOption);
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
-		return SnowSetting::CONVERTER_CPP_x64.Execute(hWnd, convertOption);
+		return SnowSetting::CONVERTER_CPP_x64.execute(hWnd, convertOption);
 	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable()) {
 		if (SnowSetting::getNoise() > NOISE_HIGH)
 			convertOption->setNoiseLevel(NOISE_HIGH);
-		return SnowSetting::CONVERTER_CPP_x86.Execute(hWnd, convertOption);
+		return SnowSetting::CONVERTER_CPP_x86.execute(hWnd, convertOption);
 	}
 	else
 		return FALSE;
