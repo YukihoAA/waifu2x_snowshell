@@ -1,4 +1,4 @@
-# waifu2x - SnowShell
+# waifu2x - SnowShell ![apm](https://img.shields.io/apm/l/vim-mode.svg)
 This is GUI Shell for waifu2x-converter-cpp(https://github.com/tanakamura/waifu2x-converter-cpp). <br/> <br/>
 ![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) ![Example](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Example.PNG) <br /> <br/>
 You can use SnowShell to make your image better. <br/>
