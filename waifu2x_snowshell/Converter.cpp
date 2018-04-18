@@ -172,8 +172,9 @@ void Converter::emptyQueue() {
 	while (!ConvertQueue.empty())
 		ConvertQueue.pop();
 	TerminateThread(hConvertThread, 1);
-	TerminateProcess(hConvertProcess, 1);
 	hConvertThread = nullptr;
+	TerminateProcess(hConvertProcess, 1);
+	hConvertProcess = nullptr;
 }
 
 DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
