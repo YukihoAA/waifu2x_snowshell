@@ -7,6 +7,7 @@ ConvertOption::ConvertOption() {
 	InputFilePath = L"";
 	OutputFolderName = L"";
 	CoreNum = 0;
+	NoLabel = false;
 }
 
 ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstring scaleRatio, bool ttaEnabled, std::wstring OutputFolderName) {
@@ -16,6 +17,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->InputFilePath = inputFile;
 	this->OutputFolderName = OutputFolderName;
 	this->CoreNum = 0;
+	this->NoLabel = false;
 }
 
 void ConvertOption::setNoiseLevel(int noiseLevel) {
@@ -64,4 +66,12 @@ std::wstring ConvertOption::getOutputFolderName() {
 
 int ConvertOption::getCoreNum() {
 	return this->CoreNum;
+}
+
+bool ConvertOption::getNoLabel() {
+	return this->NoLabel;
+}
+
+void ConvertOption::setNoLabel(bool noLabel) {
+	this->NoLabel = NoLabel;
 }

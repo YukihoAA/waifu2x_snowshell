@@ -38,7 +38,7 @@ public:
 	bool getAvailable();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();
-	bool execute(ConvertOption *convertOption);
+	bool execute(ConvertOption *convertOption, bool noLabel = false);
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();
 

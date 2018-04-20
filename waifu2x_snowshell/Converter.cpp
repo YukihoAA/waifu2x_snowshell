@@ -70,7 +70,7 @@ std::wstring Converter::getWorkingDir() {
 	return this->WorkingDir;
 }
 
-bool Converter::execute(ConvertOption *convertOption) {
+bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	size_t last;
 	std::wstring ExportName;
 	std::wstringstream ExportNameStream;
@@ -92,7 +92,8 @@ bool Converter::execute(ConvertOption *convertOption) {
 	// set noise_level
 	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
-		ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
+		if(!noLabel)
+			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
 	}
 
 	// set scale_ratio
@@ -101,7 +102,7 @@ bool Converter::execute(ConvertOption *convertOption) {
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
 		last = convertOption->getScaleRatio().find_last_of(L'.');
-		if (last != std::wstring::npos)
+		if (!noLabel && last != std::wstring::npos)
 			ExportNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
 	}
 
@@ -109,7 +110,8 @@ bool Converter::execute(ConvertOption *convertOption) {
 	if (convertOption->getTTAEnabled() && this->TTA)
 	{
 		ParamStream << L"--tta 1 ";
-		ExportNameStream << L"_tta_1";
+		if(!noLabel)
+			ExportNameStream << L"_tta_1";
 	}
 
 	// set core num
@@ -124,11 +126,11 @@ bool Converter::execute(ConvertOption *convertOption) {
 		ExportName += L".png";
 
 	if (convertOption->getOutputFolderName() != L"") {
-		last = ExportName.find_last_of(L'\\');
+		last = convertOption->getInputFilePath().find_last_of(L'\\');
 		if (last == std::wstring::npos)
 			return false;
-		CreateDirectory((ExportName.substr(0, last) + convertOption->getOutputFolderName()).c_str(), NULL);
-		ExportName = ExportName.substr(0, last) + convertOption->getOutputFolderName() + ExportName.substr(last);
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		ExportName = convertOption->getOutputFolderName() + convertOption->getInputFilePath().substr(last, convertOption->getInputFilePath().find_last_of(L'.'));
 	}
 
 	ParamStream << L"-o \"" << ExportName << L"\"";
@@ -136,8 +138,10 @@ bool Converter::execute(ConvertOption *convertOption) {
 	SHELLEXECUTEINFO si;
 	WCHAR param[MAX_PATH] = L"";
 	WCHAR lpDir[MAX_PATH] = L"";
+	WCHAR lpFile[MAX_PATH] = L"";
 	lstrcpyW(param, ParamStream.str().c_str());
 	lstrcpyW(lpDir, WorkingDir.c_str());
+	lstrcpyW(lpFile, ExePath.c_str());
 
 	memset(&si, 0, sizeof(SHELLEXECUTEINFO));
 	si.cbSize = sizeof(SHELLEXECUTEINFO);
@@ -147,15 +151,14 @@ bool Converter::execute(ConvertOption *convertOption) {
 	si.hwnd = NULL;
 	si.lpDirectory = lpDir;
 	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-	si.lpFile = ExePath.c_str();
+	si.lpFile = lpFile;
 	if (ShellExecuteExW(&si) == FALSE)
 		return false;
 	else {
-		DWORD ExitCode;
 		hConvertProcess = si.hProcess;
-		WaitForSingleObject(hConvertProcess, INFINITE);
-		GetExitCodeProcess(hConvertProcess, &ExitCode);
-		if (ExitCode == STILL_ACTIVE)
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if(hConvertProcess != nullptr)
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
 	}

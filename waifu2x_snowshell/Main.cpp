@@ -131,18 +131,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		switch (LOWORD(wParam)) {
 		case ID_MENU_FILE_IMGSEL: {
 			OPENFILENAME ofn;
-			WCHAR lpwstrFile[MAX_PATH] = L"";
+			LPWSTR lpwstrFile = new WCHAR[MAX_PATH];
 			WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.jpg;*.jpeg;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.tiff;*.bmp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pam\0All Files\0*.*";
 
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hWnd;
 			ofn.lpstrFile = lpwstrFile;
-			ofn.nMaxFile = MAX_PATH;
+			ofn.nMaxFile = MAX_PATH - 1;
 			ofn.lpstrFilter = lpstrFilter;
 
 			if (GetOpenFileName(&ofn) != NULL) {
 				Execute(hWnd, &convertOption, ofn.lpstrFile);
+			}
+
+			if (lpwstrFile != nullptr)
+			{
+				delete lpwstrFile;
 			}
 		}
 								  return TRUE;
@@ -299,19 +304,21 @@ LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
+BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
 
 	if (!FileExists(fileName)) {
 		return FALSE;
 	}
 
-	if (SnowSetting::getConfirm() == CONFIRM_SHOW && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
+	if (SnowSetting::getConfirm() == CONFIRM_SHOW && convertOption->getOutputFolderName() == L"" && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 		return FALSE;
 
 	convertOption->setInputFilePath(fileName);
 	convertOption->setNoiseLevel(SnowSetting::getNoise());
-	if (SnowSetting::getExport())
-		convertOption->setOutputFolderName(SnowSetting::NewPath);
+	if (SnowSetting::getExport() && convertOption->getOutputFolderName() == L"") {
+		wstring inputPath = fileName;
+		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::NewPath);
+	}
 	switch (SnowSetting::getScale()) {
 	case SCALE_x1_0:
 		convertOption->setScaleRatio(L"1.0");
@@ -328,30 +335,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 	}
 	convertOption->setTTAEnabled(true);
 
-
-	// if input is directory
-	/*if (FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(fileName)) {
-		std::wstringstream FolderNameStream;
-		FolderNameStream << fileName << L"_waifu2x";
-
-		// set noise_level
-		if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
-			FolderNameStream << L"_noise" << convertOption->getNoiseLevel();
-		}
-
-		// set scale_ratio
-		if (convertOption->getScaleRatio() != L"1.0") {
-
-			size_t last = convertOption->getScaleRatio().find_last_of(L'.');
-			if (last != std::wstring::npos)
-				FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
-		}
-		convertOption->setOutputFolderName(FolderNameStream.str());
-		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-
-		//TODO: Find all files to convert
-	}*/
-
+	// Set Converter
 	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
@@ -363,7 +347,83 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName) {
 	}
 	else
 		return FALSE;
-	SnowSetting::CurrentConverter->addQueue(convertOption);
+
+	DWORD FileAttribute = GetFileAttributes(fileName);
+
+	// if input is directory
+	if (FILE_ATTRIBUTE_DIRECTORY & FileAttribute) {
+		std::wstringstream FolderNameStream;
+		FolderNameStream << fileName << L"_waifu2x";
+
+		if (!noLabel) {
+			// set noise_level
+			if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
+				FolderNameStream << L"_noise" << convertOption->getNoiseLevel();
+			}
+
+			// set scale_ratio
+			if (convertOption->getScaleRatio() != L"1.0") {
+
+				size_t last = convertOption->getScaleRatio().find_last_of(L'.');
+				if (last != std::wstring::npos)
+					FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
+			}
+		}
+		convertOption->setOutputFolderName(FolderNameStream.str());
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+
+		//TODO: Find all files to convert
+		queue<ConvertOption> FolderSearchQueue;
+
+		FolderSearchQueue.push(*convertOption);
+
+		while (!FolderSearchQueue.empty()) {
+			WIN32_FIND_DATA FileFindData;
+			HANDLE hFind = INVALID_HANDLE_VALUE;
+			ConvertOption FolderConvertOption= FolderSearchQueue.front();
+			wstring filePath = FolderConvertOption.getInputFilePath();
+
+			hFind = FindFirstFile((filePath + L"\\*.*").c_str(), &FileFindData);
+
+			if (INVALID_HANDLE_VALUE == hFind) {
+				FindClose(hFind);
+				return TRUE;
+			}
+			do {
+				if (FileFindData.cFileName[0] == L'.')
+					continue;
+				wstring FoundFilePath = filePath + L"\\" + FileFindData.cFileName;
+				if (FILE_ATTRIBUTE_DIRECTORY & FileFindData.dwFileAttributes)
+				{
+					ConvertOption NewFolderConvertOption = FolderConvertOption;
+					NewFolderConvertOption.setInputFilePath(FoundFilePath.c_str());
+					//MessageBox(hWnd, FoundFilePath.c_str(), L"DIR", MB_OK);
+					NewFolderConvertOption.setOutputFolderName(NewFolderConvertOption.getOutputFolderName() + L"\\" + FileFindData.cFileName);
+					NewFolderConvertOption.setNoLabel(true);
+					FolderSearchQueue.push(NewFolderConvertOption);
+					continue;
+				}
+				else if (FILE_ATTRIBUTE_ARCHIVE & FileFindData.dwFileAttributes) {
+					//MessageBox(hWnd, FoundFilePath.c_str(), L"FILE", MB_OK);
+
+					FolderConvertOption.setInputFilePath(FoundFilePath.c_str());
+					FolderConvertOption.setNoLabel(true);
+					SnowSetting::CurrentConverter->addQueue(&FolderConvertOption);
+				}
+				else
+					continue;
+
+			} while (FindNextFile(hFind, &FileFindData) != NULL);
+
+			FindClose(hFind);
+			FolderSearchQueue.pop();
+		}
+
+	}
+
+	if (FILE_ATTRIBUTE_ARCHIVE & FileAttribute)
+		SnowSetting::CurrentConverter->addQueue(convertOption);
+
 	return TRUE;
 }
 

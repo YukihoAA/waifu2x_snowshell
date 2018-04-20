@@ -6,6 +6,7 @@ class ConvertOption {
 private:
 	int NoiseLevel;	// 0:none, 1:low, 2:high, 3:very high
 	int CoreNum;	// Enable Only in CPU
+	bool NoLabel;
 	bool IsTTAEnabled;
 	std::wstring ScaleRatio;
 	std::wstring InputFilePath;
@@ -32,5 +33,6 @@ public:
 	std::wstring getInputFilePath();
 	std::wstring getOutputFolderName();
 	int getCoreNum();
-
+	bool getNoLabel();
+	void setNoLabel(bool noLabel);
 };
