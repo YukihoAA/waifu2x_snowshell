@@ -3,7 +3,6 @@
 HINSTANCE g_hInst;
 
 BOOL is64bit = FALSE;
-LPWSTR lpszClassCredit = L"CreditWindow";
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
 	HWND hWnd;
@@ -23,10 +22,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	wc.lpszClassName = lpszClass;
 	RegisterClass(&wc);
 
-	wc.lpszClassName = lpszClassCredit;
-	wc.lpfnWndProc = CreditWndProc;
-	RegisterClass(&wc);
-
 	g_hInst = hInstance;
 
 	// OpenCV 3.1 and later version does not supports x86 system.
@@ -36,7 +31,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	// MessageBox(NULL, L"SnowShell does not supports x86 system\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
 
 
-	hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.4", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.5", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -268,39 +263,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		DeleteObject(hBGBitmap);
 		DeleteObject(hFont);
 		PostQuitMessage(0);
-		return TRUE;
-	}
-	return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-LRESULT CALLBACK CreditWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	static HBITMAP hBitmap;
-	HBITMAP hOldBitmap;
-	BITMAP bit;
-	PAINTSTRUCT ps;
-	HDC hdc, MemDC;
-	RECT rt;
-	switch (uMsg) {
-	case WM_CREATE:
-		hBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
-		return TRUE;
-	case WM_PAINT:
-		hdc = BeginPaint(hWnd, &ps);
-		MemDC = CreateCompatibleDC(hdc);
-		hOldBitmap = (HBITMAP)SelectObject(MemDC, hBitmap);
-
-		GetObject(hBitmap, sizeof(BITMAP), &bit);
-
-		GetClientRect(hWnd, &rt);
-		BitBlt(hdc, rt.left, rt.top, rt.right - rt.left, rt.bottom - rt.top, MemDC, 0, 0, SRCCOPY);
-		SelectObject(MemDC, hOldBitmap);
-		DeleteDC(MemDC);
-		EndPaint(hWnd, &ps);
-		return TRUE;
-	case WM_LBUTTONDOWN:
-	case WM_RBUTTONDOWN:
-	case WM_KEYDOWN:
-		SendMessage(hWnd, WM_CLOSE, 0, 0);
 		return TRUE;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);

@@ -1,6 +1,6 @@
 ﻿#include "Main.h"
 
-#define SETTING_VER_MINIMUM 5
+#define SETTING_VER_MINIMUM 6
 
 SnowSetting *SnowSetting::Singletone;
 wstring SnowSetting::NewPath;
