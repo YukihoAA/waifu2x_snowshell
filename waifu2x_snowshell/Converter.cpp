@@ -174,9 +174,11 @@ void Converter::addQueue(ConvertOption *convertOption) {
 void Converter::emptyQueue() {
 	while (!ConvertQueue.empty())
 		ConvertQueue.pop();
-	TerminateThread(hConvertThread, 1);
+	if(hConvertThread!=nullptr)
+		TerminateThread(hConvertThread, 1);
 	hConvertThread = nullptr;
-	TerminateProcess(hConvertProcess, 1);
+	if (hConvertProcess != nullptr)
+		TerminateProcess(hConvertProcess, 1);
 	hConvertProcess = nullptr;
 }
 
