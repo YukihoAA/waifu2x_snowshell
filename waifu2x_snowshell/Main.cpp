@@ -132,7 +132,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_FILE_IMGSEL: {
 			OPENFILENAME ofn;
 			LPWSTR lpwstrFile = new WCHAR[MAX_PATH];
-			WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.jpg;*.jpeg;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.tiff;*.bmp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pam\0All Files\0*.*";
+			WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.bmp;*.dib;*.jpg;*.jpeg;*.jpe;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pxm;*.pam;*.sr;*.ras;*.tif;*.tiff;*.exr;*.hdr;*.pic\0All Files\0*.*";
 
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
@@ -154,7 +154,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_FILE_CREDIT: {
 			HWND desktop = GetDesktopWindow();
 			GetWindowRect(desktop, &rt);
-			//ShowWindow(CreateWindow(lpszClassCredit, L"waifu2x - SnowShell v1.0", WS_POPUP | WS_BORDER, (rt.right - 200) / 2, (rt.bottom - 100) / 2, 300, 150, NULL, NULL, g_hInst, NULL), TRUE);
 			if (SnowSetting::getLang() == 0)
 				MessageBox(hWnd, L"제작자: 유키 (yukiho5048@naver.com)\n\nTwitter: https://twitter.com/YukihoAA\nGitHub: https://github.com/YukihoAA\n", L"정보", MB_OK);
 			else
@@ -333,7 +332,21 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		convertOption->setScaleRatio(L"2.0");
 		break;
 	}
-	convertOption->setTTAEnabled(true);
+	
+	convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
+
+	if (SnowSetting::getIsCPU())
+		switch (SnowSetting::getCPU()) {
+		case CPU_FULL:
+			convertOption->setCoreNum(SnowSetting::getCoreNum());
+			break;
+		case CPU_HIGH:
+			convertOption->setCoreNum(SnowSetting::getCoreNum()-1);
+			break;
+		case CPU_MID:
+			convertOption->setCoreNum(SnowSetting::getCoreNum()/2);
+			break;
+		}
 
 	// Set Converter
 	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
@@ -397,15 +410,12 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 				{
 					ConvertOption NewFolderConvertOption = FolderConvertOption;
 					NewFolderConvertOption.setInputFilePath(FoundFilePath.c_str());
-					//MessageBox(hWnd, FoundFilePath.c_str(), L"DIR", MB_OK);
 					NewFolderConvertOption.setOutputFolderName(NewFolderConvertOption.getOutputFolderName() + L"\\" + FileFindData.cFileName);
 					NewFolderConvertOption.setNoLabel(true);
 					FolderSearchQueue.push(NewFolderConvertOption);
 					continue;
 				}
 				else if (FILE_ATTRIBUTE_ARCHIVE & FileFindData.dwFileAttributes) {
-					//MessageBox(hWnd, FoundFilePath.c_str(), L"FILE", MB_OK);
-
 					FolderConvertOption.setInputFilePath(FoundFilePath.c_str());
 					FolderConvertOption.setNoLabel(true);
 					SnowSetting::CurrentConverter->addQueue(&FolderConvertOption);
