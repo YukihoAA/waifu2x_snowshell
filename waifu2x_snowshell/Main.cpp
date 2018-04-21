@@ -349,7 +349,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		}
 
 	// Set Converter
-	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() == CPU_FULL && SnowSetting::getCudaAvailable())
+	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() != CPU_MID && SnowSetting::getCudaAvailable())
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable())
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x64;
@@ -381,6 +381,10 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 				if (last != std::wstring::npos)
 					FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
 			}
+
+			// set tta
+			if (SnowSetting::CurrentConverter->getTTA() && convertOption->getTTAEnabled())
+				FolderNameStream << L"_tta_1";
 		}
 		convertOption->setOutputFolderName(FolderNameStream.str());
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);

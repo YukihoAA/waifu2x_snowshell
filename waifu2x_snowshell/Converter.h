@@ -35,6 +35,7 @@ public:
 	void setExePath(std::wstring exePath);
 	void setWorkingDir(std::wstring workingDir);
 	bool getCPU();
+	bool getTTA();
 	bool getAvailable();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();

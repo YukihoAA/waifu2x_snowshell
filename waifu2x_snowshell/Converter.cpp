@@ -58,6 +58,10 @@ bool Converter::getCPU() {
 	return this->IsCPU;
 }
 
+bool Converter::getTTA() {
+	return this->TTA;
+}
+
 bool Converter::getAvailable() {
 	return this->Available;
 }
