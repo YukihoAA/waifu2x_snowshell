@@ -23,9 +23,10 @@ wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.i
 SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH - 1, path);
+	GetModuleFileName(NULL, path, MAX_PATH);
 	//AddFontResource(L"font.ttf");
 	CurrPath = path;
+	CurrPath=CurrPath.substr(0,CurrPath.find_last_of(L'\\'));
 	NewPath = L"output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
