@@ -119,6 +119,7 @@ public:
 	static wstring* getNoiseText();
 	static wstring* getScaleText();
 	static wstring* getCPUText();
+	static wstring* getGPUText();
 	static wstring* getExportText();
 	static wstring* getConfirmText();
 };
@@ -127,3 +128,7 @@ wstring itos(int n);
 BOOL FileExists(LPCWSTR file);
 BOOL IsDirectory(LPCWSTR path);
 int contain(wstring str, wstring find);
+
+void PrintDebugMessage(double db, wstring title= L"Debug");
+void PrintDebugMessage(string str);
+void PrintDebugMessage(wstring str);

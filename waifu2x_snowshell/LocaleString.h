@@ -35,7 +35,7 @@ extern wstring STRING_MENU_CPU_HIGH;
 extern wstring STRING_MENU_CPU_FULL;
 
 extern wstring STRING_MENU_GPU_OPENCL;
-extern wstring STRING_MENU_GPU_NORM;
+extern wstring STRING_MENU_GPU_CUDA;
 extern wstring STRING_MENU_GPU_TTA;
 
 extern wstring STRING_MENU_EXPORT_SAME;
@@ -62,6 +62,11 @@ extern wstring STRING_TEXT_CPU;
 extern wstring STRING_TEXT_CPU_MID;
 extern wstring STRING_TEXT_CPU_HIGH;
 extern wstring STRING_TEXT_CPU_FULL;
+
+extern wstring STRING_TEXT_GPU;
+extern wstring STRING_TEXT_GPU_OPENCL;
+extern wstring STRING_TEXT_GPU_CUDA;
+extern wstring STRING_TEXT_GPU_TTA;
 
 extern wstring STRING_TEXT_EXPORT;
 extern wstring STRING_TEXT_EXPORT_SAME;

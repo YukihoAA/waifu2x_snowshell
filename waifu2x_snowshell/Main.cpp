@@ -187,7 +187,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_CPU_HIGH:
 		case ID_MENU_CPU_FULL:
 			SnowSetting::checkCPU(hMenu, LOWORD(wParam) - ID_MENU_CPU_MID);
-			UIText[2] = SnowSetting::getCPUText();
+			if (!SnowSetting::getCudaAvailable() || !SnowSetting::CONVERTER_CAFFE.getAvailable())
+				UIText[2] = SnowSetting::getCPUText();
+			else
+				UIText[2] = SnowSetting::getGPUText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
 		case ID_MENU_EXPORT_SAME:
@@ -335,7 +338,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	
 	convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
 
-	if (!SnowSetting::getCudaAvailable())
+	if (!SnowSetting::getCudaAvailable() || !SnowSetting::CONVERTER_CAFFE.getAvailable())
 		switch (SnowSetting::getCPU()) {
 		case CPU_FULL:
 			convertOption->setCoreNum(SnowSetting::getCoreNum());

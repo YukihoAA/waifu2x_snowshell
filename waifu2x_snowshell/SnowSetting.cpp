@@ -1,6 +1,6 @@
 ﻿#include "Main.h"
 
-#define SETTING_VER_MINIMUM 2
+#define SETTING_VER_MINIMUM 5
 
 SnowSetting *SnowSetting::Singletone;
 wstring SnowSetting::NewPath;
@@ -274,9 +274,9 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use OpenCL", buf, 200, LangFileName.c_str());
 	STRING_MENU_GPU_OPENCL = buf;
 
-	Key = L"STRING_MENU_GPU_NORM";
+	Key = L"STRING_MENU_GPU_CUDA";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CUDA", buf, 200, LangFileName.c_str());
-	STRING_MENU_GPU_NORM = buf;
+	STRING_MENU_GPU_CUDA = buf;
 
 	Key = L"STRING_MENU_GPU_TTA";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CUDA With TTA", buf, 200, LangFileName.c_str());
@@ -315,19 +315,19 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_NOISE = buf;
 
 	Key = L"STRING_TEXT_NOISE_NONE";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    None", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"None", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_NONE = buf;
 
 	Key = L"STRING_TEXT_NOISE_LOW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    Low", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Low", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_LOW = buf;
 
 	Key = L"STRING_TEXT_NOISE_HIGH";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    High", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"High", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_HIGH = buf;
 
 	Key = L"STRING_TEXT_NOISE_VERY_HIGH";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Anti Noise    Max", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Max", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_VERY_HIGH = buf;
 
 
@@ -336,19 +336,19 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_SCALE = buf;
 
 	Key = L"STRING_TEXT_SCALE_x1_0";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale   x1.0", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.0", buf, 200, LangFileName.c_str());
 	STRING_TEXT_SCALE_x1_0 = buf;
 
 	Key = L"STRING_TEXT_SCALE_x1_5";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale   x1.5", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.5", buf, 200, LangFileName.c_str());
 	STRING_TEXT_SCALE_x1_5 = buf;
 
 	Key = L"STRING_TEXT_SCALE_x1_6";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale   x1.6", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.6", buf, 200, LangFileName.c_str());
 	STRING_TEXT_SCALE_x1_6 = buf;
 
 	Key = L"STRING_TEXT_SCALE_x2_0";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale   x2.0", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x2.0", buf, 200, LangFileName.c_str());
 	STRING_TEXT_SCALE_x2_0 = buf;
 
 
@@ -357,16 +357,33 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_CPU = buf;
 
 	Key = L"STRING_TEXT_CPU_MID";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num  Half", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Half", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CPU_MID = buf;
 
 	Key = L"STRING_TEXT_CPU_HIGH";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num  Almost All", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Almost All", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CPU_HIGH = buf;
 
 	Key = L"STRING_TEXT_CPU_FULL";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num  All", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"All", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CPU_FULL = buf;
+
+
+	Key = L"STRING_TEXT_GPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Converter", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU = buf;
+
+	Key = L"STRING_TEXT_GPU_OPENCL";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"OpenCL", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_OPENCL = buf;
+
+	Key = L"STRING_TEXT_GPU_CUDA";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CUDA", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_CUDA = buf;
+
+	Key = L"STRING_TEXT_GPU_TTA";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CUDA (with TTA)", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_TTA = buf;
 
 
 	Key = L"STRING_TEXT_EXPORT";
@@ -374,11 +391,11 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_EXPORT = buf;
 
 	Key = L"STRING_TEXT_EXPORT_SAME";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir     Same Folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Same Folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_SAME = buf;
 
 	Key = L"STRING_TEXT_EXPORT_NEW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir     \"output\" Folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"\"output\" Folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_NEW = buf;
 
 
@@ -387,11 +404,11 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_CONFIRM = buf;
 
 	Key = L"STRING_TEXT_CONFIRM_SHOW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning       Show", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Show", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CONFIRM_SHOW = buf;
 
 	Key = L"STRING_TEXT_CONFIRM_SKIP";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning       Hide", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Hide", buf, 200, LangFileName.c_str());
 	STRING_TEXT_CONFIRM_SKIP = buf;
 
 	Key = L"STRING_TEXT_CONFIRM_TITLE";
@@ -514,9 +531,9 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
 	}
-	else if (SnowSetting::getCudaAvailable()) {	// CUDA OPTION
+	else if (SnowSetting::getCudaAvailable() && SnowSetting::CONVERTER_CAFFE.getAvailable()) {	// CUDA OPTION
 		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_GPU_OPENCL.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_GPU_NORM.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_GPU_CUDA.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_GPU_TTA.c_str());
 	}
 	else { // OPENCL
@@ -734,13 +751,19 @@ void SnowSetting::checkLang(HMENU hMenu, int sel)
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
 	(*UITitleText)[0] = &STRING_TEXT_NOISE;
 	(*UITitleText)[1] = &STRING_TEXT_SCALE;
-	(*UITitleText)[2] = &STRING_TEXT_CPU;
+	if(!IsCudaAvailable || !SnowSetting::CONVERTER_CAFFE.getAvailable())
+		(*UITitleText)[2] = &STRING_TEXT_CPU;
+	else
+		(*UITitleText)[2] = &STRING_TEXT_GPU;
 	(*UITitleText)[3] = &STRING_TEXT_EXPORT;
 	(*UITitleText)[4] = &STRING_TEXT_CONFIRM;
 
 	(*UIText)[0] = getNoiseText();
 	(*UIText)[1] = getScaleText();
-	(*UIText)[2] = getCPUText();
+	if (!IsCudaAvailable || !SnowSetting::CONVERTER_CAFFE.getAvailable())
+		(*UIText)[2] = getCPUText();
+	else
+		(*UIText)[2] = getGPUText();
 	(*UIText)[3] = getExportText();
 	(*UIText)[4] = getConfirmText();
 }
@@ -784,6 +807,19 @@ wstring * SnowSetting::getCPUText()
 		return &STRING_TEXT_CPU_HIGH;
 	case CPU_FULL:
 		return &STRING_TEXT_CPU_FULL;
+	}
+	return nullptr;
+}
+
+wstring * SnowSetting::getGPUText()
+{
+	switch (getCPU()) {
+	case CPU_MID:
+		return &STRING_TEXT_GPU_OPENCL;
+	case CPU_HIGH:
+		return &STRING_TEXT_GPU_CUDA;
+	case CPU_FULL:
+		return &STRING_TEXT_GPU_TTA;
 	}
 	return nullptr;
 }
@@ -836,4 +872,16 @@ int contain(wstring str, wstring find) {
 		count++;
 	}
 	return count;
+}
+
+void PrintDebugMessage(double db, wstring title) {
+	wstringstream ss;
+	ss << db;
+	MessageBox(NULL, ss.str().c_str(), title.c_str(), MB_OK);
+}
+void PrintDebugMessage(string str) {
+	MessageBoxA(NULL, str.c_str(), "Debug", MB_OK);
+}
+void PrintDebugMessage(wstring str) {
+	MessageBox(NULL, str.c_str(), L"Debug", MB_OK);
 }
