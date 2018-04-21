@@ -60,6 +60,7 @@ private:
 	static int CoreNum;
 	const static int LangNum;
 	static bool IsCudaAvailable;
+	static bool IsCPU;
 
 	int Noise;
 	int Scale;
@@ -84,6 +85,8 @@ public:
 	static SnowSetting *Init();
 	static bool checkCuda();
 	static bool getCudaAvailable();
+	static bool getIsCPU();
+	static int getCoreNum();
 	static bool loadSetting();
 	static bool saveSetting();
 	static void loadMenuString(HMENU hMenu);

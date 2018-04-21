@@ -13,6 +13,7 @@ Converter SnowSetting::CONVERTER_CAFFE;
 Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCudaAvailable;
+bool SnowSetting::IsCPU;
 
 const int SnowSetting::LangNum = 4;
 wstring SnowSetting::LangName[4] = { L"한국어", L"English", L"日本語", L"中文" };
@@ -59,6 +60,7 @@ SnowSetting *SnowSetting::Init()
 
 bool SnowSetting::checkCuda() {
 	bool cuda = false;
+	IsCPU = false;
 	HANDLE hRead, hWrite;
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
@@ -104,6 +106,9 @@ bool SnowSetting::checkCuda() {
 		if (st.find("CUDA") != string::npos)
 			cuda = true;
 
+		if (st.find("FMA") != string::npos)
+			IsCPU = true;
+
 		CloseHandle(hRead);
 		CloseHandle(pi.hProcess);
 		CloseHandle(pi.hThread);
@@ -114,6 +119,14 @@ bool SnowSetting::checkCuda() {
 
 bool SnowSetting::getCudaAvailable() {
 	return IsCudaAvailable;
+}
+
+bool SnowSetting::getIsCPU() {
+	return IsCPU;
+}
+
+int SnowSetting::getCoreNum() {
+	return CoreNum;
 }
 
 void SnowSetting::loadLocale()
