@@ -7,6 +7,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_MENU_NOISE = L"노이즈 감소";
  wstring STRING_MENU_SCALE = L"비율";
  wstring STRING_MENU_CPU = L"CPU";
+ wstring STRING_MENU_GPU = L"GPU";
  wstring STRING_MENU_EXPORT = L"출력";
  wstring STRING_MENU_CONFIRM = L"확인창";
 
@@ -27,6 +28,10 @@ int INT_SETTING_VER = 0;
  wstring STRING_MENU_CPU_MID = L"중간";
  wstring STRING_MENU_CPU_HIGH = L"높음";
  wstring STRING_MENU_CPU_FULL = L"극한";
+
+ wstring STRING_MENU_GPU_OPENCL = L"OPENCL로 변환";
+ wstring STRING_MENU_GPU_NORM = L"CUDA로 변환";
+ wstring STRING_MENU_GPU_TTA = L"CUDA로 변환 (TTA)";
 
  wstring STRING_MENU_EXPORT_SAME = L"원본 이미지와 같은 폴더";
  wstring STRING_MENU_EXPORT_NEW = L"\"output\" 폴더";

@@ -12,6 +12,7 @@ extern wstring STRING_MENU_FILE;
 extern wstring STRING_MENU_NOISE;
 extern wstring STRING_MENU_SCALE;
 extern wstring STRING_MENU_CPU;
+extern wstring STRING_MENU_GPU;
 extern wstring STRING_MENU_EXPORT;
 extern wstring STRING_MENU_CONFIRM;
 
@@ -32,6 +33,10 @@ extern wstring STRING_MENU_SCALE_x2_0;
 extern wstring STRING_MENU_CPU_MID;
 extern wstring STRING_MENU_CPU_HIGH;
 extern wstring STRING_MENU_CPU_FULL;
+
+extern wstring STRING_MENU_GPU_OPENCL;
+extern wstring STRING_MENU_GPU_NORM;
+extern wstring STRING_MENU_GPU_TTA;
 
 extern wstring STRING_MENU_EXPORT_SAME;
 extern wstring STRING_MENU_EXPORT_NEW;

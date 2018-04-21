@@ -335,7 +335,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	
 	convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
 
-	if (SnowSetting::getIsCPU())
+	if (!SnowSetting::getCudaAvailable())
 		switch (SnowSetting::getCPU()) {
 		case CPU_FULL:
 			convertOption->setCoreNum(SnowSetting::getCoreNum());

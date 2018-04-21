@@ -23,7 +23,7 @@ wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.i
 SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
-	GetCurrentDirectory(MAX_PATH-1, path);
+	GetCurrentDirectory(MAX_PATH - 1, path);
 	//AddFontResource(L"font.ttf");
 	CurrPath = path;
 	NewPath = L"output";
@@ -190,6 +190,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CPU", buf, 200, LangFileName.c_str());
 	STRING_MENU_CPU = buf;
 
+	Key = L"STRING_MENU_GPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU", buf, 200, LangFileName.c_str());
+	STRING_MENU_GPU = buf;
+
 	Key = L"STRING_MENU_EXPORT";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export", buf, 200, LangFileName.c_str());
 	STRING_MENU_EXPORT = buf;
@@ -265,6 +269,18 @@ void SnowSetting::loadLocale()
 	Key = L"STRING_MENU_CPU_FULL";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Full Power!!!!", buf, 200, LangFileName.c_str());
 	STRING_MENU_CPU_FULL = buf;
+
+	Key = L"STRING_MENU_GPU_OPENCL";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use OpenCL", buf, 200, LangFileName.c_str());
+	STRING_MENU_GPU_OPENCL = buf;
+
+	Key = L"STRING_MENU_GPU_NORM";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CUDA", buf, 200, LangFileName.c_str());
+	STRING_MENU_GPU_NORM = buf;
+
+	Key = L"STRING_MENU_GPU_TTA";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CUDA With TTA", buf, 200, LangFileName.c_str());
+	STRING_MENU_GPU_TTA = buf;
 
 
 	Section = L"Export";
@@ -472,7 +488,10 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, 0, STRING_MENU_FILE.c_str());
 	ModifyMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, 1, STRING_MENU_NOISE.c_str());
 	ModifyMenu(hMenu, 2, MF_BYPOSITION | MF_STRING, 2, STRING_MENU_SCALE.c_str());
-	ModifyMenu(hMenu, 3, MF_BYPOSITION | MF_STRING, 3, STRING_MENU_CPU.c_str());
+	if (SnowSetting::getIsCPU())
+		ModifyMenu(hMenu, 3, MF_BYPOSITION | MF_STRING, 3, STRING_MENU_CPU.c_str());
+	else
+		ModifyMenu(hMenu, 3, MF_BYPOSITION | MF_STRING, 3, STRING_MENU_GPU.c_str());
 	ModifyMenu(hMenu, 4, MF_BYPOSITION | MF_STRING, 4, STRING_MENU_EXPORT.c_str());
 	ModifyMenu(hMenu, 5, MF_BYPOSITION | MF_STRING, 5, STRING_MENU_CONFIRM.c_str());
 
@@ -490,9 +509,21 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_6, STRING_MENU_SCALE_x1_6.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
 
-	ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
-	ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
-	ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
+	if (SnowSetting::getIsCPU()) { // FOR CPU
+		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
+	}
+	else if (SnowSetting::getCudaAvailable()) {	// CUDA OPTION
+		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_GPU_OPENCL.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_GPU_NORM.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_GPU_TTA.c_str());
+	}
+	else { // OPENCL
+		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
+		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
+	}
 
 	ModifyMenu(hMenu, ID_MENU_EXPORT_SAME, MF_BYCOMMAND | MF_STRING, ID_MENU_EXPORT_SAME, STRING_MENU_EXPORT_SAME.c_str());
 	ModifyMenu(hMenu, ID_MENU_EXPORT_NEW, MF_BYCOMMAND | MF_STRING, ID_MENU_EXPORT_NEW, STRING_MENU_EXPORT_NEW.c_str());

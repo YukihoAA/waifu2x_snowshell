@@ -119,7 +119,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	}
 
 	// set core num
-	if (IsCPU && convertOption->getCoreNum() > 0) {
+	if (!this->IsCudaOnly && convertOption->getCoreNum() > 0) {
 		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
 	}
 
