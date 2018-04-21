@@ -10,9 +10,8 @@
 
 using namespace std;
 
-#ifndef MAX_PATH
-	#define MAX_PATH SHRT_MAX
-#endif
+#undef MAX_PATH
+#define MAX_PATH SHRT_MAX
 
 extern HINSTANCE g_hInst;
 extern BOOL is64bit;

@@ -2,6 +2,9 @@
 
 #include <string>
 
+#undef MAX_PATH
+#define MAX_PATH SHRT_MAX
+
 class ConvertOption {
 private:
 	int NoiseLevel;	// 0:none, 1:low, 2:high, 3:very high
