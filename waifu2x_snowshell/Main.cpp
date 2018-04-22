@@ -297,7 +297,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		convertOption->setScaleRatio(L"2.0");
 		break;
 	}
-	
+
 	convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
 
 	if (!SnowSetting::getCudaAvailable() || !SnowSetting::CONVERTER_CAFFE.getAvailable())
@@ -306,10 +306,10 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			convertOption->setCoreNum(SnowSetting::getCoreNum());
 			break;
 		case CPU_HIGH:
-			convertOption->setCoreNum(SnowSetting::getCoreNum()-1);
+			convertOption->setCoreNum(SnowSetting::getCoreNum() - 1 > 0 ? SnowSetting::getCoreNum() - 1 : 1);
 			break;
 		case CPU_MID:
-			convertOption->setCoreNum(SnowSetting::getCoreNum()/2);
+			convertOption->setCoreNum(SnowSetting::getCoreNum() / 2 > 0 ? SnowSetting::getCoreNum() / 2 : 1);
 			break;
 		}
 
@@ -362,7 +362,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		while (!FolderSearchQueue.empty()) {
 			WIN32_FIND_DATA FileFindData;
 			HANDLE hFind = INVALID_HANDLE_VALUE;
-			ConvertOption FolderConvertOption= FolderSearchQueue.front();
+			ConvertOption FolderConvertOption = FolderSearchQueue.front();
 			wstring filePath = FolderConvertOption.getInputFilePath();
 
 			hFind = FindFirstFile((filePath + L"\\*.*").c_str(), &FileFindData);

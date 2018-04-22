@@ -29,12 +29,12 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 }
 
 bool Converter::checkAvailable() {
-	if (Is64bitOnly) {
-		BOOL bIsWow64;
-		IsWow64Process(GetCurrentProcess(), &bIsWow64);
-		this->Available &= bIsWow64 == TRUE;
-	}
 	this->Available = FileExists(ExePath.c_str());
+	if (Is64bitOnly) {
+		BOOL bIsWow64=FALSE;
+		IsWow64Process(GetCurrentProcess(), &bIsWow64);
+		this->Available &= (bool) bIsWow64;
+	}
 	return this->Available;
 }
 
