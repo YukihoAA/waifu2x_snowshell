@@ -13,9 +13,5 @@ To change your conversion setting, select option at menubar. <br/>
 > 2. Set CPU to Full Power Mode.
 > 3. SnowShell will start conversion using waifu2x-chaffe with tta option.
 
-## Windows x86 Support
-Latest SnowShell doesn't supports windows x86. <br/>
-Please use [SnowShell v1.0](https://github.com/YukihoAA/waifu2x_snowshell/releases/tag/v1.0)
-
 # License
 SnowShell is MIT-License.
