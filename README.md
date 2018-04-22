@@ -9,9 +9,10 @@ Just drag & drop your image files (or folder) in to SnowShell! (multiple image s
 To change your conversion setting, select option at menubar. <br/>
 
 ## To Use waifu2x-chaffe (NVIDIA GPU Only)
-> 1. Put latest [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-chaffe folder
-> 2. Set CPU to Full Power Mode.
-> 3. SnowShell will start conversion using waifu2x-chaffe with tta option.
+> 1. Put latest [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder
+> 2. Set GPU to Caffe or Caffe(TTA).
+> 2-1. TTA convert mode is slower but higher quality conversion.
+> 3. SnowShell will start conversion using waifu2x-caffe. (with TTA option)
 
 # License
 SnowShell is MIT-License.
