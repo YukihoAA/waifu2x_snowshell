@@ -1,6 +1,6 @@
 ﻿#include "Main.h"
 
-#define SETTING_VER_MINIMUM 6
+#define SETTING_VER_MINIMUM 7
 
 SnowSetting *SnowSetting::Singletone;
 wstring SnowSetting::NewPath;
@@ -429,6 +429,19 @@ void SnowSetting::loadLocale()
 	while (nl != wstring::npos) {
 		STRING_TEXT_CONFIRM_MESSAGE.replace(nl, 2, L"\n");
 		nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
+	}
+
+	Key = L"STRING_TEXT_NOCONVERTER_TITLE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Error", buf, 200, LangFileName.c_str());
+	STRING_TEXT_NOCONVERTER_TITLE = buf;
+
+	Key = L"STRING_TEXT_NOCONVERTER_MESSAGE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"No converter available.\nPlease check your windows version.", buf, 200, LangFileName.c_str());
+	STRING_TEXT_NOCONVERTER_MESSAGE = buf;
+	nl = STRING_TEXT_NOCONVERTER_MESSAGE.find(L"\\n");
+	while (nl != wstring::npos) {
+		STRING_TEXT_NOCONVERTER_MESSAGE.replace(nl, 2, L"\n");
+		nl = STRING_TEXT_NOCONVERTER_MESSAGE.find(L"\\n");
 	}
 
 }

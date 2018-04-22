@@ -73,3 +73,6 @@ int INT_SETTING_VER = 0;
  wstring STRING_TEXT_CONFIRM_SKIP = L"보여주지 않기";
  wstring STRING_TEXT_CONFIRM_TITLE = L"확인";
  wstring STRING_TEXT_CONFIRM_MESSAGE = L"큰 이미지 파일은\n작업에 많은 시간이 소요될 수 있습니다.\n작업을 진행하시겠습니까?";
+
+ wstring STRING_TEXT_NOCONVERTER_TITLE = L"오류";
+ wstring STRING_TEXT_NOCONVERTER_MESSAGE = L"사용 가능한 컨버터가 없습니다.\n윈도우 버전을 확인해주시기 바랍니다.";

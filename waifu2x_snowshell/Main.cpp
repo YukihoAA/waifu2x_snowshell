@@ -323,8 +323,10 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			convertOption->setNoiseLevel(NOISE_HIGH);
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x86;
 	}
-	else
+	else {
+		MessageBox(hWnd, STRING_TEXT_NOCONVERTER_MESSAGE.c_str(), STRING_TEXT_NOCONVERTER_TITLE.c_str(), MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
 		return FALSE;
+	}
 
 	DWORD FileAttribute = GetFileAttributes(fileName);
 
