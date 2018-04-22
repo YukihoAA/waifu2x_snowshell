@@ -31,11 +31,8 @@ SnowSetting::SnowSetting()
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
 	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter-x86\\waifu2x-converter_x86.exe", false);
-	PrintDebugMessage(CONVERTER_CPP_x86.getAvailable(), L"x86");
 	CONVERTER_CPP_x64 = Converter(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
-	PrintDebugMessage(CONVERTER_CPP_x64.getAvailable(), L"x64");
 	CONVERTER_CAFFE = Converter(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe", true, true, true);
-	PrintDebugMessage(CONVERTER_CAFFE.getAvailable(), L"caffe");
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 
