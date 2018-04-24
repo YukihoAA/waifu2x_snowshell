@@ -1,7 +1,7 @@
 ﻿#include "Main.h"
 
 SnowSetting *SnowSetting::Singletone;
-wstring SnowSetting::ExportDirName;
+wstring SnowSetting::OutputDirName;
 wstring SnowSetting::CurrPath;
 wstring SnowSetting::LangPath;
 wstring SnowSetting::INIPath;
@@ -22,7 +22,7 @@ SnowSetting::SnowSetting()
 	WCHAR path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, path);
 	CurrPath = path;
-	ExportDirName = L"output";
+	OutputDirName = L"output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
 	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter-x86\\waifu2x-converter_x86.exe", false);
@@ -498,8 +498,8 @@ bool SnowSetting::loadSetting()
 	if (SnowSetting::getScaleRatio() == L"")
 		SnowSetting::setScaleRatio(L"1.6");
 
-	GetPrivateProfileStringW(Section.c_str(), L"ExportDirName", L"output", buf, MAX_PATH, INIPath.c_str());
-	ExportDirName = buf;
+	GetPrivateProfileStringW(Section.c_str(), L"OutputDirName", L"output", buf, MAX_PATH, INIPath.c_str());
+	OutputDirName = buf;
 
 
 	Section = L"Model";
@@ -558,8 +558,8 @@ bool SnowSetting::saveSetting()
 	Key = L"ScaleRatio";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), SnowSetting::getScaleRatio().c_str(), INIPath.c_str());
 
-	Key = L"ExportDirName";
-	WritePrivateProfileString(Section.c_str(), Key.c_str(), ExportDirName.c_str(), INIPath.c_str());
+	Key = L"OutputDirName";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), OutputDirName.c_str(), INIPath.c_str());
 
 
 	Section = L"Model";

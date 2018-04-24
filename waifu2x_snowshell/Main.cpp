@@ -278,7 +278,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	convertOption->setNoiseLevel(SnowSetting::getNoise());
 	if (SnowSetting::getExport() && convertOption->getOutputFolderName() == L"") {
 		wstring inputPath = fileName;
-		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::ExportDirName);
+		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::OutputDirName);
 	}
 	switch (SnowSetting::getScale()) {
 	case SCALE_x1_0:

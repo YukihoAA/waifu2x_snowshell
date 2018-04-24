@@ -77,7 +77,7 @@ protected:
 	static void loadLocale();
 
 public:
-	static std::wstring ExportDirName;
+	static std::wstring OutputDirName;
 	static std::wstring CurrPath;
 
 	static Converter CONVERTER_CPP_x86;
