@@ -295,7 +295,7 @@ void SnowSetting::loadLocale()
 	STRING_MENU_EXPORT_SAME = buf;
 
 	Key = L"STRING_MENU_EXPORT_NEW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"\"output\" Folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"output Folder", buf, 200, LangFileName.c_str());
 	STRING_MENU_EXPORT_NEW = buf;
 
 
@@ -408,7 +408,7 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_EXPORT_SAME = buf;
 
 	Key = L"STRING_TEXT_EXPORT_NEW";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"\"output\" Folder", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"output Folder", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT_NEW = buf;
 
 

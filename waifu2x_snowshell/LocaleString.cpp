@@ -35,7 +35,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_MENU_GPU_TTA = L"CUDA로 변환 (TTA)";
 
  wstring STRING_MENU_EXPORT_SAME = L"원본 이미지와 같은 폴더";
- wstring STRING_MENU_EXPORT_NEW = L"\"output\" 폴더";
+ wstring STRING_MENU_EXPORT_NEW = L"output 폴더";
 
  wstring STRING_MENU_CONFIRM_SHOW = L"보여주기";
  wstring STRING_MENU_CONFIRM_SKIP = L"보여주지 않기";
@@ -69,7 +69,7 @@ int INT_SETTING_VER = 0;
 
  wstring STRING_TEXT_EXPORT = L"출력 폴더";
  wstring STRING_TEXT_EXPORT_SAME = L"같은 폴더";
- wstring STRING_TEXT_EXPORT_NEW = L"\"output\" 폴더";
+ wstring STRING_TEXT_EXPORT_NEW = L"output 폴더";
 
  wstring STRING_TEXT_CONFIRM = L"확인";
  wstring STRING_TEXT_CONFIRM_SHOW = L"보여주기";
