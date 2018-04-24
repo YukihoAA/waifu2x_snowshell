@@ -55,7 +55,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_TEXT_SCALE_x1_6 = L"x1.6";
  wstring STRING_TEXT_SCALE_x2_0 = L"x2.0";
  wstring STRING_TEXT_SCALE_PREFIX = L"x";
- wstring STRING_TEXT_SCALE_POSTFIX = L"x";
+ wstring STRING_TEXT_SCALE_POSTFIX = L"";
 
  wstring STRING_TEXT_CPU = L"작업스레드 수";
  wstring STRING_TEXT_CPU_MID = L"절반";
