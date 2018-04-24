@@ -894,7 +894,7 @@ wstring * SnowSetting::getScaleText()
 	case SCALE_x2_0:
 		return &STRING_TEXT_SCALE_x2_0;
 	case SCALE_CUSTOM:
-		scaleRatioString = STRING_TEXT_SCALE_PREFIX + 
+		scaleRatioString = STRING_TEXT_SCALE_PREFIX +
 			SnowSetting::getScaleRatio() + STRING_TEXT_SCALE_POSTFIX;
 		return &scaleRatioString;
 	}

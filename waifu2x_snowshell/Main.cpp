@@ -1,7 +1,6 @@
 ﻿#include "Main.h"
 
 HINSTANCE g_hInst;
-
 BOOL is64bit = FALSE;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
@@ -21,6 +20,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	wc.lpszMenuName = NULL;
 	wc.lpszClassName = lpszClass;
 	RegisterClass(&wc);
+
 
 	g_hInst = hInstance;
 
@@ -72,6 +72,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		else
 			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 		DragAcceptFiles(hWnd, TRUE);
+
 		return TRUE;
 	case WM_INITMENU:
 		SnowSetting::checkMenuAll(hMenu);
@@ -166,11 +167,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			UIText[0] = SnowSetting::getNoiseText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
+		case ID_MENU_SCALE_CUSTOM:
+			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
 		case ID_MENU_SCALE_x1_0:
 		case ID_MENU_SCALE_x1_5:
 		case ID_MENU_SCALE_x1_6:
 		case ID_MENU_SCALE_x2_0:
-		case ID_MENU_SCALE_CUSTOM:
 			SnowSetting::checkScale(hMenu, LOWORD(wParam) - ID_MENU_SCALE_x1_0);
 			UIText[1] = SnowSetting::getScaleText();
 			InvalidateRect(hWnd, NULL, TRUE);
@@ -263,6 +265,36 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		return TRUE;
 	}
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
+}
+
+BOOL CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	static HWND hEdit, hText, hButton;
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
+		hText = GetDlgItem(hDlg, IDC_TEXT1);
+		hButton = GetDlgItem(hDlg, IDOK);
+		SetWindowText(hEdit, SnowSetting::getScaleRatio().c_str());
+		SetWindowText(hText, STRING_TEXT_SCALE.c_str());
+		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			WCHAR scaleText[6] = L"";
+			GetWindowText(hEdit, scaleText, 6);
+			SnowSetting::setScaleRatio(scaleText);
+
+			EndDialog(hDlg, IDCANCEL);
+			return TRUE;
+		}
+		return FALSE;
+	case WM_CLOSE:
+		EndDialog(hDlg, IDCANCEL);
+		return TRUE;
+	}
+	return DefWindowProc(hDlg, uMsg, wParam, lParam);
 }
 
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
@@ -407,7 +439,6 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 
 	return TRUE;
 }
-
 
 void prtTextBorder(HDC hdc, int x, int y, LPCWSTR str, int c, COLORREF borderColor, int borderSize, COLORREF textColor) {
 	COLORREF OldColor = textColor;
