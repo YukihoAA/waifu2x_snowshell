@@ -3,7 +3,7 @@
 #define SETTING_VER_MINIMUM 7
 
 SnowSetting *SnowSetting::Singletone;
-wstring SnowSetting::NewPath;
+wstring SnowSetting::ExportDirName;
 wstring SnowSetting::CurrPath;
 wstring SnowSetting::LangPath;
 wstring SnowSetting::INIPath;
@@ -22,11 +22,9 @@ wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.i
 SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
-	GetModuleFileName(NULL, path, MAX_PATH);
-	//AddFontResource(L"font.ttf");
+	GetCurrentDirectory(MAX_PATH, path);
 	CurrPath = path;
-	CurrPath=CurrPath.substr(0,CurrPath.find_last_of(L'\\'));
-	NewPath = L"output";
+	ExportDirName = L"output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
 	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter-x86\\waifu2x-converter_x86.exe", false);
@@ -45,7 +43,6 @@ SnowSetting::SnowSetting()
 
 SnowSetting::~SnowSetting()
 {
-	//RemoveFontResource(L"font.ttf");
 	saveSetting();
 }
 
@@ -486,6 +483,12 @@ bool SnowSetting::loadSetting()
 	setLang(langsel);
 	loadLocale();
 
+	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"", buf, MAX_PATH, INIPath.c_str());
+	SnowSetting::setScaleRatio(buf);
+
+	GetPrivateProfileStringW(Section.c_str(), L"ExportDirName", L"output", buf, MAX_PATH, INIPath.c_str());
+	ExportDirName = buf;
+
 
 	Section = L"Model";
 
@@ -497,6 +500,19 @@ bool SnowSetting::loadSetting()
 
 	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CPP_x86.setModelDir(buf);
+
+
+	Section = L"CustomOption";
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CAFFE.setOptionString(buf);
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x64", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP_x64.setOptionString(buf);
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP_x86.setOptionString(buf);
+
 
 	return true;
 }
@@ -527,6 +543,12 @@ bool SnowSetting::saveSetting()
 	Key = L"Lang";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getLang()).c_str(), INIPath.c_str());
 
+	Key = L"ScaleRatio";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), SnowSetting::getScaleRatio().c_str(), INIPath.c_str());
+
+	Key = L"ExportDirName";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), ExportDirName.c_str(), INIPath.c_str());
+
 
 	Section = L"Model";
 
@@ -535,6 +557,15 @@ bool SnowSetting::saveSetting()
 	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", CONVERTER_CPP_x64.getModelDir().c_str(), INIPath.c_str());
 
 	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", CONVERTER_CPP_x86.getModelDir().c_str(), INIPath.c_str());
+
+
+	Section = L"CustomOption";
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", CONVERTER_CAFFE.getOptionString().c_str(), INIPath.c_str());
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", CONVERTER_CPP_x64.getOptionString().c_str(), INIPath.c_str());
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", CONVERTER_CPP_x86.getOptionString().c_str(), INIPath.c_str());
 
 	return true;
 }
@@ -641,6 +672,13 @@ wstring SnowSetting::getLangName()
 	return LangFile[getLang()];
 }
 
+std::wstring SnowSetting::getScaleRatio() {
+	if (Singletone == nullptr)
+		Init();
+
+	return Singletone->ScaleRatio;
+}
+
 void SnowSetting::setNoise(int Noise)
 {
 	if (Singletone == nullptr)
@@ -703,6 +741,13 @@ void SnowSetting::setLang(int Lang)
 
 	Singletone->Lang = Lang;
 	loadLocale();
+}
+
+void SnowSetting::setScaleRatio(std::wstring scaleRatio) {
+	if (Singletone == nullptr)
+		Init();
+
+	Singletone->ScaleRatio = scaleRatio;
 }
 
 void SnowSetting::checkMenuAll(HMENU hMenu)
@@ -790,7 +835,7 @@ void SnowSetting::checkLang(HMENU hMenu, int sel)
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
 	(*UITitleText)[0] = &STRING_TEXT_NOISE;
 	(*UITitleText)[1] = &STRING_TEXT_SCALE;
-	if(!IsCudaAvailable || !SnowSetting::CONVERTER_CAFFE.getAvailable())
+	if (!IsCudaAvailable || !SnowSetting::CONVERTER_CAFFE.getAvailable())
 		(*UITitleText)[2] = &STRING_TEXT_CPU;
 	else
 		(*UITitleText)[2] = &STRING_TEXT_GPU;

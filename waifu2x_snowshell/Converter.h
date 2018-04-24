@@ -20,6 +20,7 @@ private:
 	std::wstring ExePath;
 	std::wstring WorkingDir;
 	std::wstring ModelDir;
+	std::wstring CustomOption;
 	HANDLE hConvertThread;
 	HANDLE hConvertProcess;
 
@@ -36,12 +37,14 @@ public:
 	void setExePath(std::wstring exePath);
 	void setWorkingDir(std::wstring workingDir);
 	void setModelDir(std::wstring modelDir);
+	void setOptionString(std::wstring optionString);
 	bool getCPU();
 	bool getTTA();
 	bool getAvailable();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();
 	std::wstring getModelDir();
+	std::wstring getOptionString();
 	bool execute(ConvertOption *convertOption, bool noLabel = false);
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();

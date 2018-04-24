@@ -25,6 +25,7 @@ using namespace std;
 #define SCALE_x1_5 1
 #define SCALE_x1_6 2
 #define SCALE_x2_0 3
+#define SCALE_CUSTOM 4
 
 #define SCALE_MAX 3
 
@@ -53,10 +54,10 @@ using namespace std;
 class SnowSetting {
 private:
 	static SnowSetting *Singletone;
-	static wstring LangPath;
-	static wstring LangName[];
-	static wstring LangFile[];
-	static wstring INIPath;
+	static std::wstring LangPath;
+	static std::wstring LangName[];
+	static std::wstring LangFile[];
+	static std::wstring INIPath;
 	static int CoreNum;
 	const static int LangNum;
 	static bool IsCudaAvailable;
@@ -68,6 +69,7 @@ private:
 	int Export;
 	int Confirm;
 	int Lang;
+	std::wstring ScaleRatio;
 
 protected:
 	SnowSetting();
@@ -75,8 +77,9 @@ protected:
 	static void loadLocale();
 
 public:
-	static wstring NewPath;
-	static wstring CurrPath;
+	static std::wstring ExportDirName;
+	static std::wstring CurrPath;
+
 	static Converter CONVERTER_CPP_x86;
 	static Converter CONVERTER_CPP_x64;
 	static Converter CONVERTER_CAFFE;
@@ -97,7 +100,8 @@ public:
 	static int getExport();
 	static BOOL getConfirm();
 	static int getLang();
-	static wstring getLangName();
+	static std::wstring getLangName();
+	static std::wstring getScaleRatio();
 
 	static void setNoise(int Noise);
 	static void setScale(int Scale);
@@ -105,6 +109,7 @@ public:
 	static void setExport(int Export);
 	static void setConfirm(BOOL Confirm);
 	static void setLang(int Lang);
+	static void setScaleRatio(std::wstring scaleRatio);
 
 	static void checkMenuAll(HMENU hMenu);
 	static void checkNoise(HMENU hMenu, int sel = -1);
@@ -115,20 +120,20 @@ public:
 	static void checkConfirm(HMENU hMenu, int sel = -1);
 	static void checkLang(HMENU hMenu, int sel = -1);
 
-	static void getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]);
-	static wstring* getNoiseText();
-	static wstring* getScaleText();
-	static wstring* getCPUText();
-	static wstring* getGPUText();
-	static wstring* getExportText();
-	static wstring* getConfirmText();
+	static void getTexts(std::wstring*(*UITitleText)[5], std::wstring*(*UIText)[5]);
+	static std::wstring* getNoiseText();
+	static std::wstring* getScaleText();
+	static std::wstring* getCPUText();
+	static std::wstring* getGPUText();
+	static std::wstring* getExportText();
+	static std::wstring* getConfirmText();
 };
 
-wstring itos(int n);
+std::wstring itos(int n);
 BOOL FileExists(LPCWSTR file);
 BOOL IsDirectory(LPCWSTR path);
-int contain(wstring str, wstring find);
+int contain(std::wstring str, std::wstring find);
 
-void PrintDebugMessage(double db, wstring title= L"Debug");
-void PrintDebugMessage(string str);
-void PrintDebugMessage(wstring str);
+void PrintDebugMessage(double db, std::wstring title= L"Debug");
+void PrintDebugMessage(std::string str);
+void PrintDebugMessage(std::wstring str);

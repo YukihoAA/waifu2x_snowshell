@@ -27,10 +27,6 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	// OpenCV 3.1 and later version does not supports x86 system.
 	IsWow64Process(GetCurrentProcess(), &is64bit);
 
-	// if(!is64bit)
-	// MessageBox(NULL, L"SnowShell does not supports x86 system\n\nMore Information: https://github.com/YukihoAA/waifu2x_snowshell/releases", L"Warning", MB_OK | MB_ICONERROR);
-
-
 	hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.5", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
@@ -281,7 +277,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	convertOption->setNoiseLevel(SnowSetting::getNoise());
 	if (SnowSetting::getExport() && convertOption->getOutputFolderName() == L"") {
 		wstring inputPath = fileName;
-		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::NewPath);
+		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::ExportDirName);
 	}
 	switch (SnowSetting::getScale()) {
 	case SCALE_x1_0:
@@ -295,6 +291,9 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		break;
 	case SCALE_x2_0:
 		convertOption->setScaleRatio(L"2.0");
+		break;
+	case SCALE_CUSTOM:
+		convertOption->setScaleRatio(SnowSetting::getScaleRatio());
 		break;
 	}
 

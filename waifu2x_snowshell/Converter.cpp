@@ -4,6 +4,8 @@ Converter::Converter() {
 	this->Available = false;
 	this->ExePath = L"";
 	this->WorkingDir = L"";
+	this->ModelDir = L"";
+	this->CustomOption = L"";
 	this->Is64bitOnly = true;
 	this->IsCudaOnly = false;
 	this->TTA = false;
@@ -18,6 +20,8 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 	else {
 		this->ExePath = exePath;
 		this->WorkingDir = exePath.substr(0, exePath.find_last_of('\\'));
+		this->ModelDir = L"";
+		this->CustomOption = L"";
 		this->Is64bitOnly = is64bitOnly;
 		this->IsCudaOnly = isCudaOnly;
 		this->TTA = tta;
@@ -60,6 +64,10 @@ void Converter::setModelDir(std::wstring modelDir) {
 	this->ModelDir = modelDir;
 }
 
+void Converter::setOptionString(std::wstring optionString) {
+	this->CustomOption = optionString;
+}
+
 bool Converter::getCPU() {
 	return this->IsCPU;
 }
@@ -80,9 +88,12 @@ std::wstring Converter::getWorkingDir() {
 	return this->WorkingDir;
 }
 
-std::wstring Converter::getModelDir()
-{
+std::wstring Converter::getModelDir() {
 	return this->ModelDir;
+}
+
+std::wstring Converter::getOptionString() {
+	return this->CustomOption;
 }
 
 bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
@@ -152,6 +163,8 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	// set model directory
 	if (this->ModelDir != L"")
 		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
+
+	// add custom option
 
 	// set output name
 	ParamStream << L"-o \"" << ExportName << L"\"";
