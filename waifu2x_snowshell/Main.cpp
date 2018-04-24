@@ -170,6 +170,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_SCALE_x1_5:
 		case ID_MENU_SCALE_x1_6:
 		case ID_MENU_SCALE_x2_0:
+		case ID_MENU_SCALE_CUSTOM:
 			SnowSetting::checkScale(hMenu, LOWORD(wParam) - ID_MENU_SCALE_x1_0);
 			UIText[1] = SnowSetting::getScaleText();
 			InvalidateRect(hWnd, NULL, TRUE);

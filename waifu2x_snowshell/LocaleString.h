@@ -5,6 +5,7 @@
 
 using namespace std;
 
+#define SETTING_VER_MINIMUM 7
 
 extern int INT_SETTING_VER;
 
@@ -29,6 +30,7 @@ extern wstring STRING_MENU_SCALE_x1_0;
 extern wstring STRING_MENU_SCALE_x1_5;
 extern wstring STRING_MENU_SCALE_x1_6;
 extern wstring STRING_MENU_SCALE_x2_0;
+extern wstring STRING_MENU_SCALE_CUSTOM;
 
 extern wstring STRING_MENU_CPU_MID;
 extern wstring STRING_MENU_CPU_HIGH;
@@ -57,6 +59,8 @@ extern wstring STRING_TEXT_SCALE_x1_0;
 extern wstring STRING_TEXT_SCALE_x1_5;
 extern wstring STRING_TEXT_SCALE_x1_6;
 extern wstring STRING_TEXT_SCALE_x2_0;
+extern wstring STRING_TEXT_SCALE_PREFIX;
+extern wstring STRING_TEXT_SCALE_POSTFIX;
 
 extern wstring STRING_TEXT_CPU;
 extern wstring STRING_TEXT_CPU_MID;

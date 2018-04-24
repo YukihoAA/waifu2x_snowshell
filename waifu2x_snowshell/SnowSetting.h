@@ -27,7 +27,7 @@ using namespace std;
 #define SCALE_x2_0 3
 #define SCALE_CUSTOM 4
 
-#define SCALE_MAX 3
+#define SCALE_MAX 4
 
 
 #define CPU_MID 0
@@ -130,6 +130,7 @@ public:
 };
 
 std::wstring itos(int n);
+std::wstring dtos(double n);
 BOOL FileExists(LPCWSTR file);
 BOOL IsDirectory(LPCWSTR path);
 int contain(std::wstring str, std::wstring find);

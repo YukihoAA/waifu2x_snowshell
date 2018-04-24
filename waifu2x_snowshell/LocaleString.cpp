@@ -24,6 +24,7 @@ int INT_SETTING_VER = 0;
  wstring STRING_MENU_SCALE_x1_5 = L"x1.5";
  wstring STRING_MENU_SCALE_x1_6 = L"x1.6";
  wstring STRING_MENU_SCALE_x2_0 = L"x2.0";
+ wstring STRING_MENU_SCALE_CUSTOM = L"사용자 설정";
 
  wstring STRING_MENU_CPU_MID = L"중간";
  wstring STRING_MENU_CPU_HIGH = L"높음";
@@ -53,6 +54,8 @@ int INT_SETTING_VER = 0;
  wstring STRING_TEXT_SCALE_x1_5 = L"x1.5";
  wstring STRING_TEXT_SCALE_x1_6 = L"x1.6";
  wstring STRING_TEXT_SCALE_x2_0 = L"x2.0";
+ wstring STRING_TEXT_SCALE_PREFIX = L"x";
+ wstring STRING_TEXT_SCALE_POSTFIX = L"x";
 
  wstring STRING_TEXT_CPU = L"작업스레드 수";
  wstring STRING_TEXT_CPU_MID = L"절반";

@@ -1,7 +1,5 @@
 ﻿#include "Main.h"
 
-#define SETTING_VER_MINIMUM 7
-
 SnowSetting *SnowSetting::Singletone;
 wstring SnowSetting::ExportDirName;
 wstring SnowSetting::CurrPath;
@@ -258,6 +256,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x2.0", buf, 200, LangFileName.c_str());
 	STRING_MENU_SCALE_x2_0 = buf;
 
+	Key = L"STRING_MENU_SCALE_CUSTOM";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Custom", buf, 200, LangFileName.c_str());
+	STRING_MENU_SCALE_CUSTOM = buf;
+
 
 	Section = L"CPU";
 
@@ -353,6 +355,14 @@ void SnowSetting::loadLocale()
 	Key = L"STRING_TEXT_SCALE_x2_0";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x2.0", buf, 200, LangFileName.c_str());
 	STRING_TEXT_SCALE_x2_0 = buf;
+
+	Key = L"STRING_TEXT_SCALE_PREFIX";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x", buf, 200, LangFileName.c_str());
+	STRING_TEXT_SCALE_PREFIX = buf;
+
+	Key = L"STRING_TEXT_SCALE_POSTFIX";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"", buf, 200, LangFileName.c_str());
+	STRING_TEXT_SCALE_POSTFIX = buf;
 
 
 	Key = L"STRING_TEXT_CPU";
@@ -483,8 +493,10 @@ bool SnowSetting::loadSetting()
 	setLang(langsel);
 	loadLocale();
 
-	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"", buf, MAX_PATH, INIPath.c_str());
+	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"1.6", buf, MAX_PATH, INIPath.c_str());
 	SnowSetting::setScaleRatio(buf);
+	if (SnowSetting::getScaleRatio() == L"")
+		SnowSetting::setScaleRatio(L"1.6");
 
 	GetPrivateProfileStringW(Section.c_str(), L"ExportDirName", L"output", buf, MAX_PATH, INIPath.c_str());
 	ExportDirName = buf;
@@ -595,6 +607,7 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_5, STRING_MENU_SCALE_x1_5.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_6, STRING_MENU_SCALE_x1_6.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
+	ModifyMenu(hMenu, ID_MENU_SCALE_CUSTOM, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_CUSTOM, STRING_MENU_SCALE_CUSTOM.c_str());
 
 	if (SnowSetting::getIsCPU()) { // FOR CPU
 		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
@@ -869,6 +882,8 @@ wstring * SnowSetting::getNoiseText()
 
 wstring * SnowSetting::getScaleText()
 {
+	static std::wstring scaleRatioString;
+
 	switch (getScale()) {
 	case SCALE_x1_0:
 		return &STRING_TEXT_SCALE_x1_0;
@@ -878,6 +893,10 @@ wstring * SnowSetting::getScaleText()
 		return &STRING_TEXT_SCALE_x1_6;
 	case SCALE_x2_0:
 		return &STRING_TEXT_SCALE_x2_0;
+	case SCALE_CUSTOM:
+		scaleRatioString = STRING_TEXT_SCALE_PREFIX + 
+			SnowSetting::getScaleRatio() + STRING_TEXT_SCALE_POSTFIX;
+		return &scaleRatioString;
 	}
 	return nullptr;
 }
@@ -930,6 +949,13 @@ wstring * SnowSetting::getConfirmText()
 wstring itos(int n) {
 	wstringstream ss;
 
+	ss << n;
+
+	return ss.str();
+}
+
+wstring dtos(double n) {
+	wstringstream ss;
 	ss << n;
 
 	return ss.str();
