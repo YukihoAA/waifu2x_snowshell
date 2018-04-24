@@ -102,13 +102,13 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	std::wstringstream ExportNameStream;
 	std::wstringstream ParamStream;
 
-	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
-	if (this->CustomOption != L"")
-		ParamStream << this->CustomOption << L" ";
-
 	ExportNameStream << convertOption->getInputFilePath().substr(0, convertOption->getInputFilePath().find_last_of(L".")) << L"_waifu2x";
 
 	ParamStream << L"-i \"" << convertOption->getInputFilePath() << L"\" ";
+
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
 
 	// set convert mode
 	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
