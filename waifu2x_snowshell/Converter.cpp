@@ -102,6 +102,10 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	std::wstringstream ExportNameStream;
 	std::wstringstream ParamStream;
 
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
+
 	ExportNameStream << convertOption->getInputFilePath().substr(0, convertOption->getInputFilePath().find_last_of(L".")) << L"_waifu2x";
 
 	ParamStream << L"-i \"" << convertOption->getInputFilePath() << L"\" ";
@@ -163,10 +167,6 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	// set model directory
 	if (this->ModelDir != L"")
 		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
-
-	// add custom option
-	if (this->CustomOption != L"")
-		ParamStream << this->CustomOption << L" ";
 
 	// set output name
 	ParamStream << L"-o \"" << ExportName << L"\"";
