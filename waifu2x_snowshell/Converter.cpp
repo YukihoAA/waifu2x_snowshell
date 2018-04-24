@@ -165,6 +165,8 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
 
 	// add custom option
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
 
 	// set output name
 	ParamStream << L"-o \"" << ExportName << L"\"";
