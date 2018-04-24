@@ -19,6 +19,7 @@ private:
 	bool TTA;
 	std::wstring ExePath;
 	std::wstring WorkingDir;
+	std::wstring ModelDir;
 	HANDLE hConvertThread;
 	HANDLE hConvertProcess;
 
@@ -34,11 +35,13 @@ public:
 	void setAvailable(bool available);
 	void setExePath(std::wstring exePath);
 	void setWorkingDir(std::wstring workingDir);
+	void setModelDir(std::wstring modelDir);
 	bool getCPU();
 	bool getTTA();
 	bool getAvailable();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();
+	std::wstring getModelDir();
 	bool execute(ConvertOption *convertOption, bool noLabel = false);
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();

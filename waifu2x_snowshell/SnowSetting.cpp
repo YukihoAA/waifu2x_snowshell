@@ -19,7 +19,6 @@ const int SnowSetting::LangNum = 4;
 wstring SnowSetting::LangName[4] = { L"한국어", L"English", L"日本語", L"中文" };
 wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini" };
 
-
 SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
@@ -451,6 +450,7 @@ bool SnowSetting::loadSetting()
 	if (Singletone == nullptr)
 		Init();
 
+	WCHAR buf[MAX_PATH];
 	wstring Section = L"SnowShell";
 	wstring Key, Value;
 
@@ -470,9 +470,7 @@ bool SnowSetting::loadSetting()
 	setConfirm(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
 
 	Key = L"Lang";
-
 	int langsel = GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str());
-
 	if (langsel == -1) {
 		WCHAR buf[40];
 		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, buf, 40);
@@ -487,6 +485,18 @@ bool SnowSetting::loadSetting()
 	}
 	setLang(langsel);
 	loadLocale();
+
+
+	Section = L"Model";
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CAFFE.setModelDir(buf);
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x64", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP_x64.setModelDir(buf);
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP_x86.setModelDir(buf);
 
 	return true;
 }
@@ -516,6 +526,15 @@ bool SnowSetting::saveSetting()
 
 	Key = L"Lang";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getLang()).c_str(), INIPath.c_str());
+
+
+	Section = L"Model";
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", CONVERTER_CAFFE.getModelDir().c_str(), INIPath.c_str());
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", CONVERTER_CPP_x64.getModelDir().c_str(), INIPath.c_str());
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", CONVERTER_CPP_x86.getModelDir().c_str(), INIPath.c_str());
 
 	return true;
 }

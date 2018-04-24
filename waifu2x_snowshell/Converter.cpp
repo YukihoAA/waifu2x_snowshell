@@ -31,9 +31,9 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 bool Converter::checkAvailable() {
 	this->Available = FileExists(ExePath.c_str());
 	if (Is64bitOnly) {
-		BOOL bIsWow64=FALSE;
+		BOOL bIsWow64 = FALSE;
 		IsWow64Process(GetCurrentProcess(), &bIsWow64);
-		this->Available &= (bool) bIsWow64;
+		this->Available &= (bool)bIsWow64;
 	}
 	return this->Available;
 }
@@ -47,11 +47,17 @@ void Converter::setAvailable(bool available) {
 }
 
 void Converter::setExePath(std::wstring exePath) {
+	if (exePath.empty())
+		this->Available = false;
 	this->ExePath = exePath;
 }
 
 void Converter::setWorkingDir(std::wstring workingDir) {
 	this->WorkingDir = workingDir;
+}
+
+void Converter::setModelDir(std::wstring modelDir) {
+	this->ModelDir = modelDir;
 }
 
 bool Converter::getCPU() {
@@ -72,6 +78,11 @@ std::wstring Converter::getExePath() {
 
 std::wstring Converter::getWorkingDir() {
 	return this->WorkingDir;
+}
+
+std::wstring Converter::getModelDir()
+{
+	return this->ModelDir;
 }
 
 bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
@@ -96,7 +107,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	// set noise_level
 	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
-		if(!noLabel)
+		if (!noLabel)
 			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
 	}
 
@@ -114,7 +125,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	if (convertOption->getTTAEnabled() && this->TTA)
 	{
 		ParamStream << L"--tta 1 ";
-		if(!noLabel)
+		if (!noLabel)
 			ExportNameStream << L"_tta_1";
 	}
 
@@ -125,10 +136,11 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 
 	ExportName = ExportNameStream.str();
 
-
+	// add extension
 	if (!IsDirectory(convertOption->getInputFilePath().c_str()))
 		ExportName += L".png";
 
+	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
 		last = convertOption->getInputFilePath().find_last_of(L'\\');
 		if (last == std::wstring::npos)
@@ -137,8 +149,14 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 		ExportName = convertOption->getOutputFolderName() + convertOption->getInputFilePath().substr(last, convertOption->getInputFilePath().find_last_of(L'.'));
 	}
 
+	// set model directory
+	if (this->ModelDir != L"")
+		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
+
+	// set output name
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
+	// Execute
 	SHELLEXECUTEINFO si;
 	WCHAR param[MAX_PATH] = L"";
 	WCHAR lpDir[MAX_PATH] = L"";
@@ -162,7 +180,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 		hConvertProcess = si.hProcess;
 		if (hConvertProcess != nullptr)
 			WaitForSingleObject(hConvertProcess, INFINITE);
-		if(hConvertProcess != nullptr)
+		if (hConvertProcess != nullptr)
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
 	}
@@ -178,7 +196,7 @@ void Converter::addQueue(ConvertOption *convertOption) {
 void Converter::emptyQueue() {
 	while (!ConvertQueue.empty())
 		ConvertQueue.pop();
-	if(hConvertThread!=nullptr)
+	if (hConvertThread != nullptr)
 		TerminateThread(hConvertThread, 1);
 	hConvertThread = nullptr;
 	if (hConvertProcess != nullptr)
