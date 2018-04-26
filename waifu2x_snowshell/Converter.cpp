@@ -222,10 +222,42 @@ void Converter::emptyQueue() {
 DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	Converter* This = (Converter*)lParam;
 
+	DialogBox(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDD_DIALOG2), NULL, Converter::ProgressDlgProc);
+
 	while (!This->ConvertQueue.empty()) {
 		This->execute(&This->ConvertQueue.front());
 		This->ConvertQueue.pop();
 	}
+	
 	This->hConvertThread = nullptr;
 	ExitThread(0);
+}
+
+BOOL CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	static HWND hEdit, hText, hProgress, hButton;
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
+		hText = GetDlgItem(hDlg, IDC_TEXT1);
+		hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
+		hButton = GetDlgItem(hDlg, IDCANCEL);
+		SendMessage(hProgress, PBM_SETRANGE, NULL, MAKELPARAM(0, 1));
+		SendMessage(hProgress, PBM_SETSTEP, (WPARAM)1, NULL);
+		//SendMessage(hProgress, PBM_STEPIT, 0, 0);
+		SetWindowText(hText, L"In queue: 0");
+		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDCANCEL:
+			EndDialog(hDlg, IDCANCEL);
+			return TRUE;
+		}
+		return FALSE;
+	case WM_CLOSE:
+		EndDialog(hDlg, IDCANCEL);
+		return TRUE;
+	}
+	return DefWindowProc(hDlg, uMsg, wParam, lParam);
 }

@@ -1,11 +1,13 @@
 #pragma once
 
 #include <Windows.h>
+#include <CommCtrl.h>
 #include <string>
 #include <sstream>
 #include <queue>
 
 #include "ConvertOption.h"
+#include "resource.h"
 
 extern BOOL FileExists(LPCWSTR file);
 extern BOOL IsDirectory(LPCWSTR path);
@@ -27,6 +29,7 @@ private:
 protected:
 	std::queue<ConvertOption> ConvertQueue;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
+	static BOOL CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
 	Converter();
