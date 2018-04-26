@@ -25,15 +25,19 @@ private:
 	std::wstring CustomOption;
 	HANDLE hConvertThread;
 	HANDLE hConvertProcess;
+	HANDLE hProgressThread;
+	HWND hProgressDlg;
 
 protected:
 	std::queue<ConvertOption> ConvertQueue;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
+	static DWORD WINAPI ProgressPorc(PVOID lParam);
 	static BOOL CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
 	Converter();
 	Converter(std::wstring exePath, bool is64bitOnly = true, bool isCudaOnly = false, bool tta = false);
+	~Converter();
 	bool checkAvailable();
 	void setCPU(bool isCPU);
 	void setAvailable(bool available);

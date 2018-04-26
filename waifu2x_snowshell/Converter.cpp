@@ -32,6 +32,20 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 	}
 }
 
+Converter::~Converter() {
+	if (hConvertThread != nullptr)
+		TerminateThread(hConvertThread, 1);
+	hConvertThread = nullptr;
+	if (hConvertProcess != nullptr)
+		TerminateProcess(hConvertProcess, 1);
+	if (hProgressDlg != nullptr)
+		EndDialog(hProgressDlg, 1);
+	hProgressDlg = nullptr;
+	if (hProgressThread != nullptr)
+		TerminateThread(hProgressThread, 1);
+	hProgressThread = nullptr;
+}
+
 bool Converter::checkAvailable() {
 	this->Available = FileExists(ExePath.c_str());
 	if (Is64bitOnly) {
@@ -221,15 +235,47 @@ void Converter::emptyQueue() {
 
 DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	Converter* This = (Converter*)lParam;
+	WCHAR InQueueText[20];
 
-	DialogBox(GetModuleHandle(nullptr), MAKEINTRESOURCE(IDD_DIALOG2), NULL, Converter::ProgressDlgProc);
+	if (This->hProgressDlg != nullptr)
+		EndDialog(This->hProgressDlg, 1);
+	This->hProgressDlg = nullptr;
+	if (This->hProgressThread != nullptr)
+		TerminateThread(This->hProgressThread, 1);
+	This->hProgressThread = nullptr;
 
-	while (!This->ConvertQueue.empty()) {
+	
+	This->hProgressThread = CreateThread(nullptr, 0, Converter::ProgressPorc, This, 0, nullptr);
+
+	for (int i = 0; !This->ConvertQueue.empty(); i++) {
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, This->ConvertQueue.size()+i));
+		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
+		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
 		This->execute(&This->ConvertQueue.front());
 		This->ConvertQueue.pop();
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
 	}
-	
+
+	SetDlgItemText(This->hProgressDlg, IDC_TEXT1, L"Done!");
+	SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETPOS, (WPARAM)100, 0);
 	This->hConvertThread = nullptr;
+	ExitThread(0);
+}
+
+DWORD WINAPI Converter::ProgressPorc(PVOID lParam) {
+	MSG msg;
+	Converter* This = (Converter*)lParam;
+	
+	This->hProgressDlg = CreateDialog(NULL, MAKEINTRESOURCE(IDD_DIALOG2), NULL, Converter::ProgressDlgProc);
+
+
+	while (GetMessage(&msg, This->hProgressDlg, 0, 0)) {
+		TranslateMessage(&msg);
+		DispatchMessage(&msg);
+	}
+
+	This->hProgressDlg = nullptr;
+	This->hProgressThread = nullptr;
 	ExitThread(0);
 }
 
@@ -244,7 +290,6 @@ BOOL CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 		hButton = GetDlgItem(hDlg, IDCANCEL);
 		SendMessage(hProgress, PBM_SETRANGE, NULL, MAKELPARAM(0, 1));
 		SendMessage(hProgress, PBM_SETSTEP, (WPARAM)1, NULL);
-		//SendMessage(hProgress, PBM_STEPIT, 0, 0);
 		SetWindowText(hText, L"In queue: 0");
 		return TRUE;
 	case WM_COMMAND:
