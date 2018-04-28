@@ -189,7 +189,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	WCHAR param[MAX_PATH] = L"";
 	WCHAR lpDir[MAX_PATH] = L"";
 	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, (ExePath + L" " + ParamStream.str()).c_str());
+	lstrcpyW(param, (L"\"" + ExePath + L"\" " + ParamStream.str()).c_str());
 	lstrcpyW(lpDir, WorkingDir.c_str());
 	lstrcpyW(lpFile, ExePath.c_str());
 
