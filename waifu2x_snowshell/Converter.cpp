@@ -202,7 +202,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
 	StartupInfo.wShowWindow = SW_SHOW;
 
-	
+
 	if (CreateProcess(lpFile, param, NULL, NULL, FALSE, NULL, NULL, lpDir, &StartupInfo, &ProcessInfo) == FALSE)
 		return false;
 	else {
@@ -252,11 +252,11 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 		TerminateThread(This->hProgressThread, 1);
 	This->hProgressThread = nullptr;
 
-	
+
 	This->hProgressThread = CreateThread(nullptr, 0, Converter::ProgressPorc, This, 0, nullptr);
 
 	for (int i = 0; !This->ConvertQueue.empty(); i++) {
-		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, This->ConvertQueue.size()+i));
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, This->ConvertQueue.size() + i));
 		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
 		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
 		This->execute(&This->ConvertQueue.front());
@@ -273,7 +273,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 DWORD WINAPI Converter::ProgressPorc(PVOID lParam) {
 	MSG msg;
 	Converter* This = (Converter*)lParam;
-	
+
 	This->hProgressDlg = CreateDialog(NULL, MAKEINTRESOURCE(IDD_DIALOG2), NULL, Converter::ProgressDlgProc);
 
 
