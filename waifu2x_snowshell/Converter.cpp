@@ -186,31 +186,39 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	SHELLEXECUTEINFO si;
 	WCHAR param[MAX_PATH] = L"";
 	WCHAR lpDir[MAX_PATH] = L"";
 	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, ParamStream.str().c_str());
+	lstrcpyW(param, (ExePath + L" " + ParamStream.str()).c_str());
 	lstrcpyW(lpDir, WorkingDir.c_str());
 	lstrcpyW(lpFile, ExePath.c_str());
 
-	memset(&si, 0, sizeof(SHELLEXECUTEINFO));
-	si.cbSize = sizeof(SHELLEXECUTEINFO);
-	si.nShow = SW_SHOW;
-	si.lpVerb = L"open";
-	si.lpParameters = param;
-	si.hwnd = NULL;
-	si.lpDirectory = lpDir;
-	si.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-	si.lpFile = lpFile;
-	if (ShellExecuteExW(&si) == FALSE)
+	STARTUPINFO StartupInfo;
+	PROCESS_INFORMATION ProcessInfo;
+	memset(&StartupInfo, 0, sizeof(STARTUPINFO));
+	memset(&ProcessInfo, 0, sizeof(PROCESS_INFORMATION));
+
+	StartupInfo.cb = sizeof(STARTUPINFO);
+	StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
+	StartupInfo.wShowWindow = SW_SHOW;
+
+	
+	if (CreateProcess(lpFile, param, NULL, NULL, FALSE, NULL, NULL, lpDir, &StartupInfo, &ProcessInfo) == FALSE)
 		return false;
 	else {
-		hConvertProcess = si.hProcess;
-		if (hConvertProcess != nullptr)
-			WaitForSingleObject(hConvertProcess, INFINITE);
-		if (hConvertProcess != nullptr)
-			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = ProcessInfo.hProcess;
+		if (ProcessInfo.hProcess != nullptr)
+			WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
+		if (ProcessInfo.hProcess)
+		{
+			DWORD dwExitCode = STILL_ACTIVE;
+			while (dwExitCode == STILL_ACTIVE)
+			{
+				GetExitCodeProcess(ProcessInfo.hProcess, &dwExitCode);
+			}
+		}
+		CloseHandle(ProcessInfo.hProcess);
+		CloseHandle(ProcessInfo.hThread);
 		hConvertProcess = nullptr;
 	}
 	return true;
