@@ -293,7 +293,7 @@ BOOL CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EndDialog(hDlg, IDCANCEL);
 		return TRUE;
 	}
-	return DefDlgProc(hDlg, uMsg, wParam, lParam);
+	return FALSE;
 }
 
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
