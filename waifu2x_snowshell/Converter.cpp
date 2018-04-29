@@ -248,7 +248,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	WCHAR InQueueText[20];
 
 	for (int i = 0; !This->ConvertQueue.empty(); i++) {
-		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, 10*(This->ConvertQueue.size() + i + 1)));
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, 10 * (This->ConvertQueue.size() + i + 1)));
 		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
 		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
 		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
@@ -283,7 +283,7 @@ BOOL CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 		switch (wParam)
 		{
 		case IDCANCEL:
-			if (converter != nullptr && converter->ConvertQueue.empty() || MessageBox(hWnd, L"Do you want to cancel the converting process?", L"Confirm", MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES){
+			if (converter != nullptr && converter->ConvertQueue.empty() || MessageBox(hWnd, L"Do you want to cancel the converting process?", L"Confirm", MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES) {
 				if (converter != nullptr)
 					converter->emptyQueue();
 				DestroyWindow(hDlg);
