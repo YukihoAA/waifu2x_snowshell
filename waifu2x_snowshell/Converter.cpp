@@ -258,8 +258,9 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 
 	SetDlgItemText(This->hProgressDlg, IDC_TEXT1, L"Done!");
 	SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETPOS, (WPARAM)100, 0);
+	Sleep(300);
+	SendMessage(This->hProgressDlg, WM_CLOSE, 0, 0);
 	This->hConvertThread = nullptr;
-	DestroyWindow(This->hProgressDlg);
 	This->hProgressDlg = nullptr;
 	ExitThread(0);
 }
