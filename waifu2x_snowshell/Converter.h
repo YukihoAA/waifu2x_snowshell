@@ -9,6 +9,8 @@
 #include "ConvertOption.h"
 #include "resource.h"
 
+#define WM_SET_CONVERTER WM_USER+1000
+
 extern BOOL FileExists(LPCWSTR file);
 extern BOOL IsDirectory(LPCWSTR path);
 
@@ -25,13 +27,11 @@ private:
 	std::wstring CustomOption;
 	HANDLE hConvertThread;
 	HANDLE hConvertProcess;
-	HANDLE hProgressThread;
 	HWND hProgressDlg;
 
 protected:
 	std::queue<ConvertOption> ConvertQueue;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
-	static DWORD WINAPI ProgressPorc(PVOID lParam);
 	static BOOL CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:

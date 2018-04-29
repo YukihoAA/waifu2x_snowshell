@@ -12,6 +12,7 @@ Converter::Converter() {
 	this->IsCPU = false;
 	this->hConvertThread = nullptr;
 	this->hConvertProcess = nullptr;
+	this->hProgressDlg = nullptr;
 }
 
 Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bool tta) {
@@ -28,6 +29,7 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 		this->IsCPU = false;
 		this->hConvertThread = nullptr;
 		this->hConvertProcess = nullptr;
+		this->hProgressDlg = nullptr;
 		checkAvailable();
 	}
 }
@@ -39,11 +41,8 @@ Converter::~Converter() {
 	if (hConvertProcess != nullptr)
 		TerminateProcess(hConvertProcess, 1);
 	if (hProgressDlg != nullptr)
-		EndDialog(hProgressDlg, 1);
+		DestroyWindow(hProgressDlg);
 	hProgressDlg = nullptr;
-	if (hProgressThread != nullptr)
-		TerminateThread(hProgressThread, 1);
-	hProgressThread = nullptr;
 }
 
 bool Converter::checkAvailable() {
@@ -186,48 +185,51 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
+	SHELLEXECUTEINFO shellExecuteInfo;
 	WCHAR param[MAX_PATH] = L"";
 	WCHAR lpDir[MAX_PATH] = L"";
 	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, (L"\"" + ExePath + L"\" " + ParamStream.str()).c_str());
+	lstrcpyW(param, ParamStream.str().c_str());
 	lstrcpyW(lpDir, WorkingDir.c_str());
 	lstrcpyW(lpFile, ExePath.c_str());
 
-	STARTUPINFO StartupInfo;
-	PROCESS_INFORMATION ProcessInfo;
-	memset(&StartupInfo, 0, sizeof(STARTUPINFO));
-	memset(&ProcessInfo, 0, sizeof(PROCESS_INFORMATION));
+	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	shellExecuteInfo.nShow = SW_HIDE;
+	shellExecuteInfo.lpVerb = L"open";
+	shellExecuteInfo.lpParameters = param;
+	shellExecuteInfo.hwnd = NULL;
+	shellExecuteInfo.lpDirectory = lpDir;
+	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.lpFile = lpFile;
 
-	StartupInfo.cb = sizeof(STARTUPINFO);
-	StartupInfo.dwFlags = STARTF_USESHOWWINDOW;
-	StartupInfo.wShowWindow = SW_SHOW;
-
-
-	if (CreateProcess(lpFile, param, NULL, NULL, FALSE, NULL, NULL, lpDir, &StartupInfo, &ProcessInfo) == FALSE)
+	if (!ShellExecuteExW(&shellExecuteInfo))
 		return false;
 	else {
-		hConvertProcess = ProcessInfo.hProcess;
-		if (ProcessInfo.hProcess != nullptr)
-			WaitForSingleObject(ProcessInfo.hProcess, INFINITE);
-		if (ProcessInfo.hProcess)
-		{
-			DWORD dwExitCode = STILL_ACTIVE;
-			while (dwExitCode == STILL_ACTIVE)
-			{
-				GetExitCodeProcess(ProcessInfo.hProcess, &dwExitCode);
-			}
-		}
-		CloseHandle(ProcessInfo.hProcess);
-		CloseHandle(ProcessInfo.hThread);
+		hConvertProcess = shellExecuteInfo.hProcess;
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if (hConvertProcess != nullptr)
+			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
+		CloseHandle(shellExecuteInfo.hProcess);
 	}
 	return true;
 }
 
+extern HINSTANCE g_hInst;
+extern HWND hWnd;
+
 void Converter::addQueue(ConvertOption *convertOption) {
 	ConvertQueue.push(*convertOption);
-	if (hConvertThread == nullptr)
+	if (hConvertThread == nullptr) {
+		if (hProgressDlg != nullptr)
+			DestroyWindow(hProgressDlg);
+		hProgressDlg = CreateDialog(g_hInst, MAKEINTRESOURCE(IDD_DIALOG2), hWnd, Converter::ProgressDlgProc);
+		SendMessage(hProgressDlg, WM_SET_CONVERTER, (WPARAM)this, 0);
+		ShowWindow(hProgressDlg, SW_SHOW);
 		hConvertThread = CreateThread(nullptr, 0, Converter::ConvertPorc, this, 0, nullptr);
+	}
 }
 
 void Converter::emptyQueue() {
@@ -245,72 +247,55 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	Converter* This = (Converter*)lParam;
 	WCHAR InQueueText[20];
 
-	if (This->hProgressDlg != nullptr)
-		EndDialog(This->hProgressDlg, 1);
-	This->hProgressDlg = nullptr;
-	if (This->hProgressThread != nullptr)
-		TerminateThread(This->hProgressThread, 1);
-	This->hProgressThread = nullptr;
-
-
-	This->hProgressThread = CreateThread(nullptr, 0, Converter::ProgressPorc, This, 0, nullptr);
-
 	for (int i = 0; !This->ConvertQueue.empty(); i++) {
-		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, This->ConvertQueue.size() + i));
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, 10*(This->ConvertQueue.size() + i + 1)));
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
 		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
 		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
 		This->execute(&This->ConvertQueue.front());
 		This->ConvertQueue.pop();
-		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
 	}
 
 	SetDlgItemText(This->hProgressDlg, IDC_TEXT1, L"Done!");
 	SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETPOS, (WPARAM)100, 0);
 	This->hConvertThread = nullptr;
-	ExitThread(0);
-}
-
-DWORD WINAPI Converter::ProgressPorc(PVOID lParam) {
-	MSG msg;
-	Converter* This = (Converter*)lParam;
-
-	This->hProgressDlg = CreateDialog(NULL, MAKEINTRESOURCE(IDD_DIALOG2), NULL, Converter::ProgressDlgProc);
-
-
-	while (GetMessage(&msg, This->hProgressDlg, 0, 0)) {
-		TranslateMessage(&msg);
-		DispatchMessage(&msg);
-	}
-
+	DestroyWindow(This->hProgressDlg);
 	This->hProgressDlg = nullptr;
-	This->hProgressThread = nullptr;
 	ExitThread(0);
 }
 
 BOOL CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	static HWND hEdit, hText, hProgress, hButton;
+	static HWND hText, hProgress;
+	static Converter *converter = nullptr;
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
-		hEdit = GetDlgItem(hDlg, IDC_EDIT1);
 		hText = GetDlgItem(hDlg, IDC_TEXT1);
 		hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
-		hButton = GetDlgItem(hDlg, IDCANCEL);
-		SendMessage(hProgress, PBM_SETRANGE, NULL, MAKELPARAM(0, 1));
-		SendMessage(hProgress, PBM_SETSTEP, (WPARAM)1, NULL);
+		SendMessage(hProgress, PBM_SETRANGE, NULL, MAKELPARAM(0, 100));
+		SendMessage(hProgress, PBM_SETSTEP, (WPARAM)10, NULL);
 		SetWindowText(hText, L"In queue: 0");
 		return TRUE;
+	case WM_SET_CONVERTER:
+		converter = (Converter*)wParam;
+		return TRUE;
 	case WM_COMMAND:
-		switch (LOWORD(wParam))
+		switch (wParam)
 		{
 		case IDCANCEL:
-			EndDialog(hDlg, IDCANCEL);
+			if (converter != nullptr && converter->ConvertQueue.empty() || MessageBox(hWnd, L"Do you want to cancel the converting process?", L"Confirm", MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES){
+				if (converter != nullptr)
+					converter->emptyQueue();
+				DestroyWindow(hDlg);
+				hDlg = nullptr;
+			}
 			return TRUE;
 		}
 		return FALSE;
 	case WM_CLOSE:
-		EndDialog(hDlg, IDCANCEL);
+		DestroyWindow(hDlg);
+		hDlg = nullptr;
 		return TRUE;
 	}
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return FALSE;
 }

@@ -2,9 +2,9 @@
 
 HINSTANCE g_hInst;
 BOOL is64bit = FALSE;
+HWND hWnd;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
-	HWND hWnd;
 	MSG msg;
 	LPWSTR lpszClass = L"SnowShell";
 
@@ -294,7 +294,7 @@ BOOL CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 		EndDialog(hDlg, IDCANCEL);
 		return TRUE;
 	}
-	return DefWindowProc(hDlg, uMsg, wParam, lParam);
+	return DefDlgProc(hDlg, uMsg, wParam, lParam);
 }
 
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
