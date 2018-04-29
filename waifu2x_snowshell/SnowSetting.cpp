@@ -437,6 +437,19 @@ void SnowSetting::loadLocale()
 		nl = STRING_TEXT_CONFIRM_MESSAGE.find(L"\\n");
 	}
 
+	Key = L"STRING_TEXT_CONFIRM_CUSTOM_SCALE_TITLE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Warning", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONFIRM_CUSTOM_SCALE_TITLE = buf;
+
+	Key = L"STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Program will crashes if your memory space is not enough.\nDo you want to continue?", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE = buf;
+	nl = STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.find(L"\\n");
+	while (nl != wstring::npos) {
+		STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.replace(nl, 2, L"\n");
+		nl = STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.find(L"\\n");
+	}
+
 	Key = L"STRING_TEXT_NOCONVERTER_TITLE";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Error", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOCONVERTER_TITLE = buf;
