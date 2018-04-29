@@ -17,12 +17,12 @@ To change your conversion setting, select option at menubar. <br/>
 ## To Change Model File
 > 1. Open config.ini file (if there is no config.ini, launch snowshell and close it) <br/>
 > 2. Set your model file directory with absolute path or relative path. <br/>
-> 2-1 You have to use \\ instead of \ <br/>
+> 2-1 You have to use \\\\ instead of \ <br/>
 > 2-2. When you use relative path, path is relative to converter's directory. <br/>
 > 3. Converters default model directory (relative) <br/>
 > 3-1. waifu2x_converter_cpp_x64 = models_rgb <br/>
 > 3-2. waifu2x_converter_cpp_x86 = models_rgb <br/>
-> 3-3. waifu2x_caffe = models_rgb = models\\upconv_7_anime_style_art_rgb <br/>
+> 3-3. waifu2x_caffe = models_rgb = models\\\\upconv_7_anime_style_art_rgb <br/>
 
 ## To Use Advanced Option in Converter
 > 1. Open config.ini file (if there is no config.ini, launch snowshell and close it) <br/>
