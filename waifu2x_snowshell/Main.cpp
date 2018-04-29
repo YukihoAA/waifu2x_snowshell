@@ -377,7 +377,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 
 				size_t last = convertOption->getScaleRatio().find_last_of(L'.');
 				if (last != std::wstring::npos)
-					FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
+					FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last-1, L"_");
 			}
 
 			// set tta
