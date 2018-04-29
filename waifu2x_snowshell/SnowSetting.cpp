@@ -161,9 +161,8 @@ void SnowSetting::loadLocale()
 			if (hFile != NULL)
 				CloseHandle(hFile);
 		}
-		loadLocale();
-		return;
 	}
+
 	Section = L"SnowShell";
 
 	Key = L"INT_SETTING_VER";
