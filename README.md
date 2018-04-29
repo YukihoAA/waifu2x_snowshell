@@ -1,6 +1,6 @@
 # waifu2x - SnowShell [![apm](https://img.shields.io/apm/l/vim-mode.svg)]( [![apm](https://img.shields.io/apm/dm/vim-mode.svg)](https://github.com/YukihoAA/waifu2x_snowshell)) [![Github Releases](https://img.shields.io/github/downloads/YukihoAA/waifu2x_snowshell/total.svg)](https://github.com/YukihoAA/waifu2x_snowshell/releases)
 
-This is GUI Shell for waifu2x-converter-cpp(https://github.com/tanakamura/waifu2x-converter-cpp) and waifu2x-caffe(https://github.com/lltcggie/waifu2x-caffe) <br/> <br/>
+This is GUI Shell for [waifu2x-converter-cpp](https://github.com/tanakamura/waifu2x-converter-cpp) and [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe) <br/> <br/>
 ![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) ![Example](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Example.PNG) <br /> <br/>
 You can use SnowShell to make your image better. <br/>
 SnowShell uses C++ and Win32API. 
