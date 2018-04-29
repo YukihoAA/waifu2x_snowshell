@@ -1,7 +1,7 @@
 #include "ConvertOption.h"
 
 ConvertOption::ConvertOption() {
-	NoiseLevel = 0;
+	NoiseLevel = CO_NOISE_NONE;
 	ScaleRatio = L"1.0";
 	IsTTAEnabled = false;
 	InputFilePath = L"";

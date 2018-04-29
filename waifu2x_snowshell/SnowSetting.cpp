@@ -31,9 +31,9 @@ SnowSetting::SnowSetting()
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 
-	Noise = 1;
-	Scale = 2;
-	CPU = 2;
+	Noise = NOISE_LOW;
+	Scale = SCALE_x1_6;
+	CPU = CPU_FULL;
 	Export = 0;
 	Confirm = 0;
 	Lang = 1;
@@ -161,6 +161,8 @@ void SnowSetting::loadLocale()
 			if (hFile != NULL)
 				CloseHandle(hFile);
 		}
+		loadLocale();
+		return;
 	}
 	Section = L"SnowShell";
 
@@ -718,8 +720,8 @@ void SnowSetting::setNoise(int Noise)
 	if (Singletone == nullptr)
 		Init();
 
-	if (Noise > NOISE_MAX || Noise < 0)
-		Noise = 0;
+	if (Noise > NOISE_MAX || Noise < NOISE_NONE)
+		Noise = NOISE_NONE;
 
 	Singletone->Noise = Noise;
 }

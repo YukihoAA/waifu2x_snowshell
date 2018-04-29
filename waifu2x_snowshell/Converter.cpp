@@ -146,7 +146,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 
 		last = convertOption->getScaleRatio().find_last_of(L'.');
 		if (!noLabel && last != std::wstring::npos)
-			ExportNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last-1, L"_");
+			ExportNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
 	}
 
 	// set tta mode
