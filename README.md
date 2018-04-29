@@ -22,7 +22,7 @@ To change your conversion setting, select option at menubar. <br/>
 > 3. Converters default model directory (relative) <br/>
 > 3-1. waifu2x_converter_cpp_x64 = models_rgb <br/>
 > 3-2. waifu2x_converter_cpp_x86 = models_rgb <br/>
-> 3-3. waifu2x_caffe = models_rgb = models\\\\upconv_7_anime_style_art_rgb <br/>
+> 3-3. waifu2x_caffe = models\\\\upconv_7_anime_style_art_rgb <br/>
 
 ## To Use Advanced Option in Converter
 > 1. Open config.ini file (if there is no config.ini, launch snowshell and close it) <br/>
