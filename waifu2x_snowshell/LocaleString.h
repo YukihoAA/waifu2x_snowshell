@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define SETTING_VER_MINIMUM 7
+#define SETTING_VER_MINIMUM 9
 
 extern int INT_SETTING_VER;
 
@@ -84,3 +84,6 @@ extern wstring STRING_TEXT_CONFIRM_MESSAGE;
 
 extern wstring STRING_TEXT_NOCONVERTER_TITLE;
 extern wstring STRING_TEXT_NOCONVERTER_MESSAGE;
+
+extern wstring STRING_TEXT_ABORT_CONVERT_TITLE;
+extern wstring STRING_TEXT_ABORT_CONVERT_MESSAGE;

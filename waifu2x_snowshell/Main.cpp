@@ -80,7 +80,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	case WM_KEYDOWN:
 		switch (wParam) {
 		case VK_ESCAPE:
-			if (SnowSetting::CurrentConverter != nullptr && MessageBox(hWnd, L"Do you want to cancel the converting process?", STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES)
+			if (SnowSetting::CurrentConverter != nullptr && MessageBox(hWnd, STRING_TEXT_ABORT_CONVERT_MESSAGE.c_str(), STRING_TEXT_ABORT_CONVERT_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES)
 				SnowSetting::CurrentConverter->emptyQueue();
 			return TRUE;
 		}

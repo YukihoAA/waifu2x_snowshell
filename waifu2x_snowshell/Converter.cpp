@@ -284,7 +284,7 @@ BOOL CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LP
 		switch (wParam)
 		{
 		case IDCANCEL:
-			if (converter != nullptr && converter->ConvertQueue.empty() || MessageBox(hWnd, L"Do you want to cancel the converting process?", L"Confirm", MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES) {
+			if (converter != nullptr && converter->ConvertQueue.empty() || MessageBox(hWnd, STRING_TEXT_ABORT_CONVERT_MESSAGE.c_str(), STRING_TEXT_ABORT_CONVERT_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDYES) {
 				if (converter != nullptr)
 					converter->emptyQueue();
 				DestroyWindow(hDlg);

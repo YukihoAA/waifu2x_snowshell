@@ -450,6 +450,14 @@ void SnowSetting::loadLocale()
 		nl = STRING_TEXT_NOCONVERTER_MESSAGE.find(L"\\n");
 	}
 
+	Key = L"STRING_TEXT_ABORT_CONVERT_TITLE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Confirm", buf, 200, LangFileName.c_str());
+	STRING_TEXT_ABORT_CONVERT_TITLE = buf;
+
+	Key = L"STRING_TEXT_ABORT_CONVERT_MESSAGE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Do you want to stop the converting process?", buf, 200, LangFileName.c_str());
+	STRING_TEXT_ABORT_CONVERT_MESSAGE = buf;
+
 }
 
 bool SnowSetting::loadSetting()

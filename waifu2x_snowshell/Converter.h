@@ -6,6 +6,7 @@
 #include <sstream>
 #include <queue>
 
+#include "LocaleString.h"
 #include "ConvertOption.h"
 #include "resource.h"
 
