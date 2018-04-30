@@ -144,9 +144,12 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 		ParamStream << L"--scale_ratio ";
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
-		last = convertOption->getScaleRatio().find_last_of(L'.');
-		if (!noLabel && last != std::wstring::npos)
-			ExportNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
+		std::wstring ScaleRatio = convertOption->getScaleRatio();
+		size_t last = ScaleRatio.find_last_of(L'.');
+		if (last != std::wstring::npos)
+			ScaleRatio[last] = L'_';
+		if (!noLabel)
+			ExportNameStream << L"_scale_x" << ScaleRatio;
 	}
 
 	// set tta mode

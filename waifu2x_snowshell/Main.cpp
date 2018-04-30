@@ -27,7 +27,7 @@ int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLi
 	// OpenCV 3.1 and later version does not supports x86 system.
 	IsWow64Process(GetCurrentProcess(), &is64bit);
 
-	hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.6.2", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"waifu2x - SnowShell v1.6.3", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -377,9 +377,12 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			// set scale_ratio
 			if (convertOption->getScaleRatio() != L"1.0") {
 
-				size_t last = convertOption->getScaleRatio().find_last_of(L'.');
+				std::wstring ScaleRatio = convertOption->getScaleRatio();
+				size_t last = ScaleRatio.find_last_of(L'.');
 				if (last != std::wstring::npos)
-					FolderNameStream << L"_scale_x" << convertOption->getScaleRatio().replace(last, last, L"_");
+					ScaleRatio[last]= L'_';
+
+				FolderNameStream << L"_scale_x" << ScaleRatio;
 			}
 
 			// set tta
