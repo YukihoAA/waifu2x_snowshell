@@ -30,7 +30,7 @@ To change your conversion setting, select option at menubar. <br/>
 > 2. Check your converter and fill OptionString with currect option. <br/>
 > 3. To find option for your converter, please visit converter's HP <br/>
 > 3-1. waifu2x_converter_cpp_x64 (Default): [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp) <br/>
-> 3-2. waifu2x_converter_cpp_x86 (For x86 User): [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp) <br/>
+> 3-2. waifu2x_converter_cpp_x86 (For x86 User): [waifu2x-converter-cpp](https://github.com/tanakamura/waifu2x-converter-cpp) <br/>
 > 3-3. waifu2x_caffe (For NVIDIA user): [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe) <br/>
 > 4. If you want to ignore/override settings that snowshell supports, add -- to end of optionstring to ignore all settings.<br/>
 > 4-1. you cannot override input file name because it is nessesory to make snowshell works.
