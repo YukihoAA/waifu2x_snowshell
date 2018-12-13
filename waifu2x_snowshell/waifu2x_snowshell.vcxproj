@@ -135,6 +135,7 @@
     <Image Include="Bitmap\BG.bmp" />
     <Image Include="Bitmap\BG_Japanese.bmp" />
     <Image Include="Bitmap\BG_Korean.bmp" />
+    <Image Include="Bitmap\BG_Chinese.bmp" />
     <Image Include="Bitmap\ICON.ico" />
   </ItemGroup>
   <ItemGroup>
