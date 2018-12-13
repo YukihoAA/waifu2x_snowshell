@@ -33,7 +33,7 @@ private:
 protected:
 	std::queue<ConvertOption> ConvertQueue;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
-	static BOOL CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
+	static INT_PTR CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
 	Converter();

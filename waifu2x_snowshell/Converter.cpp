@@ -268,7 +268,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	ExitThread(0);
 }
 
-BOOL CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+INT_PTR CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HWND hText, hProgress;
 	static Converter *converter = nullptr;
 	switch (uMsg)

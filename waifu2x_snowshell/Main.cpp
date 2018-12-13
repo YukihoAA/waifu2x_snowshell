@@ -272,7 +272,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	return DefWindowProc(hWnd, uMsg, wParam, lParam);
 }
 
-BOOL CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+INT_PTR CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HWND hEdit, hText, hButton;
 	switch (uMsg)
 	{
