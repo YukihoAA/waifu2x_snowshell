@@ -115,7 +115,7 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	std::wstringstream ExportNameStream;
 	std::wstringstream ParamStream;
 
-	ExportNameStream << convertOption->getInputFilePath().substr(0, convertOption->getInputFilePath().find_last_of(L".")) << L"_waifu2x";
+	ExportNameStream << convertOption->getInputFilePath().substr(0, convertOption->getInputFilePath().find_last_of(L".")).substr(0,200) << L"_waifu2x";
 
 	ParamStream << L"-i \"" << convertOption->getInputFilePath() << L"\" ";
 
