@@ -37,6 +37,7 @@ SnowSetting::SnowSetting()
 	Export = 0;
 	Confirm = 0;
 	Lang = 1;
+	Debug = 0;
 }
 
 SnowSetting::~SnowSetting()
@@ -521,6 +522,9 @@ bool SnowSetting::loadSetting()
 	setLang(langsel);
 	loadLocale();
 
+	Key = L"Debug";
+	setDebug(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+
 	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"1.6", buf, MAX_PATH, INIPath.c_str());
 	SnowSetting::setScaleRatio(buf);
 	if (SnowSetting::getScaleRatio() == L"")
@@ -582,6 +586,9 @@ bool SnowSetting::saveSetting()
 
 	Key = L"Lang";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getLang()).c_str(), INIPath.c_str());
+
+	Key = L"Debug";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getDebug()).c_str(), INIPath.c_str());
 
 	Key = L"ScaleRatio";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), SnowSetting::getScaleRatio().c_str(), INIPath.c_str());
@@ -709,6 +716,14 @@ int SnowSetting::getLang()
 	return Singletone->Lang;
 }
 
+BOOL SnowSetting::getDebug()
+{
+	if (Singletone == nullptr)
+		Init();
+
+	return Singletone->Debug;
+}
+
 wstring SnowSetting::getLangName()
 {
 	return LangFile[getLang()];
@@ -785,6 +800,14 @@ void SnowSetting::setLang(int Lang)
 	loadLocale();
 }
 
+void SnowSetting::setDebug(BOOL Debug)
+{
+	if (Singletone == nullptr)
+		Init();
+
+	Singletone->Debug = Debug;
+}
+
 void SnowSetting::setScaleRatio(std::wstring scaleRatio) {
 	if (Singletone == nullptr)
 		Init();
@@ -800,6 +823,7 @@ void SnowSetting::checkMenuAll(HMENU hMenu)
 	checkExport(hMenu);
 	checkConfirm(hMenu);
 	checkLang(hMenu);
+	checkDebug(hMenu);
 }
 
 void SnowSetting::checkNoise(HMENU hMenu, int sel)
@@ -872,6 +896,20 @@ void SnowSetting::checkLang(HMENU hMenu, int sel)
 	for (int i = 0; i < LangNum; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getLang(), MF_BYPOSITION | MF_CHECKED);
+}
+
+void SnowSetting::checkDebug(HMENU hMenu, int sel)
+{
+	HMENU hSubMenu = GetSubMenu(hMenu, 5);
+
+	if (sel != -1)
+		setDebug(!getDebug());
+
+	if(getDebug())
+		CheckMenuItem(hSubMenu, 3, MF_BYPOSITION | MF_CHECKED);
+	else
+		CheckMenuItem(hSubMenu, 3, MF_BYPOSITION | MF_UNCHECKED);
+	
 }
 
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {

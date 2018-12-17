@@ -202,6 +202,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			UIText[4] = SnowSetting::getConfirmText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
+		case ID_MENU_CONFIRM_DEBUG:
+			SnowSetting::checkDebug(hMenu, 0);
+			return TRUE;
 		case ID_MENU_LANG_KO:
 		case ID_MENU_LANG_EN:
 		case ID_MENU_LANG_JP:

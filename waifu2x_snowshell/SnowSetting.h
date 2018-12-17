@@ -69,6 +69,7 @@ private:
 	int Export;
 	int Confirm;
 	int Lang;
+	int Debug;
 	std::wstring ScaleRatio;
 
 protected:
@@ -99,6 +100,7 @@ public:
 	static int getCPU();
 	static int getExport();
 	static BOOL getConfirm();
+	static BOOL getDebug();
 	static int getLang();
 	static std::wstring getLangName();
 	static std::wstring getScaleRatio();
@@ -109,16 +111,17 @@ public:
 	static void setExport(int Export);
 	static void setConfirm(BOOL Confirm);
 	static void setLang(int Lang);
+	static void setDebug(BOOL Debug);
 	static void setScaleRatio(std::wstring scaleRatio);
 
 	static void checkMenuAll(HMENU hMenu);
 	static void checkNoise(HMENU hMenu, int sel = -1);
-
 	static void checkScale(HMENU hMenu, int sel = -1);
 	static void checkCPU(HMENU hMenu, int sel = -1);
 	static void checkExport(HMENU hMenu, int sel = -1);
 	static void checkConfirm(HMENU hMenu, int sel = -1);
 	static void checkLang(HMENU hMenu, int sel = -1);
+	static void checkDebug(HMENU hMenu, int sel = -1);
 
 	static void getTexts(std::wstring*(*UITitleText)[5], std::wstring*(*UIText)[5]);
 	static std::wstring* getNoiseText();
