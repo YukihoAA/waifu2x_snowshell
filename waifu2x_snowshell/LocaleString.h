@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define SETTING_VER_MINIMUM 13
+#define SETTING_VER_MINIMUM 14
 
 extern int INT_SETTING_VER;
 
@@ -45,6 +45,7 @@ extern wstring STRING_MENU_EXPORT_NEW;
 
 extern wstring STRING_MENU_CONFIRM_SHOW;
 extern wstring STRING_MENU_CONFIRM_SKIP;
+extern wstring STRING_MENU_CONFIRM_DEBUG;
 
 
 extern int INT_TEXT_TAB;

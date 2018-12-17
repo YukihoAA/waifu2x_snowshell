@@ -312,6 +312,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Hide Warning", buf, 200, LangFileName.c_str());
 	STRING_MENU_CONFIRM_SKIP = buf;
 
+	Key = L"STRING_MENU_CONFIRM_DEBUG";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Hide Warning", buf, 200, LangFileName.c_str());
+	STRING_MENU_CONFIRM_DEBUG = buf;
+
 
 	Section = L"Text";
 
@@ -654,6 +658,7 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 
 	ModifyMenu(hMenu, ID_MENU_CONFIRM_SHOW, MF_BYCOMMAND | MF_STRING, ID_MENU_CONFIRM_SHOW, STRING_MENU_CONFIRM_SHOW.c_str());
 	ModifyMenu(hMenu, ID_MENU_CONFIRM_HIDE, MF_BYCOMMAND | MF_STRING, ID_MENU_CONFIRM_HIDE, STRING_MENU_CONFIRM_SKIP.c_str());
+	ModifyMenu(hMenu, ID_MENU_CONFIRM_DEBUG, MF_BYCOMMAND | MF_STRING, ID_MENU_CONFIRM_DEBUG, STRING_MENU_CONFIRM_DEBUG.c_str());
 }
 
 int SnowSetting::getNoise()

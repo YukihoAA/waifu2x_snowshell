@@ -39,6 +39,7 @@ wstring STRING_MENU_EXPORT_NEW = L"output 폴더";
 
 wstring STRING_MENU_CONFIRM_SHOW = L"보여주기";
 wstring STRING_MENU_CONFIRM_SKIP = L"보여주지 않기";
+wstring STRING_MENU_CONFIRM_DEBUG = L"변환과정 출력";
 
 
 int INT_TEXT_TAB = 11;
