@@ -9,6 +9,7 @@ class ConvertOption {
 private:
 	int NoiseLevel;	// 0:none, 1:low, 2:high, 3:very high
 	int CoreNum;	// Enable Only in CPU
+	int DebugMode;	// 0:Disabled, 1:Snow Converting Log
 	bool NoLabel;
 	bool IsTTAEnabled;
 	std::wstring ScaleRatio;
@@ -25,17 +26,20 @@ public:
 	ConvertOption();
 	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::CO_NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = true, std::wstring OutputFolderName = L"");
 	void setNoiseLevel(int noiseLevel);
-	void setScaleRatio(std::wstring scaleRatio);
+	void setCoreNum(int coreNum);
+	void setDebugMode(int debugMode);
+	void setNoLabel(bool noLabel);
 	void setTTAEnabled(bool ttaEnabled);
+	void setScaleRatio(std::wstring scaleRatio);
 	void setInputFilePath(std::wstring inputFile);
 	void setOutputFolderName(std::wstring OutputFolderName);
-	void setCoreNum(int coreNum);
+
 	int getNoiseLevel();
-	std::wstring getScaleRatio();
+	int getCoreNum();
+	int getDebugMode();
+	bool getNoLabel();
 	bool getTTAEnabled();
+	std::wstring getScaleRatio();
 	std::wstring getInputFilePath();
 	std::wstring getOutputFolderName();
-	int getCoreNum();
-	bool getNoLabel();
-	void setNoLabel(bool noLabel);
 };

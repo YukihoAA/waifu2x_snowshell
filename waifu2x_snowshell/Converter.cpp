@@ -198,7 +198,10 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 
 	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
 	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	shellExecuteInfo.nShow = SW_HIDE;
+	if(convertOption->getDebugMode() == 0)
+		shellExecuteInfo.nShow = SW_HIDE;
+	else
+		shellExecuteInfo.nShow = SW_SHOW;
 	shellExecuteInfo.lpVerb = L"open";
 	shellExecuteInfo.lpParameters = param;
 	shellExecuteInfo.hwnd = NULL;

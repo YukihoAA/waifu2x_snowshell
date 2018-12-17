@@ -314,6 +314,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	if (SnowSetting::getConfirm() == CONFIRM_SHOW && convertOption->getOutputFolderName() == L"" && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 		return FALSE;
 
+	convertOption->setDebugMode(SnowSetting::getDebug());
+
 	convertOption->setInputFilePath(fileName);
 	convertOption->setNoiseLevel(SnowSetting::getNoise());
 	if (SnowSetting::getExport() && convertOption->getOutputFolderName() == L"") {
