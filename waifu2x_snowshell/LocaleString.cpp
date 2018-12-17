@@ -28,7 +28,7 @@ wstring STRING_MENU_SCALE_CUSTOM = L"사용자 설정";
 
 wstring STRING_MENU_CPU_MID = L"중간";
 wstring STRING_MENU_CPU_HIGH = L"높음";
-wstring STRING_MENU_CPU_FULL = L"극한";
+wstring STRING_MENU_CPU_FULL = L"최대";
 
 wstring STRING_MENU_GPU_OPENCL = L"OPENCL로 변환";
 wstring STRING_MENU_GPU_CUDA = L"CUDA로 변환";
