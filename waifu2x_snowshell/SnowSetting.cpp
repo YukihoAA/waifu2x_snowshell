@@ -169,7 +169,9 @@ void SnowSetting::loadLocale()
 	INT_SETTING_VER = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), 0, LangFileName.c_str());
 
 	if (INT_SETTING_VER < SETTING_VER_MINIMUM) {
-		DeleteFile(LangFileName.c_str());
+		for (wstring iLangFileName : LangFile) {
+			DeleteFile((LangPath + L"\\" + iLangFileName).c_str());
+		}
 		loadSetting();
 		return;
 	}
