@@ -311,6 +311,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	if (!FileExists(fileName)) {
 		return FALSE;
 	}
+
+	// Limit Input File Name Length
 	FileNameLength = wcslen(fileName);
 	MaxInputLength = SnowSetting::getExport() ? 255 - SnowSetting::OutputDirName.length() : 220;
 	if (FileNameLength >= MaxInputLength) {
@@ -416,11 +418,12 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 
 		while (!FolderSearchQueue.empty()) {
 			WIN32_FIND_DATA FileFindData;
+			int FoundNameLength;
 			HANDLE hFind = INVALID_HANDLE_VALUE;
 			ConvertOption FolderConvertOption = FolderSearchQueue.front();
 			wstring filePath = FolderConvertOption.getInputFilePath();
 
-			hFind = FindFirstFile((filePath + L"\\*.*").c_str(), &FileFindData);
+			hFind = FindFirstFileW((filePath + L"\\*.*").c_str(), &FileFindData);
 
 			if (INVALID_HANDLE_VALUE == hFind) {
 				FindClose(hFind);
@@ -430,6 +433,13 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 				if (FileFindData.cFileName[0] == L'.')
 					continue;
 				wstring FoundFilePath = filePath + L"\\" + FileFindData.cFileName;
+				// Limit Input File Name Length
+				FoundNameLength = FoundFilePath.length();
+				if (FoundNameLength >= 220) {
+					wstring Message = STRING_TEXT_TOO_LONG_PATH_MESSAGE + L" (" + itos(FoundNameLength) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L"/" + itos(220) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L")\n" + FoundFilePath;
+					MessageBoxW(hWnd, Message.c_str(), STRING_TEXT_TOO_LONG_PATH_TITLE.c_str(), MB_ICONERROR | MB_SYSTEMMODAL | MB_OK);
+					continue;
+				}
 				if (FILE_ATTRIBUTE_DIRECTORY & FileFindData.dwFileAttributes)
 				{
 					ConvertOption NewFolderConvertOption = FolderConvertOption;
