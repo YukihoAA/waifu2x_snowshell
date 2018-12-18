@@ -83,5 +83,9 @@ wstring STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE = L"메모리가 부족하면 �
 wstring STRING_TEXT_NOCONVERTER_TITLE = L"오류";
 wstring STRING_TEXT_NOCONVERTER_MESSAGE = L"사용 가능한 컨버터가 없습니다.\n윈도우 버전을 확인해주시기 바랍니다.";
 
+wstring STRING_TEXT_TOO_LONG_PATH_TITLE = L"오류";
+wstring STRING_TEXT_TOO_LONG_PATH_MESSAGE = L"다음 파일의 파일 경로가 너무 길기 때문에 변환이 불가능합니다.";
+wstring STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT = L"자";
+
 wstring STRING_TEXT_ABORT_CONVERT_TITLE = L"확인";
 wstring STRING_TEXT_ABORT_CONVERT_MESSAGE = L"변환을 중단하시겠습니까?";

@@ -112,12 +112,17 @@ std::wstring Converter::getOptionString() {
 bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	size_t last;
 	std::wstring ExportName;
+	std::wstring InputName = convertOption->getInputFilePath();
 	std::wstringstream ExportNameStream;
 	std::wstringstream ParamStream;
 
-	ExportNameStream << convertOption->getInputFilePath().substr(0, convertOption->getInputFilePath().find_last_of(L".")).substr(0,200) << L"_waifu2x";
+	last = InputName.find_last_of(L'\\');
+	if (last == std::wstring::npos)
+		return false;
 
-	ParamStream << L"-i \"" << convertOption->getInputFilePath() << L"\" ";
+	ParamStream << L"-i \"" << InputName << L"\" ";
+
+	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_waifu2x";
 
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (this->CustomOption != L"")
@@ -168,16 +173,13 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 	ExportName = ExportNameStream.str();
 
 	// add extension
-	if (!IsDirectory(convertOption->getInputFilePath().c_str()))
+	if (!IsDirectory(InputName.c_str()))
 		ExportName += L".png";
 
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
-		last = convertOption->getInputFilePath().find_last_of(L'\\');
-		if (last == std::wstring::npos)
-			return false;
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + convertOption->getInputFilePath().substr(last, convertOption->getInputFilePath().find_last_of(L'.'));
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
 	}
 
 	// set model directory

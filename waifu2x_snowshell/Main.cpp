@@ -306,8 +306,16 @@ INT_PTR CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 }
 
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
-
+	int FileNameLength;
+	int MaxInputLength;
 	if (!FileExists(fileName)) {
+		return FALSE;
+	}
+	FileNameLength = wcslen(fileName);
+	MaxInputLength = SnowSetting::getExport() ? 255 - SnowSetting::OutputDirName.length() : 220;
+	if (FileNameLength >= MaxInputLength) {
+		wstring Message = STRING_TEXT_TOO_LONG_PATH_MESSAGE + L" (" + itos(FileNameLength) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L"/" + itos(MaxInputLength) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L")\n" + fileName;
+		MessageBoxW(hWnd, Message.c_str(), STRING_TEXT_TOO_LONG_PATH_TITLE.c_str(), MB_ICONERROR | MB_SYSTEMMODAL | MB_OK);
 		return FALSE;
 	}
 

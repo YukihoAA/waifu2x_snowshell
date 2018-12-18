@@ -314,7 +314,7 @@ void SnowSetting::loadLocale()
 	STRING_MENU_CONFIRM_SKIP = buf;
 
 	Key = L"STRING_MENU_CONFIRM_DEBUG";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Hide Warning", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Show Converting Log", buf, 200, LangFileName.c_str());
 	STRING_MENU_CONFIRM_DEBUG = buf;
 
 
@@ -457,6 +457,18 @@ void SnowSetting::loadLocale()
 		STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.replace(nl, 2, L"\n");
 		nl = STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.find(L"\\n");
 	}
+
+	Key = L"STRING_TEXT_TOO_LONG_PATH_TITLE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Error", buf, 200, LangFileName.c_str());
+	STRING_TEXT_TOO_LONG_PATH_TITLE = buf;
+
+	Key = L"STRING_TEXT_TOO_LONG_PATH_MESSAGE";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"File path is too long.", buf, 200, LangFileName.c_str());
+	STRING_TEXT_TOO_LONG_PATH_MESSAGE = buf;
+
+	Key = L"STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"", buf, 200, LangFileName.c_str());
+	STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT = buf;
 
 	Key = L"STRING_TEXT_NOCONVERTER_TITLE";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Error", buf, 200, LangFileName.c_str());
