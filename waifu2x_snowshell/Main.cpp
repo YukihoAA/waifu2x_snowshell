@@ -4,7 +4,7 @@ HINSTANCE g_hInst;
 BOOL is64bit = FALSE;
 HWND hWnd;
 
-int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow) {
+int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nCmdShow) {
 	MSG msg;
 	LPWSTR lpszClass = L"SnowShell";
 
