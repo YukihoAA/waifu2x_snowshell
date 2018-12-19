@@ -5,6 +5,7 @@ ConvertOption::ConvertOption() {
 	CoreNum = 0;
 	DebugMode = 0;
 	NoLabel = false;
+	ForceCPU = false;
 	IsTTAEnabled = false;
 	ScaleRatio = L"1.0";
 	InputFilePath = L"";
@@ -16,6 +17,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->CoreNum = 0;
 	this->DebugMode = 0;
 	this->NoLabel = false;
+	this->ForceCPU = false;
 	this->IsTTAEnabled = ttaEnabled;
 	this->ScaleRatio = scaleRatio;
 	this->InputFilePath = inputFile;
@@ -36,6 +38,10 @@ void ConvertOption::setDebugMode(int DebugMode) {
 
 void ConvertOption::setNoLabel(bool noLabel) {
 	this->NoLabel = NoLabel;
+}
+
+void ConvertOption::setForceCPU(bool forceCPU) {
+	this->ForceCPU = forceCPU;
 }
 
 void ConvertOption::setTTAEnabled(bool ttaEnabled) {
@@ -69,6 +75,10 @@ int ConvertOption::getDebugMode() {
 
 bool ConvertOption::getNoLabel() {
 	return this->NoLabel;
+}
+
+bool ConvertOption::getForceCPU() {
+	return this->ForceCPU;
 }
 
 bool ConvertOption::getTTAEnabled() {

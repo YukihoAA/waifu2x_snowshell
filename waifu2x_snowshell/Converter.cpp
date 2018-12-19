@@ -170,6 +170,11 @@ bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
 		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
 	}
 
+	// force cpu
+	if (convertOption->getForceCPU()) {
+		ParamStream << L"-p cpu ";
+	}
+
 	ExportName = ExportNameStream.str();
 
 	// add extension

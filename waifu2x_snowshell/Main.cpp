@@ -375,6 +375,10 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			convertOption->setNoiseLevel(ConvertOption::CO_NOISE_HIGH);
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x86;
 	}
+	else if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCudaAvailable()) {
+		convertOption->setForceCPU(true);
+		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
+	}
 	else {
 		MessageBox(hWnd, STRING_TEXT_NOCONVERTER_MESSAGE.c_str(), STRING_TEXT_NOCONVERTER_TITLE.c_str(), MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
 		return FALSE;
@@ -399,7 +403,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 				std::wstring ScaleRatio = convertOption->getScaleRatio();
 				size_t last = ScaleRatio.find_last_of(L'.');
 				if (last != std::wstring::npos)
-					ScaleRatio[last]= L'_';
+					ScaleRatio[last] = L'_';
 
 				FolderNameStream << L"_scale_x" << ScaleRatio;
 			}

@@ -11,6 +11,7 @@ private:
 	int CoreNum;	// Enable Only in CPU
 	int DebugMode;	// 0:Disabled, 1:Snow Converting Log
 	bool NoLabel;
+	bool ForceCPU;
 	bool IsTTAEnabled;
 	std::wstring ScaleRatio;
 	std::wstring InputFilePath;
@@ -29,6 +30,7 @@ public:
 	void setCoreNum(int coreNum);
 	void setDebugMode(int debugMode);
 	void setNoLabel(bool noLabel);
+	void setForceCPU(bool forceCPU);
 	void setTTAEnabled(bool ttaEnabled);
 	void setScaleRatio(std::wstring scaleRatio);
 	void setInputFilePath(std::wstring inputFile);
@@ -38,6 +40,7 @@ public:
 	int getCoreNum();
 	int getDebugMode();
 	bool getNoLabel();
+	bool getForceCPU();
 	bool getTTAEnabled();
 	std::wstring getScaleRatio();
 	std::wstring getInputFilePath();
