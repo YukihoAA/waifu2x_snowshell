@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define SETTING_VER_MINIMUM 18
+#define SETTING_VER_MINIMUM 19
 
 extern int INT_SETTING_VER;
 
