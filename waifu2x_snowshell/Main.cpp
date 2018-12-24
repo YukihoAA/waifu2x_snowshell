@@ -378,10 +378,6 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			convertOption->setNoiseLevel(ConvertOption::CO_NOISE_MID);
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x86;
 	}
-	else if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCudaAvailable()) {
-		convertOption->setForceCPU(true);
-		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
-	}
 	else {
 		MessageBox(hWnd, STRING_TEXT_NOCONVERTER_MESSAGE.c_str(), STRING_TEXT_NOCONVERTER_TITLE.c_str(), MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
 		return FALSE;
