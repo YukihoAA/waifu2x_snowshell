@@ -158,6 +158,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			return TRUE;
 		case ID_MENU_NOISE_NONE:
 		case ID_MENU_NOISE_LOW:
+		case ID_MENU_NOISE_MID:
 		case ID_MENU_NOISE_HIGH:
 		case ID_MENU_NOISE_VERY_HIGH:
 			if (LOWORD(wParam) >= ID_MENU_NOISE_VERY_HIGH) {
@@ -327,7 +328,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	convertOption->setDebugMode(SnowSetting::getDebug());
 
 	convertOption->setInputFilePath(fileName);
-	convertOption->setNoiseLevel(SnowSetting::getNoise());
+	convertOption->setNoiseLevel(SnowSetting::getNoise()-1);
 	if (SnowSetting::getExport() && convertOption->getOutputFolderName() == L"") {
 		wstring inputPath = fileName;
 		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::OutputDirName);
@@ -373,6 +374,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable()) {
 		if (SnowSetting::getNoise() > NOISE_HIGH)
 			convertOption->setNoiseLevel(ConvertOption::CO_NOISE_HIGH);
+		else if(SnowSetting::getNoise() == NOISE_LOW)
+			convertOption->setNoiseLevel(ConvertOption::CO_NOISE_MID);
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x86;
 	}
 	else if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCudaAvailable()) {

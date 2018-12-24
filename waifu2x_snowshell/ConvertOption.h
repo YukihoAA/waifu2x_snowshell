@@ -18,8 +18,9 @@ private:
 	std::wstring OutputFolderName;
 
 public:
-	const static int	CO_NOISE_NONE = 0;
-	const static int	CO_NOISE_LOW = 1;
+	const static int	CO_NOISE_NONE = -1;
+	const static int	CO_NOISE_LOW = 0;
+	const static int	CO_NOISE_MID = 1;
 	const static int	CO_NOISE_HIGH = 2;
 	const static int	CO_NOISE_VERY_HIGH = 3;
 

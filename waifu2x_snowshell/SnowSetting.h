@@ -15,10 +15,11 @@ using namespace std;
 
 #define NOISE_NONE 0
 #define NOISE_LOW 1
-#define NOISE_HIGH 2
-#define NOISE_VERY_HIGH 3
+#define NOISE_MID 2
+#define NOISE_HIGH 3
+#define NOISE_VERY_HIGH 4
 
-#define NOISE_MAX 3
+#define NOISE_MAX 4
 
 
 #define SCALE_x1_0 0

@@ -17,6 +17,7 @@ wstring STRING_MENU_FILE_QUIT = L"종료";
 
 wstring STRING_MENU_NOISE_NONE = L"없음";
 wstring STRING_MENU_NOISE_LOW = L"낮음";
+wstring STRING_MENU_NOISE_MID = L"중간";
 wstring STRING_MENU_NOISE_HIGH = L"높음";
 wstring STRING_MENU_NOISE_VERY_HIGH = L"최대";
 
@@ -47,6 +48,7 @@ int INT_TEXT_TAB = 11;
 wstring STRING_TEXT_NOISE = L"노이즈 감소";
 wstring STRING_TEXT_NOISE_NONE = L"없음";
 wstring STRING_TEXT_NOISE_LOW = L"낮음";
+wstring STRING_TEXT_NOISE_MID = L"중간";
 wstring STRING_TEXT_NOISE_HIGH = L"높음";
 wstring STRING_TEXT_NOISE_VERY_HIGH = L"최대";
 

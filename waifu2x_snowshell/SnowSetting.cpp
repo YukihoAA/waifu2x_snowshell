@@ -233,6 +233,10 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Low", buf, 200, LangFileName.c_str());
 	STRING_MENU_NOISE_LOW = buf;
 
+	Key = L"STRING_MENU_NOISE_MID";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Medium", buf, 200, LangFileName.c_str());
+	STRING_MENU_NOISE_MID = buf;
+
 	Key = L"STRING_MENU_NOISE_HIGH";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"High", buf, 200, LangFileName.c_str());
 	STRING_MENU_NOISE_HIGH = buf;
@@ -334,6 +338,10 @@ void SnowSetting::loadLocale()
 	Key = L"STRING_TEXT_NOISE_LOW";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Low", buf, 200, LangFileName.c_str());
 	STRING_TEXT_NOISE_LOW = buf;
+
+	Key = L"STRING_TEXT_NOISE_MID";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Medium", buf, 200, LangFileName.c_str());
+	STRING_TEXT_NOISE_MID = buf;
 
 	Key = L"STRING_TEXT_NOISE_HIGH";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"High", buf, 200, LangFileName.c_str());
@@ -647,6 +655,7 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 
 	ModifyMenu(hMenu, ID_MENU_NOISE_NONE, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_NONE, STRING_MENU_NOISE_NONE.c_str());
 	ModifyMenu(hMenu, ID_MENU_NOISE_LOW, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_LOW, STRING_MENU_NOISE_LOW.c_str());
+	ModifyMenu(hMenu, ID_MENU_NOISE_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_MID, STRING_MENU_NOISE_MID.c_str());
 	ModifyMenu(hMenu, ID_MENU_NOISE_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_HIGH, STRING_MENU_NOISE_HIGH.c_str());
 	ModifyMenu(hMenu, ID_MENU_NOISE_VERY_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_VERY_HIGH, STRING_MENU_NOISE_VERY_HIGH.c_str());
 
@@ -951,6 +960,8 @@ wstring * SnowSetting::getNoiseText()
 		return &STRING_TEXT_NOISE_NONE;
 	case NOISE_LOW:
 		return &STRING_TEXT_NOISE_LOW;
+	case NOISE_MID:
+		return &STRING_TEXT_NOISE_MID;
 	case NOISE_HIGH:
 		return &STRING_TEXT_NOISE_HIGH;
 	case NOISE_VERY_HIGH:
