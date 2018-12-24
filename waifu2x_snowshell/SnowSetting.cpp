@@ -31,7 +31,7 @@ SnowSetting::SnowSetting()
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 
-	Noise = NOISE_LOW;
+	Noise = NOISE_MID;
 	Scale = SCALE_x1_6;
 	CPU = CPU_FULL;
 	Export = 0;
@@ -511,19 +511,19 @@ bool SnowSetting::loadSetting()
 	wstring Key, Value;
 
 	Key = L"Noise";
-	setNoise(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 1, INIPath.c_str()));
+	setNoise(GetPrivateProfileInt(Section.c_str(), Key.c_str(), NOISE_MID, INIPath.c_str()));
 
 	Key = L"Scale";
-	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 2, INIPath.c_str()));
+	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), SCALE_x1_6, INIPath.c_str()));
 
 	Key = L"CPU";
-	setCPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 2, INIPath.c_str()));
+	setCPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), CPU_FULL, INIPath.c_str()));
 
 	Key = L"Export";
-	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), EXPORT_SAME, INIPath.c_str()));
 
 	Key = L"Confirm";
-	setConfirm(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+	setConfirm(GetPrivateProfileInt(Section.c_str(), Key.c_str(), CONFIRM_SHOW, INIPath.c_str()));
 
 	Key = L"Lang";
 	int langsel = GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str());
