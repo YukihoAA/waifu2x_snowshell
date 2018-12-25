@@ -11,7 +11,7 @@ To change your conversion setting, select option at menubar. <br/>
 
 ## To Use waifu2x-chaffe (NVIDIA GPU Only)
 > 1. Install latest [NVIDIA Graphics Driver](https://www.nvidia.co.kr/Download/index.aspx). <br/>
-> 2. Put latest [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder <br/>
+> 2. Put [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder <br/>
 > 3. Set GPU to Caffe or Caffe(TTA). <br/>
 > 4-1. TTA convert mode is slower but higher quality conversion. <br/>
 > 4. Snowshell will start conversion using waifu2x-caffe. (with TTA option) <br/>
