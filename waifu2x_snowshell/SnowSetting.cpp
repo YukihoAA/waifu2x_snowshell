@@ -164,7 +164,7 @@ void SnowSetting::loadLocale()
 		}
 	}
 
-	Section = L"SnowShell";
+	Section = L"Snowshell";
 
 	Key = L"INT_SETTING_VER";
 	INT_SETTING_VER = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), 0, LangFileName.c_str());
@@ -507,7 +507,7 @@ bool SnowSetting::loadSetting()
 		Init();
 
 	WCHAR buf[MAX_PATH];
-	wstring Section = L"SnowShell";
+	wstring Section = L"Snowshell";
 	wstring Key, Value;
 
 	Key = L"Noise";
@@ -586,7 +586,7 @@ bool SnowSetting::saveSetting()
 	if (Singletone == nullptr)
 		Init();
 
-	wstring Section = L"SnowShell";
+	wstring Section = L"Snowshell";
 	wstring Key, Value;
 
 	Key = L"Noise";
