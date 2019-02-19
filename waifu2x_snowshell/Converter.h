@@ -18,6 +18,7 @@ extern BOOL IsDirectory(LPCWSTR path);
 class Converter {
 private:
 	bool Available;
+	bool Enabled;
 	bool IsCPU;
 	bool Is64bitOnly;
 	bool IsCudaOnly;
@@ -42,6 +43,7 @@ public:
 	bool checkAvailable();
 	void setCPU(bool isCPU);
 	void setAvailable(bool available);
+	void setEnabled(bool enabled);
 	void setExePath(std::wstring exePath);
 	void setWorkingDir(std::wstring workingDir);
 	void setModelDir(std::wstring modelDir);
@@ -49,6 +51,7 @@ public:
 	bool getCPU();
 	bool getTTA();
 	bool getAvailable();
+	bool getEnabled();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();
 	std::wstring getModelDir();

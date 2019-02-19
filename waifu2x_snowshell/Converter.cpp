@@ -2,6 +2,7 @@
 
 Converter::Converter() {
 	this->Available = false;
+	this->Enabled = true;
 	this->ExePath = L"";
 	this->WorkingDir = L"";
 	this->ModelDir = L"";
@@ -16,6 +17,7 @@ Converter::Converter() {
 }
 
 Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bool tta) {
+	this->Enabled = true;
 	if (exePath.empty())
 		this->Available = false;
 	else {
@@ -63,6 +65,10 @@ void Converter::setAvailable(bool available) {
 	this->Available = available;
 }
 
+void Converter::setEnabled(bool enabled) {
+	this->Enabled = enabled;
+}
+
 void Converter::setExePath(std::wstring exePath) {
 	if (exePath.empty())
 		this->Available = false;
@@ -91,6 +97,10 @@ bool Converter::getTTA() {
 
 bool Converter::getAvailable() {
 	return this->Available;
+}
+
+bool Converter::getEnabled() {
+	return this->Enabled;
 }
 
 std::wstring Converter::getExePath() {

@@ -554,6 +554,27 @@ bool SnowSetting::loadSetting()
 	OutputDirName = buf;
 
 
+	Section = L"Converter";
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"true", buf, MAX_PATH, INIPath.c_str());
+	if (wcscmp(buf, L"true")) {
+		CONVERTER_CAFFE.setAvailable(false);
+		CONVERTER_CAFFE.setEnabled(false);
+	}
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x64", L"true", buf, MAX_PATH, INIPath.c_str());
+	if (wcscmp(buf, L"true")) {
+		CONVERTER_CPP_x64.setAvailable(false);
+		CONVERTER_CPP_x64.setEnabled(false);
+	}
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"true", buf, MAX_PATH, INIPath.c_str());
+	if (wcscmp(buf, L"true")) {
+		CONVERTER_CPP_x86.setAvailable(false);
+		CONVERTER_CPP_x86.setEnabled(false);
+	}
+
+
 	Section = L"Model";
 
 	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"", buf, MAX_PATH, INIPath.c_str());
@@ -578,6 +599,7 @@ bool SnowSetting::loadSetting()
 	CONVERTER_CPP_x86.setOptionString(buf);
 
 
+	IsCudaAvailable = checkCuda();
 	return true;
 }
 
@@ -615,6 +637,24 @@ bool SnowSetting::saveSetting()
 
 	Key = L"OutputDirName";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), OutputDirName.c_str(), INIPath.c_str());
+
+
+	Section = L"Converter";
+
+	if(CONVERTER_CAFFE.getEnabled())
+		WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", L"true", INIPath.c_str());
+	else
+		WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", L"false", INIPath.c_str());
+
+	if (CONVERTER_CPP_x64.getEnabled())
+		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", L"true", INIPath.c_str());
+	else
+		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", L"false", INIPath.c_str());
+
+	if (CONVERTER_CPP_x86.getEnabled())
+		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", L"true", INIPath.c_str());
+	else
+		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", L"false", INIPath.c_str());
 
 
 	Section = L"Model";
