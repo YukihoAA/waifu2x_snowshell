@@ -598,8 +598,8 @@ bool SnowSetting::loadSetting()
 	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CPP_x86.setOptionString(buf);
 
-
 	IsCudaAvailable = checkCuda();
+
 	return true;
 }
 

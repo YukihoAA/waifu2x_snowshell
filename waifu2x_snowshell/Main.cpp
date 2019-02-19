@@ -27,7 +27,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	// OpenCV 3.1 and later version does not supports x86 system.
 	IsWow64Process(GetCurrentProcess(), &is64bit);
 
-	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v1.8.3", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v1.8.4", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -369,7 +369,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	// Set Converter
 	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() != CPU_MID && SnowSetting::getCudaAvailable()) {
 		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
-		if (!(SnowSetting::CONVERTER_CPP_x64.getAvailable() || SnowSetting::CONVERTER_CPP_x86.getAvailable()))
+		if (!SnowSetting::CONVERTER_CPP_x64.getAvailable())
 			convertOption->setForceCPU(true);
 	}
 	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable()) {
