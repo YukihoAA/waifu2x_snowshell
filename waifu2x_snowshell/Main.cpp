@@ -385,7 +385,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 
 	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {
 		convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
-		convertOption->setForceCPU(SnowSetting::getCPU() == CPU_MID);
+		convertOption->setForceCPU(SnowSetting::getCPU() == CPU_MID || !SnowSetting::getCudaAvailable());
 	}
 
 	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)

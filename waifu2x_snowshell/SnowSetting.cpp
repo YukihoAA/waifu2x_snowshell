@@ -109,7 +109,7 @@ bool SnowSetting::checkCuda() {
 		if (st.find("CUDA") != string::npos)
 			cuda = true;
 
-		if (st.find("FMA") != string::npos)
+		if (st.find("FMA") != string::npos || st.find("AVX") != string::npos)
 			IsCPU = true;
 
 		CloseHandle(hRead);
@@ -692,17 +692,12 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_CUSTOM, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_CUSTOM, STRING_MENU_SCALE_CUSTOM.c_str());
 
-	if (SnowSetting::getIsCPU()) { // FOR CPU
-		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
-	}
-	else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {	// CUDA OPTION
+	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {	// Caffe Converter
 		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_GPU_OPENCL.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_GPU_CUDA.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_GPU_TTA.c_str());
 	}
-	else { // OPENCL
+	else { // waifu2x-converter-cpp Converter
 		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
