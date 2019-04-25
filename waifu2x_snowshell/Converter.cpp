@@ -316,18 +316,18 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	else if (convertOption->getScaleRatio() == L"1.0")
 		ParamStream << L"-m noise ";
 	else
-		ParamStream << L"-m noise_scale ";
+		ParamStream << L"-m noise-scale ";
 
 	// set noise_level
 	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
-		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
+		ParamStream << L"--noise-level " << convertOption->getNoiseLevel() << L" ";
 		if (!noLabel)
 			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
 	}
 
 	// set scale_ratio
 	if (convertOption->getScaleRatio() != L"1.0") {
-		ParamStream << L"--scale_ratio ";
+		ParamStream << L"--scale-ratio ";
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
 		std::wstring ScaleRatio = convertOption->getScaleRatio();
@@ -338,22 +338,9 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 			ExportNameStream << L"_scale_x" << ScaleRatio;
 	}
 
-	// set tta mode
-	if (convertOption->getTTAEnabled())
-	{
-		ParamStream << L"--tta 1 ";
-		if (!noLabel)
-			ExportNameStream << L"_tta_1";
-	}
-
 	// set core num
 	if (convertOption->getCoreNum() > 0) {
 		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
-	}
-
-	// force cpu
-	if (convertOption->getForceCPU()) {
-		ParamStream << L"-p cpu ";
 	}
 
 	ExportName = ExportNameStream.str();
@@ -370,7 +357,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 
 	// set model directory
 	if (this->ModelDir != L"")
-		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
+		ParamStream << L"--model-dir \"" << this->ModelDir << L"\" ";
 
 	// set output name
 	ParamStream << L"-o \"" << ExportName << L"\"";
