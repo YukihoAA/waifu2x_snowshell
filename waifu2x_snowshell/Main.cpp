@@ -1,13 +1,13 @@
 ﻿#include "Main.h"
 
 HINSTANCE g_hInst;
-BOOL is64bit = FALSE;
 HWND hWnd;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nCmdShow) {
 	int argc = 0;
 	LPWSTR *argv = CommandLineToArgvW(lpCmdLine, &argc);
 	MSG msg;
+	BOOL bIsWow64 = FALSE;
 	LPWSTR lpszClass = L"Snowshell";
 	ConvertOption convertOption;
 
@@ -28,7 +28,10 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	g_hInst = hInstance;
 
 	// OpenCV 3.1 and later version does not supports x86 system.
-	IsWow64Process(GetCurrentProcess(), &is64bit);
+	IsWow64Process(GetCurrentProcess(), &bIsWow64);
+
+	if (!bIsWow64)
+		MessageBox(NULL, L"This program only works on 64bit system", L"Error", MB_OK | MB_ICONERROR);
 
 	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v1.8.4", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 

@@ -14,7 +14,6 @@ using namespace std;
 #define MAX_PATH SHRT_MAX
 
 extern HINSTANCE g_hInst;
-extern BOOL is64bit;
 
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel = false);
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
