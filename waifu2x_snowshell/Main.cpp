@@ -204,7 +204,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_CPU_HIGH:
 		case ID_MENU_CPU_FULL:
 			SnowSetting::checkCPU(hMenu, LOWORD(wParam) - ID_MENU_CPU_MID);
-			if (!SnowSetting::getCudaAvailable() || !SnowSetting::CONVERTER_CAFFE.getAvailable())
+			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)
 				UIText[2] = SnowSetting::getCPUText();
 			else
 				UIText[2] = SnowSetting::getGPUText();
