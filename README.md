@@ -12,6 +12,7 @@ To change your conversion setting, select option at menubar. <br/>
 ## To Use waifu2x-caffe (NVIDIA GPU Only)
 > 1. Install latest [NVIDIA Graphics Driver](https://www.nvidia.co.kr/Download/index.aspx).
 > 2. Put [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder.
+> 2-1. If you want latest release of waifu2x-caffe, you need to download [cudnn64_7.dll](https://developer.nvidia.com/cudnn) first. check readme page of waifu2x-caffe.
 > 3. Select Converter to waifu2x-caffe.
 > 4. Set conversion mode on GPU(CPU) menu.
 > 4-1. TTA convert mode is slower but higher quality conversion.
