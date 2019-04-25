@@ -5,8 +5,11 @@ BOOL is64bit = FALSE;
 HWND hWnd;
 
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nCmdShow) {
+	int argc = 0;
+	LPWSTR *argv = CommandLineToArgvW(lpCmdLine, &argc);
 	MSG msg;
 	LPWSTR lpszClass = L"Snowshell";
+	ConvertOption convertOption;
 
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -30,6 +33,12 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v1.8.4", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
+
+	if (wcscmp(lpCmdLine, L"")) {
+		for (int i = 0; i < argc; i++) {
+			Execute(hWnd, &convertOption, argv[i]);
+		}
+	}
 
 	while (GetMessage(&msg, NULL, 0, 0)) {
 		TranslateMessage(&msg);
