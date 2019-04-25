@@ -48,7 +48,7 @@ public:
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();
 
-	virtual bool execute(ConvertOption *convertOption, bool noLabel = false);
+	virtual bool execute(ConvertOption *convertOption, bool noLabel = false)=0;
 };
 
 
