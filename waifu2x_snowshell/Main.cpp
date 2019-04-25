@@ -70,6 +70,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	switch (uMsg) {
 	case WM_CREATE:
 		SnowSetting::Init();
+
+		// Check Converter
+		if (SnowSetting::CurrentConverter == nullptr) {
+			MessageBox(hWnd, STRING_TEXT_NOCONVERTER_MESSAGE.c_str(), STRING_TEXT_NOCONVERTER_TITLE.c_str(), MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
+			SendMessage(hWnd, WM_DESTROY, NULL, NULL);
+			return TRUE;
+		}
+
 		SnowSetting::getTexts(&UITitleText, &UIText);
 		hMenu = LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
 		hFont = CreateFont(35, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, OUT_OUTLINE_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_MODERN, L"Malgun Gothic");
@@ -85,7 +93,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		else
 			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 		DragAcceptFiles(hWnd, TRUE);
-
 		return TRUE;
 	case WM_INITMENU:
 		SnowSetting::checkMenuAll(hMenu);
@@ -240,6 +247,19 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			else
 				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 			InvalidateRect(hWnd, NULL, TRUE);
+			return TRUE;
+		case ID_MENU_CONVERTER_CPP:
+		case ID_MENU_CONVERTER_CAFFE:
+			//TODO: set Action
+			SnowSetting::checkConverterNum(hMenu, LOWORD(wParam) - ID_MENU_CONVERTER_CPP);
+			SnowSetting::getTexts(&UITitleText, &UIText);
+			SetMenu(hWnd, NULL);
+			DestroyMenu(hMenu);
+			hMenu = LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
+			SnowSetting::loadMenuString(hMenu);
+			SetMenu(hWnd, hMenu);
+			InvalidateRect(hWnd, NULL, TRUE);
+			return TRUE;
 		}
 		return FALSE;
 	case WM_PAINT:
@@ -340,7 +360,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	convertOption->setDebugMode(SnowSetting::getDebug());
 
 	convertOption->setInputFilePath(fileName);
-	convertOption->setNoiseLevel(SnowSetting::getNoise()-1);
+	convertOption->setNoiseLevel(SnowSetting::getNoise() - 1);
 	if (SnowSetting::getExport() && convertOption->getOutputFolderName() == L"") {
 		wstring inputPath = fileName;
 		convertOption->setOutputFolderName(inputPath.substr(0, inputPath.find_last_of(L"\\")) + L"\\" + SnowSetting::OutputDirName);
@@ -363,9 +383,12 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		break;
 	}
 
-	convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
+	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {
+		convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
+		convertOption->setForceCPU(SnowSetting::getCPU() == CPU_MID);
+	}
 
-	if (!SnowSetting::getCudaAvailable() || !SnowSetting::CONVERTER_CAFFE.getAvailable())
+	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)
 		switch (SnowSetting::getCPU()) {
 		case CPU_FULL:
 			convertOption->setCoreNum(SnowSetting::getCoreNum());
@@ -377,27 +400,6 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			convertOption->setCoreNum(SnowSetting::getCoreNum() / 2 > 0 ? SnowSetting::getCoreNum() / 2 : 1);
 			break;
 		}
-
-	// Set Converter
-	if (SnowSetting::CONVERTER_CAFFE.getAvailable() && SnowSetting::getCPU() != CPU_MID && SnowSetting::getCudaAvailable()) {
-		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CAFFE;
-		if (!SnowSetting::CONVERTER_CPP_x64.getAvailable())
-			convertOption->setForceCPU(true);
-	}
-	else if (SnowSetting::CONVERTER_CPP_x64.getAvailable()) {
-		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x64;
-	}
-	else if (SnowSetting::CONVERTER_CPP_x86.getAvailable()) {
-		if (SnowSetting::getNoise() > NOISE_HIGH)
-			convertOption->setNoiseLevel(ConvertOption::CO_NOISE_HIGH);
-		else if(SnowSetting::getNoise() == NOISE_LOW)
-			convertOption->setNoiseLevel(ConvertOption::CO_NOISE_MID);
-		SnowSetting::CurrentConverter = &SnowSetting::CONVERTER_CPP_x86;
-	}
-	else {
-		MessageBox(hWnd, STRING_TEXT_NOCONVERTER_MESSAGE.c_str(), STRING_TEXT_NOCONVERTER_TITLE.c_str(), MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
-		return FALSE;
-	}
 
 	DWORD FileAttribute = GetFileAttributes(fileName);
 
@@ -424,7 +426,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 			}
 
 			// set tta
-			if (SnowSetting::CurrentConverter->getTTA() && convertOption->getTTAEnabled())
+			if (convertOption->getTTAEnabled())
 				FolderNameStream << L"_tta_1";
 		}
 		convertOption->setOutputFolderName(FolderNameStream.str());

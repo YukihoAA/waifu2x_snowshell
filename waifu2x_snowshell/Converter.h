@@ -16,13 +16,8 @@ extern BOOL FileExists(LPCWSTR file);
 extern BOOL IsDirectory(LPCWSTR path);
 
 class Converter {
-private:
+protected:
 	bool Available;
-	bool Enabled;
-	bool IsCPU;
-	bool Is64bitOnly;
-	bool IsCudaOnly;
-	bool TTA;
 	std::wstring ExePath;
 	std::wstring WorkingDir;
 	std::wstring ModelDir;
@@ -31,33 +26,42 @@ private:
 	HANDLE hConvertProcess;
 	HWND hProgressDlg;
 
-protected:
 	std::queue<ConvertOption> ConvertQueue;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
 	static INT_PTR CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 public:
 	Converter();
-	Converter(std::wstring exePath, bool is64bitOnly = true, bool isCudaOnly = false, bool tta = false);
+	Converter(std::wstring exePath);
 	~Converter();
 	bool checkAvailable();
-	void setCPU(bool isCPU);
 	void setAvailable(bool available);
-	void setEnabled(bool enabled);
 	void setExePath(std::wstring exePath);
 	void setWorkingDir(std::wstring workingDir);
 	void setModelDir(std::wstring modelDir);
 	void setOptionString(std::wstring optionString);
-	bool getCPU();
-	bool getTTA();
 	bool getAvailable();
-	bool getEnabled();
 	std::wstring getExePath();
 	std::wstring getWorkingDir();
 	std::wstring getModelDir();
 	std::wstring getOptionString();
-	bool execute(ConvertOption *convertOption, bool noLabel = false);
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();
 
+	virtual bool execute(ConvertOption *convertOption, bool noLabel = false);
+};
+
+
+class Converter_Cpp : public Converter{
+public:
+	Converter_Cpp() : Converter() {};
+	Converter_Cpp(std::wstring exePath) : Converter(exePath) {};
+	virtual bool execute(ConvertOption *convertOption, bool noLabel = false) override;
+};
+
+class Converter_Caffe : public Converter {
+public:
+	Converter_Caffe() : Converter() {};
+	Converter_Caffe(std::wstring exePath) : Converter(exePath) {};
+	virtual bool execute(ConvertOption *convertOption, bool noLabel = false) override;
 };

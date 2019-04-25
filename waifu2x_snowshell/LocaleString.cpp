@@ -66,9 +66,9 @@ wstring STRING_TEXT_CPU_HIGH = L"많음";
 wstring STRING_TEXT_CPU_FULL = L"최대";
 
 wstring STRING_TEXT_GPU = L"변환방식";
-wstring STRING_TEXT_GPU_OPENCL = L"OpenCL";
+wstring STRING_TEXT_GPU_OPENCL = L"CPU";
 wstring STRING_TEXT_GPU_CUDA = L"CUDA";
-wstring STRING_TEXT_GPU_TTA = L"CUDA (TTA 활성화)";
+wstring STRING_TEXT_GPU_TTA = L"CUDA (TTA)";
 
 wstring STRING_TEXT_EXPORT = L"출력 폴더";
 wstring STRING_TEXT_EXPORT_SAME = L"같은 폴더";

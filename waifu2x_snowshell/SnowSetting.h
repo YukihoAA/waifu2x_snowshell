@@ -49,6 +49,13 @@ using namespace std;
 
 #define CONFIRM_MAX 1
 
+
+#define CONVERTER_NUM_CPP 0
+#define CONVERTER_NUM_CAFFE 1
+
+#define CONVERTER_NUM_MAX 1
+
+
 #undef MAX_PATH
 #define MAX_PATH SHRT_MAX
 
@@ -71,6 +78,7 @@ private:
 	int Confirm;
 	int Lang;
 	int Debug;
+	int ConverterNum;
 	std::wstring ScaleRatio;
 
 protected:
@@ -82,9 +90,8 @@ public:
 	static std::wstring OutputDirName;
 	static std::wstring CurrPath;
 
-	static Converter CONVERTER_CPP_x86;
-	static Converter CONVERTER_CPP_x64;
-	static Converter CONVERTER_CAFFE;
+	static Converter_Cpp CONVERTER_CPP;
+	static Converter_Caffe CONVERTER_CAFFE;
 	static Converter* CurrentConverter;
 
 	static SnowSetting *Init();
@@ -102,6 +109,7 @@ public:
 	static int getExport();
 	static BOOL getConfirm();
 	static BOOL getDebug();
+	static int getConverterNum();
 	static int getLang();
 	static std::wstring getLangName();
 	static std::wstring getScaleRatio();
@@ -113,6 +121,7 @@ public:
 	static void setConfirm(BOOL Confirm);
 	static void setLang(int Lang);
 	static void setDebug(BOOL Debug);
+	static void setConverterNum(int ConverterNum);
 	static void setScaleRatio(std::wstring scaleRatio);
 
 	static void checkMenuAll(HMENU hMenu);
@@ -123,6 +132,7 @@ public:
 	static void checkConfirm(HMENU hMenu, int sel = -1);
 	static void checkLang(HMENU hMenu, int sel = -1);
 	static void checkDebug(HMENU hMenu, int sel = -1);
+	static void checkConverterNum(HMENU hMenu, int sel = -1);
 
 	static void getTexts(std::wstring*(*UITitleText)[5], std::wstring*(*UIText)[5]);
 	static std::wstring* getNoiseText();

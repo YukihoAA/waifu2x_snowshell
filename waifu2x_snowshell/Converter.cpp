@@ -2,22 +2,16 @@
 
 Converter::Converter() {
 	this->Available = false;
-	this->Enabled = true;
 	this->ExePath = L"";
 	this->WorkingDir = L"";
 	this->ModelDir = L"";
 	this->CustomOption = L"";
-	this->Is64bitOnly = true;
-	this->IsCudaOnly = false;
-	this->TTA = false;
-	this->IsCPU = false;
 	this->hConvertThread = nullptr;
 	this->hConvertProcess = nullptr;
 	this->hProgressDlg = nullptr;
 }
 
-Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bool tta) {
-	this->Enabled = true;
+Converter::Converter(std::wstring exePath) {
 	if (exePath.empty())
 		this->Available = false;
 	else {
@@ -25,14 +19,10 @@ Converter::Converter(std::wstring exePath, bool is64bitOnly, bool isCudaOnly, bo
 		this->WorkingDir = exePath.substr(0, exePath.find_last_of('\\'));
 		this->ModelDir = L"";
 		this->CustomOption = L"";
-		this->Is64bitOnly = is64bitOnly;
-		this->IsCudaOnly = isCudaOnly;
-		this->TTA = tta;
-		this->IsCPU = false;
 		this->hConvertThread = nullptr;
 		this->hConvertProcess = nullptr;
 		this->hProgressDlg = nullptr;
-		checkAvailable();
+		this->checkAvailable();
 	}
 }
 
@@ -48,25 +38,12 @@ Converter::~Converter() {
 }
 
 bool Converter::checkAvailable() {
-	this->Available = FileExists(ExePath.c_str());
-	if (Is64bitOnly) {
-		BOOL bIsWow64 = FALSE;
-		IsWow64Process(GetCurrentProcess(), &bIsWow64);
-		this->Available &= (bool)bIsWow64;
-	}
+	this->Available = FileExists(this->ExePath.c_str());
 	return this->Available;
-}
-
-void Converter::setCPU(bool isCPU) {
-	this->IsCPU = isCPU;
 }
 
 void Converter::setAvailable(bool available) {
 	this->Available = available;
-}
-
-void Converter::setEnabled(bool enabled) {
-	this->Enabled = enabled;
 }
 
 void Converter::setExePath(std::wstring exePath) {
@@ -87,20 +64,8 @@ void Converter::setOptionString(std::wstring optionString) {
 	this->CustomOption = optionString;
 }
 
-bool Converter::getCPU() {
-	return this->IsCPU;
-}
-
-bool Converter::getTTA() {
-	return this->TTA;
-}
-
 bool Converter::getAvailable() {
 	return this->Available;
-}
-
-bool Converter::getEnabled() {
-	return this->Enabled;
 }
 
 std::wstring Converter::getExePath() {
@@ -117,127 +82,6 @@ std::wstring Converter::getModelDir() {
 
 std::wstring Converter::getOptionString() {
 	return this->CustomOption;
-}
-
-bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
-	size_t last;
-	std::wstring ExportName;
-	std::wstring InputName = convertOption->getInputFilePath();
-	std::wstringstream ExportNameStream;
-	std::wstringstream ParamStream;
-
-	last = InputName.find_last_of(L'\\');
-	if (last == std::wstring::npos)
-		return false;
-
-	ParamStream << L"-i \"" << InputName << L"\" ";
-
-	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_waifu2x";
-
-	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
-	if (this->CustomOption != L"")
-		ParamStream << this->CustomOption << L" ";
-
-	// set convert mode
-	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
-		ParamStream << L"-m scale ";
-	}
-	else if (convertOption->getScaleRatio() == L"1.0")
-		ParamStream << L"-m noise ";
-	else
-		ParamStream << L"-m noise_scale ";
-
-	// set noise_level
-	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
-		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
-		if (!noLabel)
-			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
-	}
-
-	// set scale_ratio
-	if (convertOption->getScaleRatio() != L"1.0") {
-		ParamStream << L"--scale_ratio ";
-		ParamStream << convertOption->getScaleRatio() << L" ";
-
-		std::wstring ScaleRatio = convertOption->getScaleRatio();
-		size_t last = ScaleRatio.find_last_of(L'.');
-		if (last != std::wstring::npos)
-			ScaleRatio[last] = L'_';
-		if (!noLabel)
-			ExportNameStream << L"_scale_x" << ScaleRatio;
-	}
-
-	// set tta mode
-	if (convertOption->getTTAEnabled() && this->TTA)
-	{
-		ParamStream << L"--tta 1 ";
-		if (!noLabel)
-			ExportNameStream << L"_tta_1";
-	}
-
-	// set core num
-	if (!this->IsCudaOnly && convertOption->getCoreNum() > 0) {
-		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
-	}
-
-	// force cpu
-	if (convertOption->getForceCPU()) {
-		ParamStream << L"-p cpu ";
-	}
-
-	ExportName = ExportNameStream.str();
-
-	// add extension
-	if (!IsDirectory(InputName.c_str()))
-		ExportName += L".png";
-
-	// create folder for folder conversion
-	if (convertOption->getOutputFolderName() != L"") {
-		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
-	}
-
-	// set model directory
-	if (this->ModelDir != L"")
-		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
-
-	// set output name
-	ParamStream << L"-o \"" << ExportName << L"\"";
-
-	// Execute
-	SHELLEXECUTEINFO shellExecuteInfo;
-	WCHAR param[MAX_PATH] = L"";
-	WCHAR lpDir[MAX_PATH] = L"";
-	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, ParamStream.str().c_str());
-	lstrcpyW(lpDir, WorkingDir.c_str());
-	lstrcpyW(lpFile, ExePath.c_str());
-
-	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
-	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	if(convertOption->getDebugMode() == 0)
-		shellExecuteInfo.nShow = SW_HIDE;
-	else
-		shellExecuteInfo.nShow = SW_SHOW;
-	shellExecuteInfo.lpVerb = L"open";
-	shellExecuteInfo.lpParameters = param;
-	shellExecuteInfo.hwnd = NULL;
-	shellExecuteInfo.lpDirectory = lpDir;
-	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-	shellExecuteInfo.lpFile = lpFile;
-
-	if (!ShellExecuteExW(&shellExecuteInfo))
-		return false;
-	else {
-		hConvertProcess = shellExecuteInfo.hProcess;
-		if (hConvertProcess != nullptr)
-			WaitForSingleObject(hConvertProcess, INFINITE);
-		if (hConvertProcess != nullptr)
-			TerminateProcess(hConvertProcess, 1);
-		hConvertProcess = nullptr;
-		CloseHandle(shellExecuteInfo.hProcess);
-	}
-	return true;
 }
 
 extern HINSTANCE g_hInst;
@@ -322,4 +166,369 @@ INT_PTR CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 		return TRUE;
 	}
 	return FALSE;
+}
+
+bool Converter::execute(ConvertOption *convertOption, bool noLabel) {
+	size_t last;
+	std::wstring ExportName;
+	std::wstring InputName = convertOption->getInputFilePath();
+	std::wstringstream ExportNameStream;
+	std::wstringstream ParamStream;
+
+	last = InputName.find_last_of(L'\\');
+	if (last == std::wstring::npos)
+		return false;
+
+	ParamStream << L"-i \"" << InputName << L"\" ";
+
+	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_waifu2x";
+
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
+
+	// set convert mode
+	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"-m scale ";
+	}
+	else if (convertOption->getScaleRatio() == L"1.0")
+		ParamStream << L"-m noise ";
+	else
+		ParamStream << L"-m noise_scale ";
+
+	// set noise_level
+	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
+		if (!noLabel)
+			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
+	}
+
+	// set scale_ratio
+	if (convertOption->getScaleRatio() != L"1.0") {
+		ParamStream << L"--scale_ratio ";
+		ParamStream << convertOption->getScaleRatio() << L" ";
+
+		std::wstring ScaleRatio = convertOption->getScaleRatio();
+		size_t last = ScaleRatio.find_last_of(L'.');
+		if (last != std::wstring::npos)
+			ScaleRatio[last] = L'_';
+		if (!noLabel)
+			ExportNameStream << L"_scale_x" << ScaleRatio;
+	}
+
+	// set tta mode
+	if (convertOption->getTTAEnabled())
+	{
+		ParamStream << L"--tta 1 ";
+		if (!noLabel)
+			ExportNameStream << L"_tta_1";
+	}
+
+	// set core num
+	if (convertOption->getCoreNum() > 0) {
+		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
+	}
+
+	// force cpu
+	if (convertOption->getForceCPU()) {
+		ParamStream << L"-p cpu ";
+	}
+
+	ExportName = ExportNameStream.str();
+
+	// add extension
+	if (!IsDirectory(InputName.c_str()))
+		ExportName += L".png";
+
+	// create folder for folder conversion
+	if (convertOption->getOutputFolderName() != L"") {
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+	}
+
+	// set model directory
+	if (this->ModelDir != L"")
+		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
+
+	// set output name
+	ParamStream << L"-o \"" << ExportName << L"\"";
+
+	// Execute
+	SHELLEXECUTEINFO shellExecuteInfo;
+	WCHAR param[MAX_PATH] = L"";
+	WCHAR lpDir[MAX_PATH] = L"";
+	WCHAR lpFile[MAX_PATH] = L"";
+	lstrcpyW(param, ParamStream.str().c_str());
+	lstrcpyW(lpDir, WorkingDir.c_str());
+	lstrcpyW(lpFile, ExePath.c_str());
+
+	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	if (convertOption->getDebugMode() == 0)
+		shellExecuteInfo.nShow = SW_HIDE;
+	else
+		shellExecuteInfo.nShow = SW_SHOW;
+	shellExecuteInfo.lpVerb = L"open";
+	shellExecuteInfo.lpParameters = param;
+	shellExecuteInfo.hwnd = NULL;
+	shellExecuteInfo.lpDirectory = lpDir;
+	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.lpFile = lpFile;
+
+	if (!ShellExecuteExW(&shellExecuteInfo))
+		return false;
+	else {
+		hConvertProcess = shellExecuteInfo.hProcess;
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if (hConvertProcess != nullptr)
+			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = nullptr;
+		CloseHandle(shellExecuteInfo.hProcess);
+	}
+	return true;
+}
+
+
+bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
+	size_t last;
+	std::wstring ExportName;
+	std::wstring InputName = convertOption->getInputFilePath();
+	std::wstringstream ExportNameStream;
+	std::wstringstream ParamStream;
+
+	last = InputName.find_last_of(L'\\');
+	if (last == std::wstring::npos)
+		return false;
+
+	ParamStream << L"-i \"" << InputName << L"\" ";
+
+	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_waifu2x";
+
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
+
+	// set convert mode
+	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"-m scale ";
+	}
+	else if (convertOption->getScaleRatio() == L"1.0")
+		ParamStream << L"-m noise ";
+	else
+		ParamStream << L"-m noise_scale ";
+
+	// set noise_level
+	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
+		if (!noLabel)
+			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
+	}
+
+	// set scale_ratio
+	if (convertOption->getScaleRatio() != L"1.0") {
+		ParamStream << L"--scale_ratio ";
+		ParamStream << convertOption->getScaleRatio() << L" ";
+
+		std::wstring ScaleRatio = convertOption->getScaleRatio();
+		size_t last = ScaleRatio.find_last_of(L'.');
+		if (last != std::wstring::npos)
+			ScaleRatio[last] = L'_';
+		if (!noLabel)
+			ExportNameStream << L"_scale_x" << ScaleRatio;
+	}
+
+	// set tta mode
+	if (convertOption->getTTAEnabled())
+	{
+		ParamStream << L"--tta 1 ";
+		if (!noLabel)
+			ExportNameStream << L"_tta_1";
+	}
+
+	// set core num
+	if (convertOption->getCoreNum() > 0) {
+		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
+	}
+
+	// force cpu
+	if (convertOption->getForceCPU()) {
+		ParamStream << L"-p cpu ";
+	}
+
+	ExportName = ExportNameStream.str();
+
+	// add extension
+	if (!IsDirectory(InputName.c_str()))
+		ExportName += L".png";
+
+	// create folder for folder conversion
+	if (convertOption->getOutputFolderName() != L"") {
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+	}
+
+	// set model directory
+	if (this->ModelDir != L"")
+		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
+
+	// set output name
+	ParamStream << L"-o \"" << ExportName << L"\"";
+
+	// Execute
+	SHELLEXECUTEINFO shellExecuteInfo;
+	WCHAR param[MAX_PATH] = L"";
+	WCHAR lpDir[MAX_PATH] = L"";
+	WCHAR lpFile[MAX_PATH] = L"";
+	lstrcpyW(param, ParamStream.str().c_str());
+	lstrcpyW(lpDir, WorkingDir.c_str());
+	lstrcpyW(lpFile, ExePath.c_str());
+
+	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	if (convertOption->getDebugMode() == 0)
+		shellExecuteInfo.nShow = SW_HIDE;
+	else
+		shellExecuteInfo.nShow = SW_SHOW;
+	shellExecuteInfo.lpVerb = L"open";
+	shellExecuteInfo.lpParameters = param;
+	shellExecuteInfo.hwnd = NULL;
+	shellExecuteInfo.lpDirectory = lpDir;
+	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.lpFile = lpFile;
+
+	if (!ShellExecuteExW(&shellExecuteInfo))
+		return false;
+	else {
+		hConvertProcess = shellExecuteInfo.hProcess;
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if (hConvertProcess != nullptr)
+			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = nullptr;
+		CloseHandle(shellExecuteInfo.hProcess);
+	}
+	return true;
+}
+
+
+bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
+	size_t last;
+	std::wstring ExportName;
+	std::wstring InputName = convertOption->getInputFilePath();
+	std::wstringstream ExportNameStream;
+	std::wstringstream ParamStream;
+
+	last = InputName.find_last_of(L'\\');
+	if (last == std::wstring::npos)
+		return false;
+
+	ParamStream << L"-i \"" << InputName << L"\" ";
+
+	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_waifu2x";
+
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
+
+	// set convert mode
+	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"-m scale ";
+	}
+	else if (convertOption->getScaleRatio() == L"1.0")
+		ParamStream << L"-m noise ";
+	else
+		ParamStream << L"-m noise_scale ";
+
+	// set noise_level
+	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"--noise_level " << convertOption->getNoiseLevel() << L" ";
+		if (!noLabel)
+			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
+	}
+
+	// set scale_ratio
+	if (convertOption->getScaleRatio() != L"1.0") {
+		ParamStream << L"--scale_ratio ";
+		ParamStream << convertOption->getScaleRatio() << L" ";
+
+		std::wstring ScaleRatio = convertOption->getScaleRatio();
+		size_t last = ScaleRatio.find_last_of(L'.');
+		if (last != std::wstring::npos)
+			ScaleRatio[last] = L'_';
+		if (!noLabel)
+			ExportNameStream << L"_scale_x" << ScaleRatio;
+	}
+
+	// set tta mode
+	if (convertOption->getTTAEnabled())
+	{
+		ParamStream << L"--tta 1 ";
+		if (!noLabel)
+			ExportNameStream << L"_tta_1";
+	}
+
+	// set core num
+	if (convertOption->getCoreNum() > 0) {
+		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
+	}
+
+	// force cpu
+	if (convertOption->getForceCPU()) {
+		ParamStream << L"-p cpu ";
+	}
+
+	ExportName = ExportNameStream.str();
+
+	// add extension
+	if (!IsDirectory(InputName.c_str()))
+		ExportName += L".png";
+
+	// create folder for folder conversion
+	if (convertOption->getOutputFolderName() != L"") {
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+	}
+
+	// set model directory
+	if (this->ModelDir != L"")
+		ParamStream << L"--model_dir \"" << this->ModelDir << L"\" ";
+
+	// set output name
+	ParamStream << L"-o \"" << ExportName << L"\"";
+
+	// Execute
+	SHELLEXECUTEINFO shellExecuteInfo;
+	WCHAR param[MAX_PATH] = L"";
+	WCHAR lpDir[MAX_PATH] = L"";
+	WCHAR lpFile[MAX_PATH] = L"";
+	lstrcpyW(param, ParamStream.str().c_str());
+	lstrcpyW(lpDir, WorkingDir.c_str());
+	lstrcpyW(lpFile, ExePath.c_str());
+
+	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	if (convertOption->getDebugMode() == 0)
+		shellExecuteInfo.nShow = SW_HIDE;
+	else
+		shellExecuteInfo.nShow = SW_SHOW;
+	shellExecuteInfo.lpVerb = L"open";
+	shellExecuteInfo.lpParameters = param;
+	shellExecuteInfo.hwnd = NULL;
+	shellExecuteInfo.lpDirectory = lpDir;
+	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.lpFile = lpFile;
+
+	if (!ShellExecuteExW(&shellExecuteInfo))
+		return false;
+	else {
+		hConvertProcess = shellExecuteInfo.hProcess;
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if (hConvertProcess != nullptr)
+			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = nullptr;
+		CloseHandle(shellExecuteInfo.hProcess);
+	}
+	return true;
 }

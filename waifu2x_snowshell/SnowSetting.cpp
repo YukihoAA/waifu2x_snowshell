@@ -5,9 +5,8 @@ wstring SnowSetting::OutputDirName;
 wstring SnowSetting::CurrPath;
 wstring SnowSetting::LangPath;
 wstring SnowSetting::INIPath;
-Converter SnowSetting::CONVERTER_CPP_x86;
-Converter SnowSetting::CONVERTER_CPP_x64;
-Converter SnowSetting::CONVERTER_CAFFE;
+Converter_Cpp SnowSetting::CONVERTER_CPP;
+Converter_Caffe SnowSetting::CONVERTER_CAFFE;
 Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCudaAvailable;
@@ -21,15 +20,17 @@ SnowSetting::SnowSetting()
 {
 	WCHAR path[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, path);
+	GetModuleFileName(NULL, path, MAX_PATH);
 	CurrPath = path;
+	CurrPath = CurrPath.substr(0, CurrPath.find_last_of(L'\\'));
 	OutputDirName = L"output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
-	CONVERTER_CPP_x86 = Converter(CurrPath + L"\\waifu2x-converter-x86\\waifu2x-converter_x86.exe", false);
-	CONVERTER_CPP_x64 = Converter(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
-	CONVERTER_CAFFE = Converter(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe", true, true, true);
+	CONVERTER_CPP = Converter_Cpp(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
+	CONVERTER_CAFFE = Converter_Caffe(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe");
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
+	CurrentConverter = nullptr;
 
 	Noise = NOISE_MID;
 	Scale = SCALE_x1_6;
@@ -38,6 +39,7 @@ SnowSetting::SnowSetting()
 	Confirm = 0;
 	Lang = 1;
 	Debug = 0;
+	ConverterNum = 0;
 }
 
 SnowSetting::~SnowSetting()
@@ -64,8 +66,12 @@ bool SnowSetting::checkCuda() {
 	const static size_t bufferSize = 128;
 
 
-	if (!CONVERTER_CPP_x64.getAvailable() && CONVERTER_CAFFE.getAvailable())
-		return true;
+	if (!CONVERTER_CPP.getAvailable()){
+		if (CONVERTER_CAFFE.getAvailable())
+			return true;
+		else
+			return false;
+	}
 
 	CreatePipe(&hRead, &hWrite, NULL, bufferSize);
 	SetHandleInformation(hWrite, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
@@ -77,12 +83,7 @@ bool SnowSetting::checkCuda() {
 	si.hStdError = hWrite;
 	si.dwFlags = STARTF_USESTDHANDLES;
 
-	if (CONVERTER_CPP_x64.getAvailable())
-		lstrcpy(param, CONVERTER_CPP_x64.getExePath().c_str());
-	else if (CONVERTER_CPP_x86.getAvailable())
-		lstrcpy(param, CONVERTER_CPP_x86.getExePath().c_str());
-	else
-		return cuda;
+	lstrcpy(param, CONVERTER_CPP.getExePath().c_str());
 	lstrcat(param, L" --list-processor");
 
 	BOOL isExecuted = CreateProcess(NULL, param, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, CurrPath.c_str(), &si, &pi);
@@ -540,10 +541,14 @@ bool SnowSetting::loadSetting()
 			langsel = 1;
 	}
 	setLang(langsel);
-	loadLocale();
 
 	Key = L"Debug";
 	setDebug(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+
+	Key = L"ConverterNum";
+	setConverterNum(GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str()));
+
+	loadLocale();
 
 	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"1.6", buf, MAX_PATH, INIPath.c_str());
 	SnowSetting::setScaleRatio(buf);
@@ -556,49 +561,43 @@ bool SnowSetting::loadSetting()
 
 	Section = L"Converter";
 
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"true", buf, MAX_PATH, INIPath.c_str());
-	if (wcscmp(buf, L"true")) {
-		CONVERTER_CAFFE.setAvailable(false);
-		CONVERTER_CAFFE.setEnabled(false);
-	}
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-caffe", CONVERTER_CAFFE.getExePath().c_str(), buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CAFFE.setExePath(buf);
+	CONVERTER_CAFFE.checkAvailable();
 
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x64", L"true", buf, MAX_PATH, INIPath.c_str());
-	if (wcscmp(buf, L"true")) {
-		CONVERTER_CPP_x64.setAvailable(false);
-		CONVERTER_CPP_x64.setEnabled(false);
-	}
-
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"true", buf, MAX_PATH, INIPath.c_str());
-	if (wcscmp(buf, L"true")) {
-		CONVERTER_CPP_x86.setAvailable(false);
-		CONVERTER_CPP_x86.setEnabled(false);
-	}
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getExePath().c_str(), buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP.setExePath(buf);
+	CONVERTER_CPP.checkAvailable();
 
 
 	Section = L"Model";
 
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"", buf, MAX_PATH, INIPath.c_str());
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-caffe", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CAFFE.setModelDir(buf);
 
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x64", L"", buf, MAX_PATH, INIPath.c_str());
-	CONVERTER_CPP_x64.setModelDir(buf);
-
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"", buf, MAX_PATH, INIPath.c_str());
-	CONVERTER_CPP_x86.setModelDir(buf);
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-converter-cpp", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP.setModelDir(buf);
 
 
 	Section = L"CustomOption";
 
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_caffe", L"", buf, MAX_PATH, INIPath.c_str());
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-caffe", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CAFFE.setOptionString(buf);
 
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x64", L"", buf, MAX_PATH, INIPath.c_str());
-	CONVERTER_CPP_x64.setOptionString(buf);
-
-	GetPrivateProfileStringW(Section.c_str(), L"waifu2x_converter_cpp_x86", L"", buf, MAX_PATH, INIPath.c_str());
-	CONVERTER_CPP_x86.setOptionString(buf);
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-converter-cpp", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_CPP.setOptionString(buf);
 
 	IsCudaAvailable = checkCuda();
+
+	// Set Converter
+	if (CurrentConverter == nullptr) {
+		if (IsCudaAvailable && CONVERTER_CAFFE.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_CAFFE);
+		}
+		else if (CONVERTER_CPP.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_CPP);
+		}
+	}
 
 	return true;
 }
@@ -632,6 +631,9 @@ bool SnowSetting::saveSetting()
 	Key = L"Debug";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getDebug()).c_str(), INIPath.c_str());
 
+	Key = L"ConverterNum";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getConverterNum()).c_str(), INIPath.c_str());
+
 	Key = L"ScaleRatio";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), SnowSetting::getScaleRatio().c_str(), INIPath.c_str());
 
@@ -641,38 +643,23 @@ bool SnowSetting::saveSetting()
 
 	Section = L"Converter";
 
-	if(CONVERTER_CAFFE.getEnabled())
-		WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", L"true", INIPath.c_str());
-	else
-		WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", L"false", INIPath.c_str());
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-caffe", CONVERTER_CAFFE.getExePath().c_str(), INIPath.c_str());
 
-	if (CONVERTER_CPP_x64.getEnabled())
-		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", L"true", INIPath.c_str());
-	else
-		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", L"false", INIPath.c_str());
-
-	if (CONVERTER_CPP_x86.getEnabled())
-		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", L"true", INIPath.c_str());
-	else
-		WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", L"false", INIPath.c_str());
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getExePath().c_str(), INIPath.c_str());
 
 
 	Section = L"Model";
 
-	WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", CONVERTER_CAFFE.getModelDir().c_str(), INIPath.c_str());
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-caffe", CONVERTER_CAFFE.getModelDir().c_str(), INIPath.c_str());
 
-	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", CONVERTER_CPP_x64.getModelDir().c_str(), INIPath.c_str());
-
-	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", CONVERTER_CPP_x86.getModelDir().c_str(), INIPath.c_str());
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getModelDir().c_str(), INIPath.c_str());
 
 
 	Section = L"CustomOption";
 
-	WritePrivateProfileString(Section.c_str(), L"waifu2x_caffe", CONVERTER_CAFFE.getOptionString().c_str(), INIPath.c_str());
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-caffe", CONVERTER_CAFFE.getOptionString().c_str(), INIPath.c_str());
 
-	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x64", CONVERTER_CPP_x64.getOptionString().c_str(), INIPath.c_str());
-
-	WritePrivateProfileString(Section.c_str(), L"waifu2x_converter_cpp_x86", CONVERTER_CPP_x86.getOptionString().c_str(), INIPath.c_str());
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getOptionString().c_str(), INIPath.c_str());
 
 	return true;
 }
@@ -710,7 +697,7 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
 	}
-	else if (SnowSetting::getCudaAvailable() && SnowSetting::CONVERTER_CAFFE.getAvailable()) {	// CUDA OPTION
+	else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {	// CUDA OPTION
 		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_GPU_OPENCL.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_GPU_CUDA.c_str());
 		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_GPU_TTA.c_str());
@@ -783,6 +770,14 @@ BOOL SnowSetting::getDebug()
 		Init();
 
 	return Singletone->Debug;
+}
+
+int SnowSetting::getConverterNum()
+{
+	if (Singletone == nullptr)
+		Init();
+
+	return Singletone->ConverterNum;
 }
 
 wstring SnowSetting::getLangName()
@@ -869,6 +864,29 @@ void SnowSetting::setDebug(BOOL Debug)
 	Singletone->Debug = Debug;
 }
 
+void SnowSetting::setConverterNum(int ConverterNum)
+{
+	if (Singletone == nullptr)
+		Init();
+	
+	switch (ConverterNum) {
+	case CONVERTER_NUM_CPP:
+		CONVERTER_CPP.checkAvailable();
+		if (CONVERTER_CPP.getAvailable()) {
+			Singletone->CurrentConverter = &CONVERTER_CPP;
+			Singletone->ConverterNum = ConverterNum;
+		}
+		break;
+	case CONVERTER_NUM_CAFFE:
+		CONVERTER_CAFFE.checkAvailable();
+		if (CONVERTER_CAFFE.getAvailable()) {
+			Singletone->CurrentConverter = &CONVERTER_CAFFE;
+			Singletone->ConverterNum = ConverterNum;
+		}
+		break;
+	}
+}
+
 void SnowSetting::setScaleRatio(std::wstring scaleRatio) {
 	if (Singletone == nullptr)
 		Init();
@@ -885,6 +903,7 @@ void SnowSetting::checkMenuAll(HMENU hMenu)
 	checkConfirm(hMenu);
 	checkLang(hMenu);
 	checkDebug(hMenu);
+	checkConverterNum(hMenu);
 }
 
 void SnowSetting::checkNoise(HMENU hMenu, int sel)
@@ -970,25 +989,36 @@ void SnowSetting::checkDebug(HMENU hMenu, int sel)
 		CheckMenuItem(hSubMenu, 3, MF_BYPOSITION | MF_CHECKED);
 	else
 		CheckMenuItem(hSubMenu, 3, MF_BYPOSITION | MF_UNCHECKED);
-	
+}
+
+void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
+{
+	HMENU hSubMenu = GetSubMenu(hMenu, 7);
+
+	if (sel != -1)
+		setConverterNum(sel);
+
+	for (int i = 0; i < CONVERTER_NUM_MAX; i++)
+		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
+	CheckMenuItem(hSubMenu, getConverterNum(), MF_BYPOSITION | MF_CHECKED);
 }
 
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
 	(*UITitleText)[0] = &STRING_TEXT_NOISE;
 	(*UITitleText)[1] = &STRING_TEXT_SCALE;
-	if (!IsCudaAvailable || !SnowSetting::CONVERTER_CAFFE.getAvailable())
-		(*UITitleText)[2] = &STRING_TEXT_CPU;
-	else
+	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE)
 		(*UITitleText)[2] = &STRING_TEXT_GPU;
+	else
+		(*UITitleText)[2] = &STRING_TEXT_CPU;
 	(*UITitleText)[3] = &STRING_TEXT_EXPORT;
 	(*UITitleText)[4] = &STRING_TEXT_CONFIRM;
 
 	(*UIText)[0] = getNoiseText();
 	(*UIText)[1] = getScaleText();
-	if (!IsCudaAvailable || !SnowSetting::CONVERTER_CAFFE.getAvailable())
-		(*UIText)[2] = getCPUText();
-	else
+	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE)
 		(*UIText)[2] = getGPUText();
+	else
+		(*UIText)[2] = getCPUText();
 	(*UIText)[3] = getExportText();
 	(*UIText)[4] = getConfirmText();
 }

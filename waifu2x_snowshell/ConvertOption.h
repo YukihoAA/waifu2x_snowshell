@@ -26,7 +26,7 @@ public:
 
 public:
 	ConvertOption();
-	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::CO_NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = true, std::wstring OutputFolderName = L"");
+	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::CO_NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = false, std::wstring OutputFolderName = L"");
 	void setNoiseLevel(int noiseLevel);
 	void setCoreNum(int coreNum);
 	void setDebugMode(int debugMode);
