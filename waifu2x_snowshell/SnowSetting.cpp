@@ -12,9 +12,9 @@ int SnowSetting::CoreNum;
 bool SnowSetting::IsCudaAvailable;
 bool SnowSetting::IsCPU;
 
-const int SnowSetting::LangNum = 4;
-wstring SnowSetting::LangName[4] = { L"한국어", L"English", L"日本語", L"中文" };
-wstring SnowSetting::LangFile[4] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini" };
+const int SnowSetting::LangNum = 5;
+wstring SnowSetting::LangName[5] = { L"한국어", L"English", L"日本語", L"中文", L"Svenska" };
+wstring SnowSetting::LangFile[5] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini", L"Swedish.ini" };
 
 SnowSetting::SnowSetting()
 {
@@ -148,6 +148,7 @@ void SnowSetting::loadLocale()
 		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_JP), L"LANG");
 		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_CN), L"LANG");
 		else if (LangFileName.find(L"English") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_EN), L"LANG");
+		else if (LangFileName.find(L"Swedish") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_SV), L"LANG");
 		else {
 			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
 			setLang(1);

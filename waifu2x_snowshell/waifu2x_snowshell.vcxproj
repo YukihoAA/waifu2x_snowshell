@@ -144,6 +144,7 @@
     <None Include="Lang\English.ini" />
     <None Include="Lang\Japanese.ini" />
     <None Include="Lang\Korean.ini" />
+    <None Include="Lang\Swedish.ini" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
