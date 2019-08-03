@@ -13,6 +13,10 @@
 using namespace std;
 
 
+#define MENU_FILE 0
+
+
+#define MENU_NOISE 1
 #define NOISE_NONE 0
 #define NOISE_LOW 1
 #define NOISE_MID 2
@@ -22,6 +26,7 @@ using namespace std;
 #define NOISE_MAX 4
 
 
+#define MENU_SCALE 2
 #define SCALE_x1_0 0
 #define SCALE_x1_5 1
 #define SCALE_x1_6 2
@@ -31,25 +36,37 @@ using namespace std;
 #define SCALE_MAX 4
 
 
-#define CPU_MID 0
-#define CPU_HIGH 1
-#define CPU_FULL 2
+#define MENU_GPU 3
+#define GPU_CPU_MODE 0
+#define GPU_GPU_MODE 1
 
-#define CPU_MAX 2
+#define GPU_MAX 1
 
 
+#define MENU_TTA 4
+#define TTA_DISABLED 0
+#define TTA_ENABLED 1
+
+#define TTA_MAX 2
+
+
+#define MENU_EXPORT 5
 #define EXPORT_SAME 0
 #define EXPORT_NEW 1
 
 #define EXPORT_MAX 1
 
 
+#define MENU_CONFIRM 6
 #define CONFIRM_SHOW 0
 #define CONFIRM_SKIP 1
 
 #define CONFIRM_MAX 1
 
 
+#define MENU_LANG 7
+
+#define MENU_CONVERTER 8
 #define CONVERTER_NUM_CPP 0
 #define CONVERTER_NUM_CAFFE 1
 
@@ -73,7 +90,8 @@ private:
 
 	int Noise;
 	int Scale;
-	int CPU;
+	int GPU;
+	int TTA;
 	int Export;
 	int Confirm;
 	int Lang;
@@ -105,7 +123,8 @@ public:
 
 	static int getNoise();
 	static int getScale();
-	static int getCPU();
+	static int getGPU();
+	static int getTTA();
 	static int getExport();
 	static BOOL getConfirm();
 	static BOOL getDebug();
@@ -116,7 +135,8 @@ public:
 
 	static void setNoise(int Noise);
 	static void setScale(int Scale);
-	static void setCPU(int CPU);
+	static void setGPU(int GPU);
+	static void setTTA(int tta);
 	static void setExport(int Export);
 	static void setConfirm(BOOL Confirm);
 	static void setLang(int Lang);
@@ -127,7 +147,8 @@ public:
 	static void checkMenuAll(HMENU hMenu);
 	static void checkNoise(HMENU hMenu, int sel = -1);
 	static void checkScale(HMENU hMenu, int sel = -1);
-	static void checkCPU(HMENU hMenu, int sel = -1);
+	static void checkGPU(HMENU hMenu, int sel = -1);
+	static void checkTTA(HMENU hMenu, int sel = -1);
 	static void checkExport(HMENU hMenu, int sel = -1);
 	static void checkConfirm(HMENU hMenu, int sel = -1);
 	static void checkLang(HMENU hMenu, int sel = -1);
@@ -137,7 +158,6 @@ public:
 	static void getTexts(std::wstring*(*UITitleText)[5], std::wstring*(*UIText)[5]);
 	static std::wstring* getNoiseText();
 	static std::wstring* getScaleText();
-	static std::wstring* getCPUText();
 	static std::wstring* getGPUText();
 	static std::wstring* getExportText();
 	static std::wstring* getConfirmText();

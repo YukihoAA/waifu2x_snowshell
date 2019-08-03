@@ -5,15 +5,13 @@
 
 using namespace std;
 
-#define SETTING_VER_MINIMUM 21
+#define SETTING_VER_MINIMUM 22
 
 extern int INT_SETTING_VER;
 
 extern wstring STRING_MENU_FILE;
 extern wstring STRING_MENU_NOISE;
 extern wstring STRING_MENU_SCALE;
-extern wstring STRING_MENU_CPU;
-extern wstring STRING_MENU_GPU;
 extern wstring STRING_MENU_EXPORT;
 extern wstring STRING_MENU_CONFIRM;
 
@@ -33,13 +31,11 @@ extern wstring STRING_MENU_SCALE_x1_6;
 extern wstring STRING_MENU_SCALE_x2_0;
 extern wstring STRING_MENU_SCALE_CUSTOM;
 
-extern wstring STRING_MENU_CPU_MID;
-extern wstring STRING_MENU_CPU_HIGH;
-extern wstring STRING_MENU_CPU_FULL;
+extern wstring STRING_MENU_GPU_CPU;
+extern wstring STRING_MENU_GPU_GPU;
 
-extern wstring STRING_MENU_GPU_OPENCL;
-extern wstring STRING_MENU_GPU_CUDA;
-extern wstring STRING_MENU_GPU_TTA;
+extern wstring STRING_MENU_TTA_DISABLED;
+extern wstring STRING_MENU_TTA_ENABLED;
 
 extern wstring STRING_MENU_EXPORT_SAME;
 extern wstring STRING_MENU_EXPORT_NEW;
@@ -65,15 +61,11 @@ extern wstring STRING_TEXT_SCALE_x2_0;
 extern wstring STRING_TEXT_SCALE_PREFIX;
 extern wstring STRING_TEXT_SCALE_POSTFIX;
 
-extern wstring STRING_TEXT_CPU;
-extern wstring STRING_TEXT_CPU_MID;
-extern wstring STRING_TEXT_CPU_HIGH;
-extern wstring STRING_TEXT_CPU_FULL;
-
 extern wstring STRING_TEXT_GPU;
-extern wstring STRING_TEXT_GPU_OPENCL;
-extern wstring STRING_TEXT_GPU_CUDA;
-extern wstring STRING_TEXT_GPU_TTA;
+extern wstring STRING_TEXT_GPU_CPU;
+extern wstring STRING_TEXT_GPU_CPU_TTA;
+extern wstring STRING_TEXT_GPU_GPU;
+extern wstring STRING_TEXT_GPU_GPU_TTA;
 
 extern wstring STRING_TEXT_EXPORT;
 extern wstring STRING_TEXT_EXPORT_SAME;

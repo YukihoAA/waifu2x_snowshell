@@ -33,7 +33,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	if (!bIsWow64)
 		MessageBox(NULL, L"This program only works on 64bit system", L"Error", MB_OK | MB_ICONERROR);
 
-	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v1.9", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v2.0", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -138,7 +138,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		DragAcceptFiles(hWnd, TRUE);
 	}
-					   return TRUE;
+		return TRUE;
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case ID_MENU_FILE_IMGSEL: {
@@ -146,6 +146,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			LPWSTR lpwstrFile = new WCHAR[MAX_PATH];
 			WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.bmp;*.dib;*.jpg;*.jpeg;*.jpe;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pxm;*.pam;*.sr;*.ras;*.tif;*.tiff;*.exr;*.hdr;*.pic\0All Files\0*.*";
 
+			lpwstrFile[0] = '\0';
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
 			ofn.hwndOwner = hWnd;
@@ -161,15 +162,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			{
 				delete lpwstrFile;
 			}
+			return TRUE;
 		}
-								  return TRUE;
 		case ID_MENU_FILE_CREDIT: {
 			HWND desktop = GetDesktopWindow();
 			GetWindowRect(desktop, &rt);
 			if (SnowSetting::getLang() == 0)
-				MessageBox(hWnd, L"제작자: 유키 (yukiho5048@naver.com)\n\nTwitter: https://twitter.com/YukihoAA\nGitHub: https://github.com/YukihoAA\n", L"정보", MB_OK);
+				MessageBox(hWnd, L"제작자: 유키\n\nEmail: (yukihoaa@gmail.com)\nGitHub: https://github.com/YukihoAA\n", L"정보", MB_OK);
 			else
-				MessageBox(hWnd, L"Creator: Yuki (yukiho5048@naver.com)\n\nTwitter: https://twitter.com/YukihoAA\nGitHub: https://github.com/YukihoAA\n", L"Credit", MB_OK);
+				MessageBox(hWnd, L"Creator: Yuki\n\nEmail: (yukihoaa@gmail.com)\nGitHub: https://github.com/YukihoAA\n", L"Credit", MB_OK);
 		}
 								  return TRUE;
 		case ID_MENU_FILE_QUIT:
@@ -200,14 +201,16 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			UIText[1] = SnowSetting::getScaleText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case ID_MENU_CPU_MID:
-		case ID_MENU_CPU_HIGH:
-		case ID_MENU_CPU_FULL:
-			SnowSetting::checkCPU(hMenu, LOWORD(wParam) - ID_MENU_CPU_MID);
-			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)
-				UIText[2] = SnowSetting::getCPUText();
-			else
-				UIText[2] = SnowSetting::getGPUText();
+		case ID_MENU_GPU_CPU:
+		case ID_MENU_GPU_GPU:
+			SnowSetting::checkGPU(hMenu, LOWORD(wParam) - ID_MENU_GPU_CPU);
+			UIText[2] = SnowSetting::getGPUText();
+			InvalidateRect(hWnd, NULL, TRUE);
+			return TRUE;
+		case ID_MENU_TTA_DISABLED:
+		case ID_MENU_TTA_ENABLED:
+			SnowSetting::checkTTA(hMenu, LOWORD(wParam) - ID_MENU_TTA_DISABLED);
+			UIText[2] = SnowSetting::getGPUText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
 		case ID_MENU_EXPORT_SAME:
@@ -384,23 +387,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		break;
 	}
 
-	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {
-		convertOption->setTTAEnabled(SnowSetting::getCPU() == CPU_FULL);
-		convertOption->setForceCPU(SnowSetting::getCPU() == CPU_MID || !SnowSetting::getCudaAvailable());
-	}
-
-	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)
-		switch (SnowSetting::getCPU()) {
-		case CPU_FULL:
-			convertOption->setCoreNum(SnowSetting::getCoreNum());
-			break;
-		case CPU_HIGH:
-			convertOption->setCoreNum(SnowSetting::getCoreNum() - 1 > 0 ? SnowSetting::getCoreNum() - 1 : 1);
-			break;
-		case CPU_MID:
-			convertOption->setCoreNum(SnowSetting::getCoreNum() / 2 > 0 ? SnowSetting::getCoreNum() / 2 : 1);
-			break;
-		}
+	convertOption->setTTAEnabled(SnowSetting::getTTA());
+	convertOption->setForceCPU(SnowSetting::getGPU() == GPU_CPU_MODE || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE && !SnowSetting::getCudaAvailable());
 
 	DWORD FileAttribute = GetFileAttributes(fileName);
 

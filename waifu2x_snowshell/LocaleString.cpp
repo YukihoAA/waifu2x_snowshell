@@ -6,8 +6,6 @@ int INT_SETTING_VER = 0;
 wstring STRING_MENU_FILE = L"파일";
 wstring STRING_MENU_NOISE = L"노이즈 감소";
 wstring STRING_MENU_SCALE = L"비율";
-wstring STRING_MENU_CPU = L"CPU";
-wstring STRING_MENU_GPU = L"GPU";
 wstring STRING_MENU_EXPORT = L"출력";
 wstring STRING_MENU_CONFIRM = L"확인창";
 
@@ -27,13 +25,11 @@ wstring STRING_MENU_SCALE_x1_6 = L"x1.6";
 wstring STRING_MENU_SCALE_x2_0 = L"x2.0";
 wstring STRING_MENU_SCALE_CUSTOM = L"사용자 설정";
 
-wstring STRING_MENU_CPU_MID = L"중간";
-wstring STRING_MENU_CPU_HIGH = L"높음";
-wstring STRING_MENU_CPU_FULL = L"최대";
+wstring STRING_MENU_GPU_CPU = L"CPU 사용";
+wstring STRING_MENU_GPU_GPU = L"GPU 사용";
 
-wstring STRING_MENU_GPU_OPENCL = L"OPENCL로 변환";
-wstring STRING_MENU_GPU_CUDA = L"CUDA로 변환";
-wstring STRING_MENU_GPU_TTA = L"CUDA로 변환 (TTA)";
+wstring STRING_MENU_TTA_DISABLED = L"비활성화";
+wstring STRING_MENU_TTA_ENABLED = L"활성화";
 
 wstring STRING_MENU_EXPORT_SAME = L"원본 이미지와 같은 폴더";
 wstring STRING_MENU_EXPORT_NEW = L"output 폴더";
@@ -60,15 +56,11 @@ wstring STRING_TEXT_SCALE_x2_0 = L"x2.0";
 wstring STRING_TEXT_SCALE_PREFIX = L"x";
 wstring STRING_TEXT_SCALE_POSTFIX = L"";
 
-wstring STRING_TEXT_CPU = L"작업스레드 수";
-wstring STRING_TEXT_CPU_MID = L"절반";
-wstring STRING_TEXT_CPU_HIGH = L"많음";
-wstring STRING_TEXT_CPU_FULL = L"최대";
-
 wstring STRING_TEXT_GPU = L"변환방식";
-wstring STRING_TEXT_GPU_OPENCL = L"CPU";
-wstring STRING_TEXT_GPU_CUDA = L"CUDA";
-wstring STRING_TEXT_GPU_TTA = L"CUDA (TTA)";
+wstring STRING_TEXT_GPU_CPU = L"CPU";
+wstring STRING_TEXT_GPU_CPU_TTA = L"CPU (TTA)";
+wstring STRING_TEXT_GPU_GPU = L"GPU";
+wstring STRING_TEXT_GPU_GPU_TTA = L"GPU (TTA)";
 
 wstring STRING_TEXT_EXPORT = L"출력 폴더";
 wstring STRING_TEXT_EXPORT_SAME = L"같은 폴더";

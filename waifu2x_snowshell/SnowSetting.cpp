@@ -34,7 +34,8 @@ SnowSetting::SnowSetting()
 
 	Noise = NOISE_MID;
 	Scale = SCALE_x1_6;
-	CPU = CPU_FULL;
+	GPU = GPU_GPU_MODE;
+	TTA = TTA_DISABLED;
 	Export = 0;
 	Confirm = 0;
 	Lang = 1;
@@ -193,14 +194,6 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Scale", buf, 200, LangFileName.c_str());
 	STRING_MENU_SCALE = buf;
 
-	Key = L"STRING_MENU_CPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CPU", buf, 200, LangFileName.c_str());
-	STRING_MENU_CPU = buf;
-
-	Key = L"STRING_MENU_GPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU", buf, 200, LangFileName.c_str());
-	STRING_MENU_GPU = buf;
-
 	Key = L"STRING_MENU_EXPORT";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export", buf, 200, LangFileName.c_str());
 	STRING_MENU_EXPORT = buf;
@@ -271,31 +264,26 @@ void SnowSetting::loadLocale()
 	STRING_MENU_SCALE_CUSTOM = buf;
 
 
-	Section = L"CPU";
+	Section = L"GPU";
 
-	Key = L"STRING_MENU_CPU_MID";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Half", buf, 200, LangFileName.c_str());
-	STRING_MENU_CPU_MID = buf;
+	Key = L"STRING_MENU_GPU_CPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CPU", buf, 200, LangFileName.c_str());
+	STRING_MENU_GPU_CPU = buf;
 
-	Key = L"STRING_MENU_CPU_HIGH";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Almost All", buf, 200, LangFileName.c_str());
-	STRING_MENU_CPU_HIGH = buf;
+	Key = L"STRING_MENU_GPU_GPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use GPU", buf, 200, LangFileName.c_str());
+	STRING_MENU_GPU_GPU = buf;
 
-	Key = L"STRING_MENU_CPU_FULL";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Full Power!!!!", buf, 200, LangFileName.c_str());
-	STRING_MENU_CPU_FULL = buf;
 
-	Key = L"STRING_MENU_GPU_OPENCL";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use OpenCL", buf, 200, LangFileName.c_str());
-	STRING_MENU_GPU_OPENCL = buf;
+	Section = L"TTA";
 
-	Key = L"STRING_MENU_GPU_CUDA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CUDA", buf, 200, LangFileName.c_str());
-	STRING_MENU_GPU_CUDA = buf;
+	Key = L"STRING_MENU_TTA_DISABLED";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Disabled", buf, 200, LangFileName.c_str());
+	STRING_MENU_TTA_DISABLED = buf;
 
-	Key = L"STRING_MENU_GPU_TTA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CUDA With TTA", buf, 200, LangFileName.c_str());
-	STRING_MENU_GPU_TTA = buf;
+	Key = L"STRING_MENU_TTA_ENABLED";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Enabled", buf, 200, LangFileName.c_str());
+	STRING_MENU_TTA_ENABLED = buf;
 
 
 	Section = L"Export";
@@ -383,38 +371,25 @@ void SnowSetting::loadLocale()
 	STRING_TEXT_SCALE_POSTFIX = buf;
 
 
-	Key = L"STRING_TEXT_CPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Thread Num", buf, 200, LangFileName.c_str());
-	STRING_TEXT_CPU = buf;
-
-	Key = L"STRING_TEXT_CPU_MID";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Half", buf, 200, LangFileName.c_str());
-	STRING_TEXT_CPU_MID = buf;
-
-	Key = L"STRING_TEXT_CPU_HIGH";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Almost All", buf, 200, LangFileName.c_str());
-	STRING_TEXT_CPU_HIGH = buf;
-
-	Key = L"STRING_TEXT_CPU_FULL";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"All", buf, 200, LangFileName.c_str());
-	STRING_TEXT_CPU_FULL = buf;
-
-
 	Key = L"STRING_TEXT_GPU";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Converter", buf, 200, LangFileName.c_str());
 	STRING_TEXT_GPU = buf;
 
-	Key = L"STRING_TEXT_GPU_OPENCL";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"OpenCL", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_OPENCL = buf;
+	Key = L"STRING_TEXT_GPU_CPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CPU", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_CPU = buf;
 
-	Key = L"STRING_TEXT_GPU_CUDA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CUDA", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_CUDA = buf;
+	Key = L"STRING_TEXT_GPU_CPU_TTA";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CPU (TTA)", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_CPU_TTA = buf;
 
-	Key = L"STRING_TEXT_GPU_TTA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CUDA (with TTA)", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_TTA = buf;
+	Key = L"STRING_TEXT_GPU_GPU";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_GPU = buf;
+
+	Key = L"STRING_TEXT_GPU_GPU_TTA";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU (TTA)", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_GPU_TTA = buf;
 
 
 	Key = L"STRING_TEXT_EXPORT";
@@ -518,8 +493,11 @@ bool SnowSetting::loadSetting()
 	Key = L"Scale";
 	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), SCALE_x1_6, INIPath.c_str()));
 
-	Key = L"CPU";
-	setCPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), CPU_FULL, INIPath.c_str()));
+	Key = L"GPU";
+	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), GPU_GPU_MODE, INIPath.c_str()));
+
+	Key = L"TTA";
+	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), TTA_DISABLED, INIPath.c_str()));
 
 	Key = L"Export";
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), EXPORT_SAME, INIPath.c_str()));
@@ -617,8 +595,11 @@ bool SnowSetting::saveSetting()
 	Key = L"Scale";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getScale()).c_str(), INIPath.c_str());
 
-	Key = L"CPU";
-	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getCPU()).c_str(), INIPath.c_str());
+	Key = L"GPU";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getGPU()).c_str(), INIPath.c_str());
+
+	Key = L"TTA";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getTTA()).c_str(), INIPath.c_str());
 
 	Key = L"Export";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getExport()).c_str(), INIPath.c_str());
@@ -667,15 +648,11 @@ bool SnowSetting::saveSetting()
 
 void SnowSetting::loadMenuString(HMENU hMenu)
 {
-	ModifyMenu(hMenu, 0, MF_BYPOSITION | MF_STRING, 0, STRING_MENU_FILE.c_str());
-	ModifyMenu(hMenu, 1, MF_BYPOSITION | MF_STRING, 1, STRING_MENU_NOISE.c_str());
-	ModifyMenu(hMenu, 2, MF_BYPOSITION | MF_STRING, 2, STRING_MENU_SCALE.c_str());
-	if (SnowSetting::getIsCPU())
-		ModifyMenu(hMenu, 3, MF_BYPOSITION | MF_STRING, 3, STRING_MENU_CPU.c_str());
-	else
-		ModifyMenu(hMenu, 3, MF_BYPOSITION | MF_STRING, 3, STRING_MENU_GPU.c_str());
-	ModifyMenu(hMenu, 4, MF_BYPOSITION | MF_STRING, 4, STRING_MENU_EXPORT.c_str());
-	ModifyMenu(hMenu, 5, MF_BYPOSITION | MF_STRING, 5, STRING_MENU_CONFIRM.c_str());
+	ModifyMenu(hMenu, MENU_FILE, MF_BYPOSITION | MF_STRING, MENU_FILE, STRING_MENU_FILE.c_str());
+	ModifyMenu(hMenu, MENU_NOISE, MF_BYPOSITION | MF_STRING, MENU_NOISE, STRING_MENU_NOISE.c_str());
+	ModifyMenu(hMenu, MENU_SCALE, MF_BYPOSITION | MF_STRING, MENU_SCALE, STRING_MENU_SCALE.c_str());
+	ModifyMenu(hMenu, MENU_EXPORT, MF_BYPOSITION | MF_STRING, MENU_EXPORT, STRING_MENU_EXPORT.c_str());
+	ModifyMenu(hMenu, MENU_CONFIRM, MF_BYPOSITION | MF_STRING, MENU_CONFIRM, STRING_MENU_CONFIRM.c_str());
 
 	ModifyMenu(hMenu, ID_MENU_FILE_IMGSEL, MF_BYCOMMAND | MF_STRING, ID_MENU_FILE_IMGSEL, STRING_MENU_FILE_IMAGE_SEL.c_str());
 	ModifyMenu(hMenu, ID_MENU_FILE_CREDIT, MF_BYCOMMAND | MF_STRING, ID_MENU_FILE_CREDIT, STRING_MENU_FILE_CREDIT.c_str());
@@ -693,16 +670,11 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_CUSTOM, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_CUSTOM, STRING_MENU_SCALE_CUSTOM.c_str());
 
-	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE) {	// Caffe Converter
-		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_GPU_OPENCL.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_GPU_CUDA.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_GPU_TTA.c_str());
-	}
-	else { // waifu2x-converter-cpp Converter
-		ModifyMenu(hMenu, ID_MENU_CPU_MID, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_MID, STRING_MENU_CPU_MID.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_HIGH, STRING_MENU_CPU_HIGH.c_str());
-		ModifyMenu(hMenu, ID_MENU_CPU_FULL, MF_BYCOMMAND | MF_STRING, ID_MENU_CPU_FULL, STRING_MENU_CPU_FULL.c_str());
-	}
+	ModifyMenu(hMenu, ID_MENU_GPU_CPU, MF_BYCOMMAND | MF_STRING, ID_MENU_GPU_CPU, STRING_MENU_GPU_CPU.c_str());
+	ModifyMenu(hMenu, ID_MENU_GPU_GPU, MF_BYCOMMAND | MF_STRING, ID_MENU_GPU_GPU, STRING_MENU_GPU_GPU.c_str());
+
+	ModifyMenu(hMenu, ID_MENU_TTA_DISABLED, MF_BYCOMMAND | MF_STRING, ID_MENU_TTA_DISABLED, STRING_MENU_TTA_DISABLED.c_str());
+	ModifyMenu(hMenu, ID_MENU_TTA_ENABLED, MF_BYCOMMAND | MF_STRING, ID_MENU_TTA_ENABLED, STRING_MENU_TTA_ENABLED.c_str());
 
 	ModifyMenu(hMenu, ID_MENU_EXPORT_SAME, MF_BYCOMMAND | MF_STRING, ID_MENU_EXPORT_SAME, STRING_MENU_EXPORT_SAME.c_str());
 	ModifyMenu(hMenu, ID_MENU_EXPORT_NEW, MF_BYCOMMAND | MF_STRING, ID_MENU_EXPORT_NEW, STRING_MENU_EXPORT_NEW.c_str());
@@ -728,12 +700,20 @@ int SnowSetting::getScale()
 	return Singletone->Scale;
 }
 
-int SnowSetting::getCPU()
+int SnowSetting::getGPU()
 {
 	if (Singletone == nullptr)
 		Init();
 
-	return Singletone->CPU;
+	return Singletone->GPU;
+}
+
+int SnowSetting::getTTA()
+{
+	if (Singletone == nullptr)
+		Init();
+
+	return Singletone->TTA;
 }
 
 int SnowSetting::getExport()
@@ -810,15 +790,15 @@ void SnowSetting::setScale(int Scale)
 	Singletone->Scale = Scale;
 }
 
-void SnowSetting::setCPU(int CPU)
+void SnowSetting::setGPU(int GPU)
 {
 	if (Singletone == nullptr)
 		Init();
 
-	if (CPU > CPU_MAX || CPU < 0)
-		CPU = 0;
+	if (GPU > GPU_MAX || GPU < 0)
+		GPU = 0;
 
-	Singletone->CPU = CPU;
+	Singletone->GPU = GPU;
 }
 
 void SnowSetting::setExport(int Export)
@@ -890,11 +870,20 @@ void SnowSetting::setScaleRatio(std::wstring scaleRatio) {
 	Singletone->ScaleRatio = scaleRatio;
 }
 
+void SnowSetting::setTTA(int tta)
+{
+	if (Singletone == nullptr)
+		Init();
+
+	Singletone->TTA = tta;
+}
+
 void SnowSetting::checkMenuAll(HMENU hMenu)
 {
 	checkNoise(hMenu);
 	checkScale(hMenu);
-	checkCPU(hMenu);
+	checkGPU(hMenu);
+	checkTTA(hMenu);
 	checkExport(hMenu);
 	checkConfirm(hMenu);
 	checkLang(hMenu);
@@ -904,7 +893,7 @@ void SnowSetting::checkMenuAll(HMENU hMenu)
 
 void SnowSetting::checkNoise(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 1);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_NOISE);
 
 	if (sel != -1)
 		setNoise(sel);
@@ -916,7 +905,7 @@ void SnowSetting::checkNoise(HMENU hMenu, int sel)
 
 void SnowSetting::checkScale(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 2);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_SCALE);
 
 	if (sel != -1)
 		setScale(sel);
@@ -926,21 +915,33 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 	CheckMenuItem(hSubMenu, getScale(), MF_BYPOSITION | MF_CHECKED);
 }
 
-void SnowSetting::checkCPU(HMENU hMenu, int sel)
+void SnowSetting::checkGPU(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 3);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_GPU);
 
 	if (sel != -1)
-		setCPU(sel);
+		setGPU(sel);
 
-	for (int i = 0; i <= CPU_MAX; i++)
+	for (int i = 0; i <= GPU_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
-	CheckMenuItem(hSubMenu, getCPU(), MF_BYPOSITION | MF_CHECKED);
+	CheckMenuItem(hSubMenu, getGPU(), MF_BYPOSITION | MF_CHECKED);
+}
+
+void SnowSetting::checkTTA(HMENU hMenu, int sel)
+{
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_TTA);
+
+	if (sel != -1)
+		setTTA(sel);
+
+	for (int i = 0; i < TTA_MAX; i++)
+		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
+	CheckMenuItem(hSubMenu, getTTA(), MF_BYPOSITION | MF_CHECKED);
 }
 
 void SnowSetting::checkExport(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 4);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_EXPORT);
 
 	if (sel != -1)
 		setExport(sel);
@@ -952,7 +953,7 @@ void SnowSetting::checkExport(HMENU hMenu, int sel)
 
 void SnowSetting::checkConfirm(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 5);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_CONFIRM);
 
 	if (sel != -1)
 		setConfirm(sel);
@@ -964,7 +965,7 @@ void SnowSetting::checkConfirm(HMENU hMenu, int sel)
 
 void SnowSetting::checkLang(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 6);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_LANG);
 
 	if (sel != -1)
 		setLang(sel);
@@ -976,7 +977,7 @@ void SnowSetting::checkLang(HMENU hMenu, int sel)
 
 void SnowSetting::checkDebug(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 5);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_CONFIRM);
 
 	if (sel != -1)
 		setDebug(!getDebug());
@@ -989,7 +990,7 @@ void SnowSetting::checkDebug(HMENU hMenu, int sel)
 
 void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
 {
-	HMENU hSubMenu = GetSubMenu(hMenu, 7);
+	HMENU hSubMenu = GetSubMenu(hMenu, MENU_CONVERTER);
 
 	if (sel != -1)
 		setConverterNum(sel);
@@ -1002,19 +1003,13 @@ void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
 	(*UITitleText)[0] = &STRING_TEXT_NOISE;
 	(*UITitleText)[1] = &STRING_TEXT_SCALE;
-	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE)
-		(*UITitleText)[2] = &STRING_TEXT_GPU;
-	else
-		(*UITitleText)[2] = &STRING_TEXT_CPU;
+	(*UITitleText)[2] = &STRING_TEXT_GPU;
 	(*UITitleText)[3] = &STRING_TEXT_EXPORT;
 	(*UITitleText)[4] = &STRING_TEXT_CONFIRM;
 
 	(*UIText)[0] = getNoiseText();
 	(*UIText)[1] = getScaleText();
-	if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE)
-		(*UIText)[2] = getGPUText();
-	else
-		(*UIText)[2] = getCPUText();
+	(*UIText)[2] = getGPUText();
 	(*UIText)[3] = getExportText();
 	(*UIText)[4] = getConfirmText();
 }
@@ -1057,30 +1052,23 @@ wstring * SnowSetting::getScaleText()
 	return nullptr;
 }
 
-wstring * SnowSetting::getCPUText()
-{
-	switch (getCPU()) {
-	case CPU_MID:
-		return &STRING_TEXT_CPU_MID;
-	case CPU_HIGH:
-		return &STRING_TEXT_CPU_HIGH;
-	case CPU_FULL:
-		return &STRING_TEXT_CPU_FULL;
-	}
-	return nullptr;
-}
-
 wstring * SnowSetting::getGPUText()
 {
-	switch (getCPU()) {
-	case CPU_MID:
-		return &STRING_TEXT_GPU_OPENCL;
-	case CPU_HIGH:
-		return &STRING_TEXT_GPU_CUDA;
-	case CPU_FULL:
-		return &STRING_TEXT_GPU_TTA;
-	}
-	return nullptr;
+	if (getGPU() == GPU_CPU_MODE) {
+		if (getTTA() == TTA_DISABLED) {
+			return &STRING_TEXT_GPU_CPU;
+		} else {
+			return &STRING_TEXT_GPU_CPU_TTA;
+		}
+
+	} else {
+		if (getTTA() == TTA_DISABLED) {
+			return &STRING_TEXT_GPU_GPU;
+		}
+		else {
+			return &STRING_TEXT_GPU_GPU_TTA;
+		}
+	}	return nullptr;
 }
 
 wstring * SnowSetting::getExportText()

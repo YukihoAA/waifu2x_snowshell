@@ -217,9 +217,23 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 			ExportNameStream << L"_scale_x" << ScaleRatio;
 	}
 
+	// set tta mode
+	if (convertOption->getTTAEnabled())
+	{
+		ParamStream << L"--tta 1 ";
+		if (!noLabel)
+			ExportNameStream << L"_tta_1";
+	}
+
+	/*
 	// set core num
 	if (convertOption->getCoreNum() > 0) {
 		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
+	}*/
+
+	// force cpu
+	if (convertOption->getForceCPU()) {
+		ParamStream << L"--disable-gpu ";
 	}
 
 	ExportName = ExportNameStream.str();
@@ -334,10 +348,11 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 			ExportNameStream << L"_tta_1";
 	}
 
+	/*
 	// set core num
 	if (convertOption->getCoreNum() > 0) {
 		ParamStream << L"-j " << convertOption->getCoreNum() << L" ";
-	}
+	}*/
 
 	// force cpu
 	if (convertOption->getForceCPU()) {
