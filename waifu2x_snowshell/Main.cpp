@@ -52,7 +52,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HMENU hMenu;
-	static HFONT hFont;
+	static HFONT hFont, hSFont;
 	static HBITMAP hBGBitmap;
 	static wstring *UIText[5];
 	static wstring *UITitleText[5];
@@ -81,6 +81,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		SnowSetting::getTexts(&UITitleText, &UIText);
 		hMenu = LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
 		hFont = CreateFont(35, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, OUT_OUTLINE_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_MODERN, L"Malgun Gothic");
+		hSFont = CreateFont(15, 0, 0, 0, FW_BOLD, 0, 0, 0, HANGEUL_CHARSET, OUT_OUTLINE_PRECIS, CLIP_STROKE_PRECIS, PROOF_QUALITY, VARIABLE_PITCH | FF_MODERN, L"Malgun Gothic");
 		SetMenu(hWnd, hMenu);
 		SnowSetting::loadMenuString(hMenu);
 		LangName = SnowSetting::getLangName();
@@ -254,7 +255,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			return TRUE;
 		case ID_MENU_CONVERTER_CPP:
 		case ID_MENU_CONVERTER_CAFFE:
-			//TODO: set Action
 			SnowSetting::checkConverterNum(hMenu, LOWORD(wParam) - ID_MENU_CONVERTER_CPP);
 			SnowSetting::getTexts(&UITitleText, &UIText);
 			SetMenu(hWnd, NULL);
@@ -293,6 +293,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		for (int i = 0; i < 5; i++)
 			prtTextBorder(hMemDC, (int)(INT_TEXT_TAB * 12.5 + 7), 133 + 33 * i, UIText[i]->c_str(), (int)UIText[i]->length(), RGB(0x21, 0x21, 0x21), 2);
+
+		SelectObject(hMemDC, hOldFont);
+		hOldFont = (HFONT)SelectObject(hMemDC, hSFont);
+		SetTextColor(hMemDC, RGB(0xef, 0xef, 0xef));
+
+		if(SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)
+			prtTextBorder(hMemDC, 375, 2, L"waifu2x-converter-cpp", 21, RGB(0x21, 0x21, 0x21), 1);
+		else
+			prtTextBorder(hMemDC, 430, 2, L"waifu2x-caffe", 13, RGB(0x21, 0x21, 0x21), 1);
 
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, hMemDC, 0, 0, SRCCOPY);
 
