@@ -205,7 +205,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	}
 
 	// set scale_ratio
-	if (convertOption->getScaleRatio() != L"1.0") {
+	if (convertOption->getScaleRatio() != L"1.0" || convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"--scale-ratio ";
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
@@ -328,7 +328,7 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 	}
 
 	// set scale_ratio
-	if (convertOption->getScaleRatio() != L"1.0") {
+	if (convertOption->getScaleRatio() != L"1.0" || convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"--scale_ratio ";
 		ParamStream << convertOption->getScaleRatio() << L" ";
 
