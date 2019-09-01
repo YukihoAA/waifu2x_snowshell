@@ -114,12 +114,19 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	Converter* This = (Converter*)lParam;
 	WCHAR InQueueText[20];
 
+	std::queue<ConvertOption> ErrorQueue;
+
 	for (int i = 0; !This->ConvertQueue.empty(); i++) {
 		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, 10 * (This->ConvertQueue.size() + i + 1)));
 		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
 		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
 		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
-		This->execute(&This->ConvertQueue.front());
+		if(This->execute(&This->ConvertQueue.front())){
+			Sleep(300);
+		}
+		else {
+			ErrorQueue.push(This->ConvertQueue.front());
+		}
 		This->ConvertQueue.pop();
 	}
 
@@ -129,6 +136,19 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	SendMessage(This->hProgressDlg, WM_CLOSE, 0, 0);
 	This->hConvertThread = nullptr;
 	This->hProgressDlg = nullptr;
+
+	if (!ErrorQueue.empty())
+	{
+		FILE *fp;
+		_wfopen_s(&fp, L"error.log", L"wt+,ccs=UTF-16LE");
+		while (!ErrorQueue.empty()) {
+			fwprintf(fp, L"Error: %s\n", ErrorQueue.front().getInputFilePath().c_str());
+			ErrorQueue.pop();
+		}
+		fclose(fp);
+		fp = nullptr;
+		ShellExecute(hWnd, L"open", L"error.log", NULL, NULL, SW_SHOW);
+	}
 	ExitThread(0);
 }
 
@@ -287,6 +307,8 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
 		CloseHandle(shellExecuteInfo.hProcess);
+		if (!FileExists(ExportName.c_str()))
+			return false;
 	}
 	return true;
 }
@@ -410,6 +432,8 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
 		CloseHandle(shellExecuteInfo.hProcess);
+		if (!FileExists(ExportName.c_str()))
+			return false;
 	}
 	return true;
 }
