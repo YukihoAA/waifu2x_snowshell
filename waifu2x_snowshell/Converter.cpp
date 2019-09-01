@@ -147,7 +147,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 		}
 		fclose(fp);
 		fp = nullptr;
-		ShellExecute(hWnd, L"open", L"error.log", NULL, NULL, SW_SHOW);
+		MessageBox(hWnd, L"Failed to convert some files.\nCheck \"error.log\"", L"Error", MB_ICONWARNING | MB_OK);
 	}
 	ExitThread(0);
 }
