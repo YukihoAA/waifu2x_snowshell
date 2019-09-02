@@ -122,7 +122,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
 		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
 		if(This->execute(&This->ConvertQueue.front())){
-			Sleep(300);
+			Sleep(200);
 		}
 		else {
 			ErrorQueue.push(This->ConvertQueue.front());
