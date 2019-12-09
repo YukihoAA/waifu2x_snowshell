@@ -359,8 +359,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	}
 
 	// Limit Input File Name Length
-	FileNameLength = wcslen(fileName);
-	MaxInputLength = SnowSetting::getExport() ? 255 - SnowSetting::OutputDirName.length() : 220;
+	FileNameLength = (int) wcslen(fileName);
+	MaxInputLength = SnowSetting::getExport() ? 255 - (int) SnowSetting::OutputDirName.length() : 220;
 	if (FileNameLength >= MaxInputLength) {
 		wstring Message = STRING_TEXT_TOO_LONG_PATH_MESSAGE + L" (" + itos(FileNameLength) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L"/" + itos(MaxInputLength) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L")\n" + fileName;
 		MessageBoxW(hWnd, Message.c_str(), STRING_TEXT_TOO_LONG_PATH_TITLE.c_str(), MB_ICONERROR | MB_SYSTEMMODAL | MB_OK);
@@ -453,7 +453,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 					continue;
 				wstring FoundFilePath = filePath + L"\\" + FileFindData.cFileName;
 				// Limit Input File Name Length
-				FoundNameLength = FoundFilePath.length();
+				FoundNameLength = (int) FoundFilePath.length();
 				if (FoundNameLength >= 220) {
 					wstring Message = STRING_TEXT_TOO_LONG_PATH_MESSAGE + L" (" + itos(FoundNameLength) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L"/" + itos(220) + STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT + L")\n" + FoundFilePath;
 					MessageBoxW(hWnd, Message.c_str(), STRING_TEXT_TOO_LONG_PATH_TITLE.c_str(), MB_ICONERROR | MB_SYSTEMMODAL | MB_OK);
