@@ -437,3 +437,97 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 	}
 	return true;
 }
+
+
+bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
+	size_t last;
+	std::wstring ExportName;
+	std::wstring InputName = convertOption->getInputFilePath();
+	std::wstringstream ExportNameStream;
+	std::wstringstream ParamStream;
+
+	last = InputName.find_last_of(L'\\');
+	if (last == std::wstring::npos)
+		return false;
+
+	ParamStream << L"-i \"" << InputName << L"\" ";
+
+	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_waifu2x";
+
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
+
+	// set noise_level
+	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
+		ParamStream << L"-n " << convertOption->getNoiseLevel() << L" ";
+		if (!noLabel)
+			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
+	}
+
+	// set scale_ratio
+	ParamStream << L"-s ";
+	ParamStream << convertOption->getScaleRatio() << L" ";
+
+	std::wstring ScaleRatio = convertOption->getScaleRatio();
+
+	if (!noLabel && (convertOption->getScaleRatio() != L"1" || convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE))
+		ExportNameStream << L"_scale_x" << ScaleRatio;
+
+	ExportName = ExportNameStream.str();
+
+	// add extension
+	if (!IsDirectory(InputName.c_str()))
+		ExportName += L".png";
+
+	// create folder for folder conversion
+	if (convertOption->getOutputFolderName() != L"") {
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+	}
+
+	// set model directory
+	if (this->ModelDir != L"")
+		ParamStream << L"-m \"" << this->ModelDir << L"\" ";
+
+	// set output name
+	ParamStream << L"-o \"" << ExportName << L"\"";
+
+	// Execute
+	SHELLEXECUTEINFO shellExecuteInfo;
+	WCHAR param[MAX_PATH] = L"";
+	WCHAR lpDir[MAX_PATH] = L"";
+	WCHAR lpFile[MAX_PATH] = L"";
+	lstrcpyW(param, ParamStream.str().c_str());
+	lstrcpyW(lpDir, WorkingDir.c_str());
+	lstrcpyW(lpFile, ExePath.c_str());
+
+	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	if (convertOption->getDebugMode() == 0)
+		shellExecuteInfo.nShow = SW_HIDE;
+	else
+		shellExecuteInfo.nShow = SW_SHOW;
+	shellExecuteInfo.lpVerb = L"open";
+	shellExecuteInfo.lpParameters = param;
+	shellExecuteInfo.hwnd = NULL;
+	shellExecuteInfo.lpDirectory = lpDir;
+	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.lpFile = lpFile;
+
+	if (!ShellExecuteExW(&shellExecuteInfo))
+		return false;
+	else {
+		hConvertProcess = shellExecuteInfo.hProcess;
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if (hConvertProcess != nullptr)
+			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = nullptr;
+		CloseHandle(shellExecuteInfo.hProcess);
+		if (!FileExists(ExportName.c_str()))
+			return false;
+	}
+	return true;
+}
+

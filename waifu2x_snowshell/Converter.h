@@ -65,3 +65,10 @@ public:
 	Converter_Caffe(std::wstring exePath) : Converter(exePath) {};
 	virtual bool execute(ConvertOption *convertOption, bool noLabel = false) override;
 };
+
+class Converter_Vulkan : public Converter {
+public:
+	Converter_Vulkan() : Converter() {};
+	Converter_Vulkan(std::wstring exePath) : Converter(exePath) {};
+	virtual bool execute(ConvertOption* convertOption, bool noLabel = false) override;
+};

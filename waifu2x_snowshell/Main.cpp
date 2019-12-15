@@ -255,13 +255,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			return TRUE;
 		case ID_MENU_CONVERTER_CPP:
 		case ID_MENU_CONVERTER_CAFFE:
+		case ID_MENU_CONVERTER_VULKAN:
 			SnowSetting::checkConverterNum(hMenu, LOWORD(wParam) - ID_MENU_CONVERTER_CPP);
-			SnowSetting::getTexts(&UITitleText, &UIText);
 			SetMenu(hWnd, NULL);
 			DestroyMenu(hMenu);
 			hMenu = LoadMenu(g_hInst, MAKEINTRESOURCE(IDR_MENU1));
 			SnowSetting::loadMenuString(hMenu);
 			SetMenu(hWnd, hMenu);
+			SnowSetting::checkMenuAll(hMenu);
+			SnowSetting::getTexts(&UITitleText, &UIText);
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
 		}
@@ -300,8 +302,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		if(SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CPP)
 			prtTextBorder(hMemDC, 375, 2, L"waifu2x-converter-cpp", 21, RGB(0x21, 0x21, 0x21), 1);
-		else
+		else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE)
 			prtTextBorder(hMemDC, 430, 2, L"waifu2x-caffe", 13, RGB(0x21, 0x21, 0x21), 1);
+		else
+			prtTextBorder(hMemDC, 385, 2, L"waifu2x-ncnn-vulkan", 19, RGB(0x21, 0x21, 0x21), 1);
 
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, hMemDC, 0, 0, SRCCOPY);
 
@@ -380,7 +384,10 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	}
 	switch (SnowSetting::getScale()) {
 	case SCALE_x1_0:
-		convertOption->setScaleRatio(L"1.0");
+		if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
+			convertOption->setScaleRatio(L"1");
+		else
+			convertOption->setScaleRatio(L"1.0");
 		break;
 	case SCALE_x1_5:
 		convertOption->setScaleRatio(L"1.5");
@@ -389,7 +396,10 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		convertOption->setScaleRatio(L"1.6");
 		break;
 	case SCALE_x2_0:
-		convertOption->setScaleRatio(L"2.0");
+		if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
+			convertOption->setScaleRatio(L"2");
+		else
+			convertOption->setScaleRatio(L"2.0");
 		break;
 	case SCALE_CUSTOM:
 		convertOption->setScaleRatio(SnowSetting::getScaleRatio());

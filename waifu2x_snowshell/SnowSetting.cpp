@@ -7,6 +7,7 @@ wstring SnowSetting::LangPath;
 wstring SnowSetting::INIPath;
 Converter_Cpp SnowSetting::CONVERTER_CPP;
 Converter_Caffe SnowSetting::CONVERTER_CAFFE;
+Converter_Vulkan SnowSetting::CONVERTER_VULKAN;
 Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCudaAvailable;
@@ -28,6 +29,7 @@ SnowSetting::SnowSetting()
 	LangPath = CurrPath + L"\\Lang";
 	CONVERTER_CPP = Converter_Cpp(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
 	CONVERTER_CAFFE = Converter_Caffe(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe");
+	CONVERTER_VULKAN = Converter_Vulkan(CurrPath + L"\\waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe");
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 	CurrentConverter = nullptr;
@@ -487,6 +489,9 @@ bool SnowSetting::loadSetting()
 	wstring Section = L"Snowshell";
 	wstring Key, Value;
 
+	Key = L"ConverterNum";
+	setConverterNum(GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str()));
+
 	Key = L"Noise";
 	setNoise(GetPrivateProfileInt(Section.c_str(), Key.c_str(), NOISE_MID, INIPath.c_str()));
 
@@ -524,9 +529,6 @@ bool SnowSetting::loadSetting()
 	Key = L"Debug";
 	setDebug(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
 
-	Key = L"ConverterNum";
-	setConverterNum(GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str()));
-
 	loadLocale();
 
 	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"1.6", buf, MAX_PATH, INIPath.c_str());
@@ -548,6 +550,10 @@ bool SnowSetting::loadSetting()
 	CONVERTER_CPP.setExePath(buf);
 	CONVERTER_CPP.checkAvailable();
 
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-ncnn-vulkan", CONVERTER_VULKAN.getExePath().c_str(), buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_VULKAN.setExePath(buf);
+	CONVERTER_VULKAN.checkAvailable();
+
 
 	Section = L"Model";
 
@@ -556,6 +562,9 @@ bool SnowSetting::loadSetting()
 
 	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-converter-cpp", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CPP.setModelDir(buf);
+
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-ncnn-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_VULKAN.setModelDir(buf);
 
 
 	Section = L"CustomOption";
@@ -566,6 +575,9 @@ bool SnowSetting::loadSetting()
 	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-converter-cpp", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CPP.setOptionString(buf);
 
+	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-ncnn-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_VULKAN.setOptionString(buf);
+
 	IsCudaAvailable = checkCuda();
 
 	// Set Converter
@@ -575,6 +587,10 @@ bool SnowSetting::loadSetting()
 		}
 		else if (CONVERTER_CPP.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CPP);
+		}
+		else if (CONVERTER_VULKAN.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_VULKAN);
+			setScale(getScale());
 		}
 	}
 
@@ -588,6 +604,9 @@ bool SnowSetting::saveSetting()
 
 	wstring Section = L"Snowshell";
 	wstring Key, Value;
+
+	Key = L"ConverterNum";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getConverterNum()).c_str(), INIPath.c_str());
 
 	Key = L"Noise";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getNoise()).c_str(), INIPath.c_str());
@@ -613,9 +632,6 @@ bool SnowSetting::saveSetting()
 	Key = L"Debug";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getDebug()).c_str(), INIPath.c_str());
 
-	Key = L"ConverterNum";
-	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getConverterNum()).c_str(), INIPath.c_str());
-
 	Key = L"ScaleRatio";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), SnowSetting::getScaleRatio().c_str(), INIPath.c_str());
 
@@ -629,6 +645,8 @@ bool SnowSetting::saveSetting()
 
 	WritePrivateProfileString(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getExePath().c_str(), INIPath.c_str());
 
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-ncnn-vulkan", CONVERTER_VULKAN.getExePath().c_str(), INIPath.c_str());
+
 
 	Section = L"Model";
 
@@ -636,12 +654,16 @@ bool SnowSetting::saveSetting()
 
 	WritePrivateProfileString(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getModelDir().c_str(), INIPath.c_str());
 
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-ncnn-vulkan", CONVERTER_VULKAN.getModelDir().c_str(), INIPath.c_str());
+
 
 	Section = L"CustomOption";
 
 	WritePrivateProfileString(Section.c_str(), L"waifu2x-caffe", CONVERTER_CAFFE.getOptionString().c_str(), INIPath.c_str());
 
 	WritePrivateProfileString(Section.c_str(), L"waifu2x-converter-cpp", CONVERTER_CPP.getOptionString().c_str(), INIPath.c_str());
+
+	WritePrivateProfileString(Section.c_str(), L"waifu2x-ncnn-vulkan", CONVERTER_VULKAN.getOptionString().c_str(), INIPath.c_str());
 
 	return true;
 }
@@ -787,6 +809,9 @@ void SnowSetting::setScale(int Scale)
 	if (Scale > SCALE_MAX || Scale < 0)
 		Scale = 0;
 
+	if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0)
+		Scale = SCALE_x2_0;
+
 	Singletone->Scale = Scale;
 }
 
@@ -860,6 +885,13 @@ void SnowSetting::setConverterNum(int ConverterNum)
 			Singletone->ConverterNum = ConverterNum;
 		}
 		break;
+	case CONVERTER_NUM_VULKAN:
+		CONVERTER_VULKAN.checkAvailable();
+		if (CONVERTER_VULKAN.getAvailable()) {
+			Singletone->CurrentConverter = &CONVERTER_VULKAN;
+			Singletone->ConverterNum = ConverterNum;
+		}
+		break;
 	}
 }
 
@@ -912,6 +944,20 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 
 	for (int i = 0; i <= SCALE_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
+
+	if (CurrentConverter == &CONVERTER_VULKAN) {
+		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(hSubMenu, SCALE_CUSTOM, MF_BYPOSITION | MF_GRAYED);
+		if (getScale() != SCALE_x1_0 && getScale() != SCALE_x2_0)
+			setScale(SCALE_x2_0);
+	}
+	else {
+		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_ENABLED);
+		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_ENABLED);
+		EnableMenuItem(hSubMenu, SCALE_CUSTOM, MF_BYPOSITION | MF_ENABLED);
+	}
+
 	CheckMenuItem(hSubMenu, getScale(), MF_BYPOSITION | MF_CHECKED);
 }
 
@@ -921,6 +967,14 @@ void SnowSetting::checkGPU(HMENU hMenu, int sel)
 
 	if (sel != -1)
 		setGPU(sel);
+
+	if (CurrentConverter == &CONVERTER_VULKAN) {
+		EnableMenuItem(hMenu, MENU_GPU, MF_BYPOSITION | MF_GRAYED);
+		return;
+	}
+	else {
+		EnableMenuItem(hMenu, MENU_GPU, MF_BYPOSITION | MF_ENABLED);
+	}
 
 	for (int i = 0; i <= GPU_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
@@ -933,6 +987,14 @@ void SnowSetting::checkTTA(HMENU hMenu, int sel)
 
 	if (sel != -1)
 		setTTA(sel);
+
+	if (CurrentConverter == &CONVERTER_VULKAN) {
+		EnableMenuItem(hMenu, MENU_TTA, MF_BYPOSITION | MF_GRAYED);
+		return;
+	}
+	else {
+		EnableMenuItem(hMenu, MENU_TTA, MF_BYPOSITION | MF_ENABLED);
+	}
 
 	for (int i = 0; i < TTA_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
@@ -1001,6 +1063,7 @@ void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
 }
 
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
+	static wstring vulkan = L"VULKAN";
 	(*UITitleText)[0] = &STRING_TEXT_NOISE;
 	(*UITitleText)[1] = &STRING_TEXT_SCALE;
 	(*UITitleText)[2] = &STRING_TEXT_GPU;
@@ -1009,7 +1072,7 @@ void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
 
 	(*UIText)[0] = getNoiseText();
 	(*UIText)[1] = getScaleText();
-	(*UIText)[2] = getGPUText();
+	(*UIText)[2] = (CurrentConverter == &CONVERTER_VULKAN) ? &vulkan : getGPUText();
 	(*UIText)[3] = getExportText();
 	(*UIText)[4] = getConfirmText();
 }
