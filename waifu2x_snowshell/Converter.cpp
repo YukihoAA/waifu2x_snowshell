@@ -459,11 +459,9 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 		ParamStream << this->CustomOption << L" ";
 
 	// set noise_level
-	if (convertOption->getNoiseLevel() != ConvertOption::CO_NOISE_NONE) {
-		ParamStream << L"-n " << convertOption->getNoiseLevel() << L" ";
-		if (!noLabel)
-			ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
-	}
+	ParamStream << L"-n " << convertOption->getNoiseLevel() << L" ";
+	if (!noLabel)
+		ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
 
 	// set scale_ratio
 	ParamStream << L"-s ";
