@@ -47,7 +47,7 @@ using namespace std;
 #define TTA_DISABLED 0
 #define TTA_ENABLED 1
 
-#define TTA_MAX 2
+#define TTA_MAX 1
 
 
 #define MENU_EXPORT 5

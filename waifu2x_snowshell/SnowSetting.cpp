@@ -502,7 +502,7 @@ bool SnowSetting::loadSetting()
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), GPU_GPU_MODE, INIPath.c_str()));
 
 	Key = L"TTA";
-	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), TTA_DISABLED, INIPath.c_str()));
+	setTTA(GetPrivateProfileInt(Section.c_str(), Key.c_str(), TTA_DISABLED, INIPath.c_str()));
 
 	Key = L"Export";
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), EXPORT_SAME, INIPath.c_str()));
