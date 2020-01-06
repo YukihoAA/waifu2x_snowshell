@@ -33,7 +33,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	if (!bIsWow64)
 		MessageBox(NULL, L"This program only works on 64bit system", L"Error", MB_OK | MB_ICONERROR);
 
-	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v2.2.1", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v2.2.2", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
