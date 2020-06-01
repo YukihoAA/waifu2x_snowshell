@@ -72,6 +72,9 @@
     <Image Include="Bitmap\BG_Chinese.bmp">
       <Filter>리소스 파일</Filter>
     </Image>
+    <Image Include="Bitmap\BG_Portuguese.bmp">
+      <Filter>리소스 파일</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Lang\Korean.ini" />
@@ -79,5 +82,7 @@
     <None Include="Lang\Chinese.ini" />
     <None Include="Lang\English.ini" />
     <None Include="Lang\Swedish.ini" />
+    <None Include="Lang\German.ini" />
+    <None Include="Lang\Portuguese.ini" />
   </ItemGroup>
 </Project>

@@ -233,7 +233,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_LANG_EN:
 		case ID_MENU_LANG_JP:
 		case ID_MENU_LANG_CN:
+		case ID_MENU_LANG_DE:
 		case ID_MENU_LANG_SV:
+		case ID_MENU_LANG_PT:
 			SnowSetting::checkLang(hMenu, LOWORD(wParam) - ID_MENU_LANG_KO);
 			SnowSetting::getTexts(&UITitleText, &UIText);
 			SetMenu(hWnd, NULL);
@@ -249,6 +251,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP3));
 			else if (LangName.find(L"Chinese") != wstring::npos)
 				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP4));
+			else if (LangName.find(L"Portuguese") != wstring::npos)
+				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP5));
 			else
 				hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
 			InvalidateRect(hWnd, NULL, TRUE);
