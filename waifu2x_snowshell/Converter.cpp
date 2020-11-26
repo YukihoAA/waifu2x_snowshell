@@ -12,16 +12,20 @@ Converter::Converter() {
 }
 
 Converter::Converter(std::wstring exePath) {
-	if (exePath.empty())
+	this->ModelDir = L"";
+	this->CustomOption = L"";
+	this->hConvertThread = nullptr;
+	this->hConvertProcess = nullptr;
+	this->hProgressDlg = nullptr;
+
+	if (exePath.empty()) {
 		this->Available = false;
+		this->ExePath = L"";
+		this->WorkingDir = L"";
+	}
 	else {
 		this->ExePath = exePath;
 		this->WorkingDir = exePath.substr(0, exePath.find_last_of('\\'));
-		this->ModelDir = L"";
-		this->CustomOption = L"";
-		this->hConvertThread = nullptr;
-		this->hConvertProcess = nullptr;
-		this->hProgressDlg = nullptr;
 		this->checkAvailable();
 	}
 }
@@ -141,12 +145,14 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	{
 		FILE *fp;
 		_wfopen_s(&fp, L"error.log", L"wt+,ccs=UTF-16LE");
-		while (!ErrorQueue.empty()) {
-			fwprintf(fp, L"Error: %s\n", ErrorQueue.front().getInputFilePath().c_str());
-			ErrorQueue.pop();
+
+		if (fp) {
+			while (!ErrorQueue.empty()) {
+				fwprintf(fp, L"Error: %s\n", ErrorQueue.front().getInputFilePath().c_str());
+				ErrorQueue.pop();
+			}
+			fclose(fp);
 		}
-		fclose(fp);
-		fp = nullptr;
 		MessageBox(hWnd, L"Failed to convert some files.\nCheck \"error.log\"", L"Error", MB_ICONWARNING | MB_OK);
 	}
 	ExitThread(0);
@@ -306,7 +312,8 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 		if (hConvertProcess != nullptr)
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
-		CloseHandle(shellExecuteInfo.hProcess);
+		if (shellExecuteInfo.hProcess != nullptr)
+			CloseHandle(shellExecuteInfo.hProcess);
 		if (!FileExists(ExportName.c_str()))
 			return false;
 	}
@@ -431,7 +438,8 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 		if (hConvertProcess != nullptr)
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
-		CloseHandle(shellExecuteInfo.hProcess);
+		if (shellExecuteInfo.hProcess != nullptr)
+			CloseHandle(shellExecuteInfo.hProcess);
 		if (!FileExists(ExportName.c_str()))
 			return false;
 	}
@@ -522,7 +530,8 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 		if (hConvertProcess != nullptr)
 			TerminateProcess(hConvertProcess, 1);
 		hConvertProcess = nullptr;
-		CloseHandle(shellExecuteInfo.hProcess);
+		if (shellExecuteInfo.hProcess != nullptr)
+			CloseHandle(shellExecuteInfo.hProcess);
 		if (!FileExists(ExportName.c_str()))
 			return false;
 	}

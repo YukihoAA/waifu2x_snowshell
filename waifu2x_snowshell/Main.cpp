@@ -66,6 +66,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	RECT rt;
 	wstring LangName;
 	ConvertOption convertOption;
+	static WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.bmp;*.dib;*.jpg;*.jpeg;*.jpe;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pxm;*.pam;*.sr;*.ras;*.tif;*.tiff;*.exr;*.hdr;*.pic\0All Files\0*.*";
 
 	switch (uMsg) {
 	case WM_CREATE:
@@ -145,8 +146,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_FILE_IMGSEL: {
 			OPENFILENAME ofn;
 			LPWSTR lpwstrFile = new WCHAR[MAX_PATH];
-			WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.bmp;*.dib;*.jpg;*.jpeg;*.jpe;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pxm;*.pam;*.sr;*.ras;*.tif;*.tiff;*.exr;*.hdr;*.pic\0All Files\0*.*";
-
+			
 			lpwstrFile[0] = '\0';
 			ZeroMemory(&ofn, sizeof(OPENFILENAME));
 			ofn.lStructSize = sizeof(OPENFILENAME);
@@ -161,7 +161,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 			if (lpwstrFile != nullptr)
 			{
-				delete lpwstrFile;
+				delete[] lpwstrFile;
 			}
 			return TRUE;
 		}
