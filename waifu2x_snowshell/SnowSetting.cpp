@@ -19,7 +19,7 @@ wstring SnowSetting::LangFile[7] = { L"Korean.ini", L"English.ini", L"Japanese.i
 
 SnowSetting::SnowSetting()
 {
-	WCHAR path[MAX_PATH];
+	LPWSTR path = new WCHAR[MAX_PATH];
 	GetCurrentDirectory(MAX_PATH, path);
 	GetModuleFileName(NULL, path, MAX_PATH);
 	CurrPath = path;
@@ -33,6 +33,7 @@ SnowSetting::SnowSetting()
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 	CurrentConverter = nullptr;
+	delete[] path;
 
 	Noise = NOISE_MID;
 	Scale = SCALE_x1_6;
@@ -65,7 +66,7 @@ bool SnowSetting::checkCuda() {
 	HANDLE hRead, hWrite;
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
-	WCHAR param[MAX_PATH] = L"";
+	LPWSTR param;
 	const static size_t bufferSize = 128;
 
 
@@ -86,39 +87,45 @@ bool SnowSetting::checkCuda() {
 	si.hStdError = hWrite;
 	si.dwFlags = STARTF_USESTDHANDLES;
 
+	param = new WCHAR[MAX_PATH];
+
 	lstrcpy(param, CONVERTER_CPP.getExePath().c_str());
 	lstrcat(param, L" --list-processor");
 
 	BOOL isExecuted = CreateProcess(NULL, param, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, CurrPath.c_str(), &si, &pi);
+	
+	CloseHandle(hWrite);
 
 	if (isExecuted)
 	{
-		CloseHandle(hWrite);
-
 		DWORD len;
 		char s[bufferSize] = "";
 		string st;
 
-		ReadFile(hRead, s, bufferSize - 1, &len, 0);
-		st = s;
-		size_t firstLF = st.find_first_of('\n');
+		if (ReadFile(hRead, s, bufferSize - 1, &len, 0) != 0) {
+			st = s;
+			size_t firstLF = st.find_first_of('\n');
 
-		if (firstLF != string::npos)
-			st[firstLF] = '\0';
+			if (firstLF != string::npos)
+				st[firstLF] = '\0';
 
-		if (st.find_last_of('=') != string::npos)
-			CoreNum = atoi(st.substr(st.find_last_of('=') + 1).c_str());
+			if (st.find_last_of('=') != string::npos)
+				CoreNum = atoi(st.substr(st.find_last_of('=') + 1).c_str());
 
-		if (st.find("CUDA") != string::npos)
-			cuda = true;
+			if (st.find("CUDA") != string::npos)
+				cuda = true;
 
-		if (st.find("FMA") != string::npos || st.find("AVX") != string::npos)
-			IsCPU = true;
+			if (st.find("FMA") != string::npos || st.find("AVX") != string::npos)
+				IsCPU = true;
 
-		CloseHandle(hRead);
-		CloseHandle(pi.hProcess);
-		CloseHandle(pi.hThread);
+			CloseHandle(pi.hProcess);
+			CloseHandle(pi.hThread);
+		}
 	}
+
+	CloseHandle(hRead);
+
+	delete[] param;
 
 	return cuda;
 }
@@ -487,7 +494,7 @@ bool SnowSetting::loadSetting()
 	if (Singletone == nullptr)
 		Init();
 
-	WCHAR buf[MAX_PATH];
+	LPWSTR buf = new WCHAR[MAX_PATH];
 	wstring Section = L"Snowshell";
 	wstring Key, Value;
 
@@ -515,10 +522,10 @@ bool SnowSetting::loadSetting()
 	Key = L"Lang";
 	int langsel = GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str());
 	if (langsel == -1) {
-		WCHAR buf[40];
-		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, buf, 40);
+		WCHAR lbuf[40];
+		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, lbuf, 40);
 		for (int i = 0; i < LangNum; i++)
-			if (LangFile[i].find(buf) >= 0)
+			if (LangFile[i].find(lbuf) >= 0)
 			{
 				langsel = i;
 				break;
@@ -595,6 +602,8 @@ bool SnowSetting::loadSetting()
 			setScale(getScale());
 		}
 	}
+
+	delete[] buf;
 
 	return true;
 }

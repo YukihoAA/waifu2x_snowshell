@@ -194,6 +194,51 @@ INT_PTR CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 	return FALSE;
 }
 
+bool Converter::convert(std::wstring param, std::wstring exportName, int debug) {
+	SHELLEXECUTEINFO shellExecuteInfo;
+	LPWSTR lpParam = new WCHAR[MAX_PATH];
+	LPWSTR lpDir = new WCHAR[MAX_PATH];
+	LPWSTR lpFile = new WCHAR[MAX_PATH];
+	bool ret=true;
+
+	lstrcpyW(lpParam, param.c_str());
+	lstrcpyW(lpDir, WorkingDir.c_str());
+	lstrcpyW(lpFile, ExePath.c_str());
+
+	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
+	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+	if (debug == 0)
+		shellExecuteInfo.nShow = SW_HIDE;
+	else
+		shellExecuteInfo.nShow = SW_SHOW;
+	shellExecuteInfo.lpVerb = L"open";
+	shellExecuteInfo.lpParameters = lpParam;
+	shellExecuteInfo.hwnd = NULL;
+	shellExecuteInfo.lpDirectory = lpDir;
+	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
+	shellExecuteInfo.lpFile = lpFile;
+
+	if (!ShellExecuteExW(&shellExecuteInfo))
+		ret=false;
+	else {
+		hConvertProcess = shellExecuteInfo.hProcess;
+		if (hConvertProcess != nullptr)
+			WaitForSingleObject(hConvertProcess, INFINITE);
+		if (hConvertProcess != nullptr)
+			TerminateProcess(hConvertProcess, 1);
+		hConvertProcess = nullptr;
+		if (shellExecuteInfo.hProcess != nullptr)
+			CloseHandle(shellExecuteInfo.hProcess);
+		if (!FileExists(exportName.c_str()))
+			ret=false;
+	}
+
+	delete[] lpParam;
+	delete[] lpDir;
+	delete[] lpFile;
+
+	return ret;
+}
 
 bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	size_t last;
@@ -282,42 +327,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	SHELLEXECUTEINFO shellExecuteInfo;
-	WCHAR param[MAX_PATH] = L"";
-	WCHAR lpDir[MAX_PATH] = L"";
-	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, ParamStream.str().c_str());
-	lstrcpyW(lpDir, WorkingDir.c_str());
-	lstrcpyW(lpFile, ExePath.c_str());
-
-	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
-	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	if (convertOption->getDebugMode() == 0)
-		shellExecuteInfo.nShow = SW_HIDE;
-	else
-		shellExecuteInfo.nShow = SW_SHOW;
-	shellExecuteInfo.lpVerb = L"open";
-	shellExecuteInfo.lpParameters = param;
-	shellExecuteInfo.hwnd = NULL;
-	shellExecuteInfo.lpDirectory = lpDir;
-	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-	shellExecuteInfo.lpFile = lpFile;
-
-	if (!ShellExecuteExW(&shellExecuteInfo))
-		return false;
-	else {
-		hConvertProcess = shellExecuteInfo.hProcess;
-		if (hConvertProcess != nullptr)
-			WaitForSingleObject(hConvertProcess, INFINITE);
-		if (hConvertProcess != nullptr)
-			TerminateProcess(hConvertProcess, 1);
-		hConvertProcess = nullptr;
-		if (shellExecuteInfo.hProcess != nullptr)
-			CloseHandle(shellExecuteInfo.hProcess);
-		if (!FileExists(ExportName.c_str()))
-			return false;
-	}
-	return true;
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
 }
 
 
@@ -408,42 +418,7 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	SHELLEXECUTEINFO shellExecuteInfo;
-	WCHAR param[MAX_PATH] = L"";
-	WCHAR lpDir[MAX_PATH] = L"";
-	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, ParamStream.str().c_str());
-	lstrcpyW(lpDir, WorkingDir.c_str());
-	lstrcpyW(lpFile, ExePath.c_str());
-
-	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
-	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	if (convertOption->getDebugMode() == 0)
-		shellExecuteInfo.nShow = SW_HIDE;
-	else
-		shellExecuteInfo.nShow = SW_SHOW;
-	shellExecuteInfo.lpVerb = L"open";
-	shellExecuteInfo.lpParameters = param;
-	shellExecuteInfo.hwnd = NULL;
-	shellExecuteInfo.lpDirectory = lpDir;
-	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-	shellExecuteInfo.lpFile = lpFile;
-
-	if (!ShellExecuteExW(&shellExecuteInfo))
-		return false;
-	else {
-		hConvertProcess = shellExecuteInfo.hProcess;
-		if (hConvertProcess != nullptr)
-			WaitForSingleObject(hConvertProcess, INFINITE);
-		if (hConvertProcess != nullptr)
-			TerminateProcess(hConvertProcess, 1);
-		hConvertProcess = nullptr;
-		if (shellExecuteInfo.hProcess != nullptr)
-			CloseHandle(shellExecuteInfo.hProcess);
-		if (!FileExists(ExportName.c_str()))
-			return false;
-	}
-	return true;
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
 }
 
 
@@ -500,41 +475,6 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	SHELLEXECUTEINFO shellExecuteInfo;
-	WCHAR param[MAX_PATH] = L"";
-	WCHAR lpDir[MAX_PATH] = L"";
-	WCHAR lpFile[MAX_PATH] = L"";
-	lstrcpyW(param, ParamStream.str().c_str());
-	lstrcpyW(lpDir, WorkingDir.c_str());
-	lstrcpyW(lpFile, ExePath.c_str());
-
-	memset(&shellExecuteInfo, 0, sizeof(SHELLEXECUTEINFO));
-	shellExecuteInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-	if (convertOption->getDebugMode() == 0)
-		shellExecuteInfo.nShow = SW_HIDE;
-	else
-		shellExecuteInfo.nShow = SW_SHOW;
-	shellExecuteInfo.lpVerb = L"open";
-	shellExecuteInfo.lpParameters = param;
-	shellExecuteInfo.hwnd = NULL;
-	shellExecuteInfo.lpDirectory = lpDir;
-	shellExecuteInfo.fMask = SEE_MASK_FLAG_NO_UI | SEE_MASK_NOCLOSEPROCESS;
-	shellExecuteInfo.lpFile = lpFile;
-
-	if (!ShellExecuteExW(&shellExecuteInfo))
-		return false;
-	else {
-		hConvertProcess = shellExecuteInfo.hProcess;
-		if (hConvertProcess != nullptr)
-			WaitForSingleObject(hConvertProcess, INFINITE);
-		if (hConvertProcess != nullptr)
-			TerminateProcess(hConvertProcess, 1);
-		hConvertProcess = nullptr;
-		if (shellExecuteInfo.hProcess != nullptr)
-			CloseHandle(shellExecuteInfo.hProcess);
-		if (!FileExists(ExportName.c_str()))
-			return false;
-	}
-	return true;
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
 }
 

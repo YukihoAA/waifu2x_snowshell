@@ -47,6 +47,7 @@ public:
 	std::wstring getOptionString();
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();
+	bool convert(std::wstring param, std::wstring exportName, int debug);
 
 	virtual bool execute(ConvertOption *convertOption, bool noLabel = false)=0;
 };
