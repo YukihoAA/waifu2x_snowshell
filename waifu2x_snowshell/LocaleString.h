@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define SETTING_VER_MINIMUM 24
+#define SETTING_VER_MINIMUM 25
 
 extern int INT_SETTING_VER;
 
@@ -66,6 +66,8 @@ extern wstring STRING_TEXT_GPU_CPU;
 extern wstring STRING_TEXT_GPU_CPU_TTA;
 extern wstring STRING_TEXT_GPU_GPU;
 extern wstring STRING_TEXT_GPU_GPU_TTA;
+extern wstring STRING_TEXT_GPU_VULKAN;
+extern wstring STRING_TEXT_GPU_VULKAN_TTA;
 
 extern wstring STRING_TEXT_EXPORT;
 extern wstring STRING_TEXT_EXPORT_SAME;

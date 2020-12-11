@@ -402,6 +402,14 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU (TTA)", buf, 200, LangFileName.c_str());
 	STRING_TEXT_GPU_GPU_TTA = buf;
 
+	Key = L"STRING_TEXT_GPU_VULKAN";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"VULKAN", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_VULKAN = buf;
+
+	Key = L"STRING_TEXT_GPU_VULKAN_TTA";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"VULKAN (TTA)", buf, 200, LangFileName.c_str());
+	STRING_TEXT_GPU_VULKAN_TTA = buf;
+
 
 	Key = L"STRING_TEXT_EXPORT";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir", buf, 200, LangFileName.c_str());
@@ -999,14 +1007,6 @@ void SnowSetting::checkTTA(HMENU hMenu, int sel)
 	if (sel != -1)
 		setTTA(sel);
 
-	if (CurrentConverter == &CONVERTER_VULKAN) {
-		EnableMenuItem(hMenu, MENU_TTA, MF_BYPOSITION | MF_GRAYED);
-		return;
-	}
-	else {
-		EnableMenuItem(hMenu, MENU_TTA, MF_BYPOSITION | MF_ENABLED);
-	}
-
 	for (int i = 0; i < TTA_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getTTA(), MF_BYPOSITION | MF_CHECKED);
@@ -1074,7 +1074,6 @@ void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
 }
 
 void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
-	static wstring vulkan = L"VULKAN";
 	(*UITitleText)[0] = &STRING_TEXT_NOISE;
 	(*UITitleText)[1] = &STRING_TEXT_SCALE;
 	(*UITitleText)[2] = &STRING_TEXT_GPU;
@@ -1083,7 +1082,7 @@ void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
 
 	(*UIText)[0] = getNoiseText();
 	(*UIText)[1] = getScaleText();
-	(*UIText)[2] = (CurrentConverter == &CONVERTER_VULKAN) ? &vulkan : getGPUText();
+	(*UIText)[2] = getGPUText();
 	(*UIText)[3] = getExportText();
 	(*UIText)[4] = getConfirmText();
 }
@@ -1128,7 +1127,15 @@ wstring * SnowSetting::getScaleText()
 
 wstring * SnowSetting::getGPUText()
 {
-	if (getGPU() == GPU_CPU_MODE) {
+	if (CurrentConverter == &CONVERTER_VULKAN) {
+		if (getTTA() == TTA_DISABLED) {
+			return &STRING_TEXT_GPU_VULKAN;
+		}
+		else {
+			return &STRING_TEXT_GPU_VULKAN_TTA;
+		}
+	}
+	else if (getGPU() == GPU_CPU_MODE) {
 		if (getTTA() == TTA_DISABLED) {
 			return &STRING_TEXT_GPU_CPU;
 		} else {
