@@ -25,6 +25,7 @@ If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
  - CPU: [e.g. Intel i7-4770]
+ - RAM: [e.g. 16GB]
  - GPU: [e.g. NVIDIA GTX 2070 SUPER]
  - OS: [e.g. Windows 7,  Windows 10 ]
  - Converter: [e.g. waifu2x-converter-cpp, waifu2x-caffe]
