@@ -60,6 +60,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
+       call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
        msbuild waifu2x_snowshell.sln /p:Configuration=Release /p:Platform=Win32 -m
 
     - name: Perform CodeQL Analysis
