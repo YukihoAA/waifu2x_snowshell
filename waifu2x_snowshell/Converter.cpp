@@ -455,6 +455,14 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 	if (!noLabel && (convertOption->getScaleRatio() != L"1" || convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE))
 		ExportNameStream << L"_scale_x" << ScaleRatio;
 
+	// set tta mode
+	if (convertOption->getTTAEnabled())
+	{
+		ParamStream << L"-x ";
+		if (!noLabel)
+			ExportNameStream << L"_tta_1";
+	}
+
 	ExportName = ExportNameStream.str();
 
 	// add extension
