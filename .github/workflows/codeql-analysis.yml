@@ -23,7 +23,7 @@ on:
 jobs:
   analyze:
     name: Analyze
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     strategy:
       fail-fast: false
@@ -60,8 +60,7 @@ jobs:
     #    uses a compiled language
 
     - run: |
-       make bootstrap
-       make release
+       msbuild waifu2x_snowshell.sln /p:Configuration=Release /p:Platform=Win32 -m
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v1
