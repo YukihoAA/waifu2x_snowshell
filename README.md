@@ -10,12 +10,12 @@ Just drag & drop your image files (or folder) in to Snowshell! (multiple image s
 To change your conversion setting, select option at menubar. <br/>
 
 ## To Use waifu2x-caffe (NVIDIA GPU Only)
-> 1. Install latest [NVIDIA Graphics Driver](https://www.nvidia.co.kr/Download/index.aspx).
-> 2. Put [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder.
-> 2-1. If you want latest release of waifu2x-caffe, you need to download [cudnn64_7.dll](https://developer.nvidia.com/cudnn) first. check readme page of waifu2x-caffe.
-> 3. Select Converter to waifu2x-caffe.
-> 4. Set conversion mode on GPU(CPU) menu.
-> 4-1. TTA convert mode is slower but higher quality conversion.
+> 1. Install latest [NVIDIA Graphics Driver](https://www.nvidia.co.kr/Download/index.aspx). <br/>
+> 2. Put [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder. <br/>
+> 2-1. If you want latest release of waifu2x-caffe, you need to download [cudnn64_7.dll](https://developer.nvidia.com/cudnn) first. check readme page of waifu2x-caffe. <br/>
+> 3. Select Converter to waifu2x-caffe. <br/>
+> 4. Set conversion mode on GPU(CPU) menu. <br/>
+> 4-1. TTA convert mode is slower but higher quality conversion. <br/>
 > 5. Snowshell will start conversion using waifu2x-caffe. (with TTA option)
 
 ## To Change Model File
