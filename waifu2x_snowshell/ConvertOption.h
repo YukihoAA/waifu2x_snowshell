@@ -7,7 +7,7 @@
 
 class ConvertOption {
 private:
-	int NoiseLevel;	// 0:none, 1:low, 2:high, 3:very high
+	int NoiseLevel;	// -1:none, 0:low, 1:mid, 2:high, 3:very high
 	int CoreNum;	// Enable Only in CPU
 	int DebugMode;	// 0:Disabled, 1:Snow Converting Log
 	bool NoLabel;
