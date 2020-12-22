@@ -254,7 +254,6 @@ void SnowSetting::loadLocale()
 
 	Section = L"Scale";
 
-
 	Key = L"STRING_MENU_SCALE_CUSTOM";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Custom", buf, 200, LangFileName.c_str());
 	STRING_MENU_SCALE_CUSTOM = buf;
