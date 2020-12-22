@@ -262,11 +262,11 @@ void SnowSetting::loadLocale()
 	Section = L"GPU";
 
 	Key = L"STRING_MENU_GPU_CPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use CPU", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Force CPU Only", buf, 200, LangFileName.c_str());
 	STRING_MENU_GPU_CPU = buf;
 
 	Key = L"STRING_MENU_GPU_GPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Use GPU", buf, 200, LangFileName.c_str());
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Prefer GPU", buf, 200, LangFileName.c_str());
 	STRING_MENU_GPU_GPU = buf;
 
 
