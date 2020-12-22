@@ -19,10 +19,6 @@ wstring STRING_MENU_NOISE_MID = L"중간";
 wstring STRING_MENU_NOISE_HIGH = L"높음";
 wstring STRING_MENU_NOISE_VERY_HIGH = L"최대";
 
-wstring STRING_MENU_SCALE_x1_0 = L"x1.0";
-wstring STRING_MENU_SCALE_x1_5 = L"x1.5";
-wstring STRING_MENU_SCALE_x1_6 = L"x1.6";
-wstring STRING_MENU_SCALE_x2_0 = L"x2.0";
 wstring STRING_MENU_SCALE_CUSTOM = L"사용자 설정";
 
 wstring STRING_MENU_GPU_CPU = L"CPU 사용";

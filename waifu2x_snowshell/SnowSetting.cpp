@@ -254,21 +254,6 @@ void SnowSetting::loadLocale()
 
 	Section = L"Scale";
 
-	Key = L"STRING_MENU_SCALE_x1_0";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.0", buf, 200, LangFileName.c_str());
-	STRING_MENU_SCALE_x1_0 = buf;
-
-	Key = L"STRING_MENU_SCALE_x1_5";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.5", buf, 200, LangFileName.c_str());
-	STRING_MENU_SCALE_x1_5 = buf;
-
-	Key = L"STRING_MENU_SCALE_x1_6";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.6", buf, 200, LangFileName.c_str());
-	STRING_MENU_SCALE_x1_6 = buf;
-
-	Key = L"STRING_MENU_SCALE_x2_0";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x2.0", buf, 200, LangFileName.c_str());
-	STRING_MENU_SCALE_x2_0 = buf;
 
 	Key = L"STRING_MENU_SCALE_CUSTOM";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Custom", buf, 200, LangFileName.c_str());
@@ -705,10 +690,6 @@ void SnowSetting::loadMenuString(HMENU hMenu)
 	ModifyMenu(hMenu, ID_MENU_NOISE_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_HIGH, STRING_MENU_NOISE_HIGH.c_str());
 	ModifyMenu(hMenu, ID_MENU_NOISE_VERY_HIGH, MF_BYCOMMAND | MF_STRING, ID_MENU_NOISE_VERY_HIGH, STRING_MENU_NOISE_VERY_HIGH.c_str());
 
-	ModifyMenu(hMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_0, STRING_MENU_SCALE_x1_0.c_str());
-	ModifyMenu(hMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_5, STRING_MENU_SCALE_x1_5.c_str());
-	ModifyMenu(hMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x1_6, STRING_MENU_SCALE_x1_6.c_str());
-	ModifyMenu(hMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_x2_0, STRING_MENU_SCALE_x2_0.c_str());
 	ModifyMenu(hMenu, ID_MENU_SCALE_CUSTOM, MF_BYCOMMAND | MF_STRING, ID_MENU_SCALE_CUSTOM, STRING_MENU_SCALE_CUSTOM.c_str());
 
 	ModifyMenu(hMenu, ID_MENU_GPU_CPU, MF_BYCOMMAND | MF_STRING, ID_MENU_GPU_CPU, STRING_MENU_GPU_CPU.c_str());

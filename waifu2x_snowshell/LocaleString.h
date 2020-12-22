@@ -25,10 +25,6 @@ extern wstring STRING_MENU_NOISE_MID;
 extern wstring STRING_MENU_NOISE_HIGH;
 extern wstring STRING_MENU_NOISE_VERY_HIGH;
 
-extern wstring STRING_MENU_SCALE_x1_0;
-extern wstring STRING_MENU_SCALE_x1_5;
-extern wstring STRING_MENU_SCALE_x1_6;
-extern wstring STRING_MENU_SCALE_x2_0;
 extern wstring STRING_MENU_SCALE_CUSTOM;
 
 extern wstring STRING_MENU_GPU_CPU;
