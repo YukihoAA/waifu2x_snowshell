@@ -46,7 +46,7 @@ To change your conversion setting, select option at menu bar. <br/>
 ## To Change Output Extension
 > 1. Open config.ini file (if there is no config.ini, launch Snowshell once and close it) <br/>
 > 2. Change extension to prefer file format. <br/>
-> 2-1. Check converter's HP first the format is supported by them (waifu2x-ncnn-vulkan only supports jpg, png, webp) <br/>
+> 2-1. Check converter's HP to find which file format will be supported. <br/>
 
 ## To Use Advanced Option in Converter
 > 1. Open config.ini file (if there is no config.ini, launch Snowshell and close it) <br/>
