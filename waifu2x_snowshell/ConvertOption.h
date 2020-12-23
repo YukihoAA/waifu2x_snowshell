@@ -16,6 +16,7 @@ private:
 	std::wstring ScaleRatio;
 	std::wstring InputFilePath;
 	std::wstring OutputFolderName;
+	std::wstring OutputFileExtension;
 
 public:
 	const static int	CO_NOISE_NONE = -1;
@@ -26,7 +27,7 @@ public:
 
 public:
 	ConvertOption();
-	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::CO_NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = false, std::wstring OutputFolderName = L"");
+	ConvertOption(std::wstring inputFile, int noiseLevel = ConvertOption::CO_NOISE_NONE, std::wstring scaleRatio = L"1.0", bool ttaEnabled = false, std::wstring OutputFolderName = L"", std::wstring OutputFileExtension = L"png");
 	void setNoiseLevel(int noiseLevel);
 	void setCoreNum(int coreNum);
 	void setDebugMode(int debugMode);
@@ -36,6 +37,7 @@ public:
 	void setScaleRatio(std::wstring scaleRatio);
 	void setInputFilePath(std::wstring inputFile);
 	void setOutputFolderName(std::wstring OutputFolderName);
+	void setOutputFileExtension(std::wstring OutputFileExtension);
 
 	int getNoiseLevel();
 	int getCoreNum();
@@ -46,4 +48,5 @@ public:
 	std::wstring getScaleRatio();
 	std::wstring getInputFilePath();
 	std::wstring getOutputFolderName();
+	std::wstring getOutputFileExtension();
 };

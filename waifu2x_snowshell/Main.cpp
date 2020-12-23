@@ -52,6 +52,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HMENU hMenu;
+	static HWND hCombo;
 	static HFONT hFont, hSFont;
 	static HBITMAP hBGBitmap;
 	static wstring *UIText[5];
@@ -64,9 +65,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	PAINTSTRUCT ps;
 	HDC hdc, hBitDC, hMemDC;
 	RECT rt;
+	int i;
 	wstring LangName;
 	ConvertOption convertOption;
-	static WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.bmp;*.dib;*.jpg;*.jpeg;*.jpe;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pxm;*.pam;*.sr;*.ras;*.tif;*.tiff;*.exr;*.hdr;*.pic\0All Files\0*.*";
+	const int ExtNum = 3;
+	const static LPWSTR ExtList[ExtNum] = {L"png", L"jpg", L"webp"};
+	const static WCHAR lpstrFilter[MAX_PATH] = L"Supported Image Files\0*.bmp;*.dib;*.jpg;*.jpeg;*.jpe;*.jpf;*.jpx;*.jp2;*.j2c;*.j2k;*.jpc;*.jps;*.png;*.webp;*.pbm;*.pgm;*.ppm;*.pnm;*.pfm;*.pxm;*.pam;*.sr;*.ras;*.tif;*.tiff;*.exr;*.hdr;*.pic\0All Files\0*.*";
 
 	switch (uMsg) {
 	case WM_CREATE:
@@ -94,6 +98,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP4));
 		else
 			hBGBitmap = LoadBitmap(g_hInst, MAKEINTRESOURCE(IDB_BITMAP1));
+
+		hCombo = CreateWindowW(L"combobox", NULL, WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST, 440, 283, 67, 0, hWnd, (HMENU)ID_EXT_COMBO, g_hInst, NULL);
+		for (i = 0; i < ExtNum; i++) {
+			SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)ExtList[i]);
+			if(SnowSetting::getOutputExt()._Equal(ExtList[i]))
+				SendMessage(hCombo, CB_SETCURSEL, i, 0);
+		}
+		SendMessage(hCombo, WM_SETFONT, (WPARAM) hSFont, 0);
 		DragAcceptFiles(hWnd, TRUE);
 		return TRUE;
 	case WM_INITMENU:
@@ -270,6 +282,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			SnowSetting::getTexts(&UITitleText, &UIText);
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
+		case ID_EXT_COMBO:
+			switch (HIWORD(wParam)) {
+			case CBN_SELCHANGE:
+				i = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+				SnowSetting::setOutputExt(ExtList[i]);
+				break;
+			}
 		}
 		return FALSE;
 	case WM_PAINT:
@@ -310,6 +329,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			prtTextBorder(hMemDC, 430, 2, L"waifu2x-caffe", 13, RGB(0x21, 0x21, 0x21), 1);
 		else
 			prtTextBorder(hMemDC, 385, 2, L"waifu2x-ncnn-vulkan", 19, RGB(0x21, 0x21, 0x21), 1);
+
+		prtTextBorder(hMemDC, 410, 288, L" =▶", 3, RGB(0x21, 0x21, 0x21), 1);
 
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, hMemDC, 0, 0, SRCCOPY);
 
@@ -412,6 +433,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 
 	convertOption->setTTAEnabled(SnowSetting::getTTA());
 	convertOption->setForceCPU(SnowSetting::getGPU() == GPU_CPU_MODE || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE && !SnowSetting::getCudaAvailable());
+	convertOption->setOutputFileExtension(SnowSetting::getOutputExt());
 
 	DWORD FileAttribute = GetFileAttributes(fileName);
 

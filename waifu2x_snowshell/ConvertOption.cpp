@@ -10,9 +10,10 @@ ConvertOption::ConvertOption() {
 	ScaleRatio = L"1.0";
 	InputFilePath = L"";
 	OutputFolderName = L"";
+	OutputFileExtension = L"png";
 }
 
-ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstring scaleRatio, bool ttaEnabled, std::wstring OutputFolderName) {
+ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstring scaleRatio, bool ttaEnabled, std::wstring OutputFolderName, std::wstring OutputFileExtension) {
 	this->NoiseLevel = noiseLevel;
 	this->CoreNum = 0;
 	this->DebugMode = 0;
@@ -22,6 +23,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->ScaleRatio = scaleRatio;
 	this->InputFilePath = inputFile;
 	this->OutputFolderName = OutputFolderName;
+	this->OutputFileExtension = OutputFileExtension;
 }
 
 void ConvertOption::setNoiseLevel(int noiseLevel) {
@@ -60,6 +62,10 @@ void ConvertOption::setOutputFolderName(std::wstring OutputFolderName) {
 	this->OutputFolderName = OutputFolderName;
 }
 
+void ConvertOption::setOutputFileExtension(std::wstring OutputFileExtension) {
+	this->OutputFileExtension = OutputFileExtension;
+}
+
 
 int ConvertOption::getNoiseLevel() {
 	return this->NoiseLevel;
@@ -95,4 +101,8 @@ std::wstring ConvertOption::getInputFilePath() {
 
 std::wstring ConvertOption::getOutputFolderName() {
 	return this->OutputFolderName;
+}
+
+std::wstring ConvertOption::getOutputFileExtension() {
+	return this->OutputFileExtension;
 }

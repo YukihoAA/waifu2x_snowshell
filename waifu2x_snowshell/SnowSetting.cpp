@@ -33,6 +33,7 @@ SnowSetting::SnowSetting()
 	CoreNum = thread::hardware_concurrency();
 	IsCudaAvailable = checkCuda();
 	CurrentConverter = nullptr;
+	OutputExt = L"png";
 	delete[] path;
 
 	Noise = NOISE_MID;
@@ -508,6 +509,10 @@ bool SnowSetting::loadSetting()
 	Key = L"Export";
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), EXPORT_SAME, INIPath.c_str()));
 
+	Key = L"Extension";
+	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"png", buf, MAX_PATH, INIPath.c_str());
+	setOutputExt(buf);
+
 	Key = L"Confirm";
 	setConfirm(GetPrivateProfileInt(Section.c_str(), Key.c_str(), CONFIRM_SHOW, INIPath.c_str()));
 
@@ -625,6 +630,9 @@ bool SnowSetting::saveSetting()
 
 	Key = L"Export";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getExport()).c_str(), INIPath.c_str());
+
+	Key = L"Extension";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), getOutputExt().c_str(), INIPath.c_str());
 
 	Key = L"Confirm";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getConfirm()).c_str(), INIPath.c_str());
@@ -789,6 +797,13 @@ std::wstring SnowSetting::getScaleRatio() {
 	return Singletone->ScaleRatio;
 }
 
+std::wstring SnowSetting::getOutputExt(){
+	if (Singletone == nullptr)
+		Init();
+
+	return Singletone->OutputExt;
+}
+
 void SnowSetting::setNoise(int Noise)
 {
 	if (Singletone == nullptr)
@@ -899,6 +914,13 @@ void SnowSetting::setScaleRatio(std::wstring scaleRatio) {
 		Init();
 
 	Singletone->ScaleRatio = scaleRatio;
+}
+
+void SnowSetting::setOutputExt(std::wstring outputExt) {
+	if (Singletone == nullptr)
+		Init();
+
+	Singletone->OutputExt = outputExt;
 }
 
 void SnowSetting::setTTA(int tta)

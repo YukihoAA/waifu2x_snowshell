@@ -99,6 +99,7 @@ private:
 	int Debug;
 	int ConverterNum;
 	std::wstring ScaleRatio;
+	std::wstring OutputExt;
 
 protected:
 	SnowSetting();
@@ -134,6 +135,7 @@ public:
 	static int getLang();
 	static std::wstring getLangName();
 	static std::wstring getScaleRatio();
+	static std::wstring getOutputExt();
 
 	static void setNoise(int Noise);
 	static void setScale(int Scale);
@@ -145,6 +147,7 @@ public:
 	static void setDebug(BOOL Debug);
 	static void setConverterNum(int ConverterNum);
 	static void setScaleRatio(std::wstring scaleRatio);
+	static void setOutputExt(std::wstring outputExt);
 
 	static void checkMenuAll(HMENU hMenu);
 	static void checkNoise(HMENU hMenu, int sel = -1);

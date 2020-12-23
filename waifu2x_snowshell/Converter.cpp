@@ -311,7 +311,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 
 	// add extension
 	if (!IsDirectory(InputName.c_str()))
-		ExportName += L".png";
+		ExportName += L"." + convertOption->getOutputFileExtension();
 
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
@@ -402,7 +402,7 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 
 	// add extension
 	if (!IsDirectory(InputName.c_str()))
-		ExportName += L".png";
+		ExportName += L"." + convertOption->getOutputFileExtension();
 
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
@@ -467,7 +467,7 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	// add extension
 	if (!IsDirectory(InputName.c_str()))
-		ExportName += L".png";
+		ExportName += L"." + convertOption->getOutputFileExtension();
 
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
