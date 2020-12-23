@@ -7,7 +7,7 @@ Snowshell uses C++ and Win32API.
 
 # Usage
 Just drag & drop your image files (or folder) in to Snowshell! (multiple image supports) <br/>
-To change your conversion setting, select option at menubar. <br/>
+To change your conversion setting, select option at menu bar. <br/>
 
 ## To Use waifu2x-ncnn-vulkan (Supported GPU Only)
 > 1. Install latest Graphics Driver. [AMD](https://www.amd.com/en/support) [NVIDIA](https://www.nvidia.co.kr/Download/index.aspx) [INTEL](https://downloadcenter.intel.com/product/80939/Graphics-Drivers) <br/>
@@ -17,6 +17,9 @@ To change your conversion setting, select option at menubar. <br/>
 > 4-1. TTA convert mode is slower but higher quality conversion. <br/>
 > 5. Snowshell will start conversion using waifu2x-ncnn-vulkan.
 
+### Notice For waifu2x-ncnn-vulkan:
+> You cannot use upconv_7 models for x1 mode. please use cunet instead (default)
+
 ## To Use waifu2x-caffe (NVIDIA GPU Only)
 > 1. Install latest [NVIDIA Graphics Driver](https://www.nvidia.co.kr/Download/index.aspx). <br/>
 > 2. Put [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe/releases) to waifu2x-caffe folder. <br/>
@@ -25,8 +28,13 @@ To change your conversion setting, select option at menubar. <br/>
 > 4-1. TTA convert mode is slower but higher quality conversion. <br/>
 > 5. Snowshell will start conversion using waifu2x-caffe.
 
+### To Use cunet model with included waifu2x-caffe:
+> 1. set model folder to models/cunet
+> 2. set Custom Option to -p cudnn
+> ![image](https://user-images.githubusercontent.com/20253131/71813700-aeede580-30bd-11ea-84a7-63d49a9fe6b6.png)
+
 ## To Change Model File
-> 1. Open config.ini file (if there is no config.ini, launch Snowshell and close it) <br/>
+> 1. Open config.ini file (if there is no config.ini, launch Snowshell once and close it) <br/>
 > 2. Set your model file directory with absolute path or relative path. <br/>
 > 2-1 You have to use \\\\ instead of \ <br/>
 > 2-2. When you use relative path, path is relative to converter's directory. <br/>
@@ -34,6 +42,11 @@ To change your conversion setting, select option at menubar. <br/>
 > 3-1. waifu2x_converter_cpp = models_rgb <br/>
 > 3-2. waifu2x_caffe = models\\\\upconv_7_anime_style_art_rgb <br/>
 > 3-3. waifu2x_ncnn-vulkan = models-cunet <br/>
+
+## To Change Output Extension
+> 1. Open config.ini file (if there is no config.ini, launch Snowshell once and close it) <br/>
+> 2. Change extension to prefer file format. <br/>
+> 2-1. Check converter's HP first the format is supported by them (vulkan only supports jpg, png, webp) <br/>
 
 ## To Use Advanced Option in Converter
 > 1. Open config.ini file (if there is no config.ini, launch Snowshell and close it) <br/>
