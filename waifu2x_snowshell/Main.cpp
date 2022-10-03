@@ -33,7 +33,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	if (!bIsWow64)
 		MessageBox(NULL, L"This program only works on 64bit system", L"Error", MB_OK | MB_ICONERROR);
 
-	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v2.3", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"waifu2x - Snowshell v2.4", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -107,6 +107,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 		SendMessage(hCombo, WM_SETFONT, (WPARAM) hSFont, 0);
 		DragAcceptFiles(hWnd, TRUE);
+
+
 		return TRUE;
 	case WM_INITMENU:
 		SnowSetting::checkMenuAll(hMenu);
@@ -205,7 +207,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_SCALE_CUSTOM:
 			if (SnowSetting::getConfirm() == CONFIRM_SHOW && MessageBox(hWnd, STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.c_str(), STRING_TEXT_CONFIRM_CUSTOM_SCALE_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 				return TRUE;
-			DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
+			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcVulkan);
+			else
+				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
 		case ID_MENU_SCALE_x1_0:
 		case ID_MENU_SCALE_x1_5:
 		case ID_MENU_SCALE_x1_6:
@@ -380,6 +385,40 @@ INT_PTR CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 	return FALSE;
 }
 
+INT_PTR CALLBACK SettingDlgProcVulkan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+	static HWND hCombo, hText, hButton;
+	switch (uMsg)
+	{
+	case WM_INITDIALOG:
+		hCombo = GetDlgItem(hDlg, IDC_COMBO1);
+		hText = GetDlgItem(hDlg, IDC_TEXT1);
+		hButton = GetDlgItem(hDlg, IDOK);
+
+		for (int i = 0; i < SnowSetting::VulkanScaleNum; i++) {
+			SendMessage(hCombo, CB_ADDSTRING, 0, (LPARAM)SnowSetting::VulkanScale[i]);
+			if (!wcscmp(SnowSetting::getScaleRatio().c_str(), SnowSetting::VulkanScale[i]))
+				SendMessage(hCombo, CB_SETCURSEL, i, 0);
+		}
+
+		SetWindowText(hText, STRING_TEXT_SCALE.c_str());
+		return TRUE;
+	case WM_COMMAND:
+		switch (LOWORD(wParam))
+		{
+		case IDOK:
+			SnowSetting::setScaleRatio(SnowSetting::VulkanScale[SendMessage(hCombo, CB_GETCURSEL, 0, 0)]);
+
+			EndDialog(hDlg, IDCANCEL);
+			return TRUE;
+		}
+		return FALSE;
+	case WM_CLOSE:
+		EndDialog(hDlg, IDCANCEL);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
 	int FileNameLength;
 	int MaxInputLength;
@@ -409,10 +448,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	}
 	switch (SnowSetting::getScale()) {
 	case SCALE_x1_0:
-		if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
-			convertOption->setScaleRatio(L"1");
-		else
-			convertOption->setScaleRatio(L"1.0");
+		convertOption->setScaleRatio(L"1.0");
 		break;
 	case SCALE_x1_5:
 		convertOption->setScaleRatio(L"1.5");
@@ -421,10 +457,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		convertOption->setScaleRatio(L"1.6");
 		break;
 	case SCALE_x2_0:
-		if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
-			convertOption->setScaleRatio(L"2");
-		else
-			convertOption->setScaleRatio(L"2.0");
+		convertOption->setScaleRatio(L"2.0");
 		break;
 	case SCALE_CUSTOM:
 		convertOption->setScaleRatio(SnowSetting::getScaleRatio());

@@ -107,6 +107,8 @@ protected:
 	static void loadLocale();
 
 public:
+	static LPWSTR VulkanScale[];
+	const static int VulkanScaleNum;
 	static std::wstring OutputDirName;
 	static std::wstring CurrPath;
 

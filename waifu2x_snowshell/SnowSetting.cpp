@@ -17,6 +17,10 @@ const int SnowSetting::LangNum = 7;
 wstring SnowSetting::LangName[7] = { L"한국어", L"English", L"日本語", L"中文", L"Deutsch", L"Svenska" , L"Portuguese" };
 wstring SnowSetting::LangFile[7] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini", L"German.ini", L"Swedish.ini", L"Portuguese.ini" };
 
+
+const int SnowSetting::VulkanScaleNum = 6;
+LPWSTR SnowSetting::VulkanScale[6] = { L"1.0", L"2.0", L"4.0", L"8.0", L"16.0", L"32.0" };
+
 SnowSetting::SnowSetting()
 {
 	LPWSTR path = new WCHAR[MAX_PATH];
@@ -821,9 +825,9 @@ void SnowSetting::setScale(int Scale)
 		Init();
 
 	if (Scale > SCALE_MAX || Scale < 0)
-		Scale = 0;
+		Scale = SCALE_x2_0;
 
-	if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0)
+	if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
 
 	Singletone->Scale = Scale;
@@ -904,6 +908,11 @@ void SnowSetting::setConverterNum(int ConverterNum)
 		if (CONVERTER_VULKAN.getAvailable()) {
 			Singletone->CurrentConverter = &CONVERTER_VULKAN;
 			Singletone->ConverterNum = ConverterNum;
+			for (int i = 0; i < VulkanScaleNum; i++) {
+				if (!wcscmp(VulkanScale[i], Singletone->ScaleRatio.c_str()))
+					return;
+			}
+			Singletone->ScaleRatio = L"2.0";
 		}
 		break;
 	}
@@ -969,14 +978,12 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 	if (CurrentConverter == &CONVERTER_VULKAN) {
 		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
-		EnableMenuItem(hSubMenu, SCALE_CUSTOM, MF_BYPOSITION | MF_GRAYED);
-		if (getScale() != SCALE_x1_0 && getScale() != SCALE_x2_0)
+		if (getScale() == SCALE_x1_5 && getScale() == SCALE_x1_6)
 			setScale(SCALE_x2_0);
 	}
 	else {
 		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_ENABLED);
 		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_ENABLED);
-		EnableMenuItem(hSubMenu, SCALE_CUSTOM, MF_BYPOSITION | MF_ENABLED);
 	}
 
 	CheckMenuItem(hSubMenu, getScale(), MF_BYPOSITION | MF_CHECKED);
