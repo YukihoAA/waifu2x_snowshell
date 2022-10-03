@@ -10,7 +10,7 @@ Just drag & drop your image files (or folder) in to Snowshell! (multiple image s
 To change your conversion setting, select option at menu bar. <br/>
 
 ## To Use waifu2x-ncnn-vulkan (Supported GPU Only)
-> 1. Install latest Graphics Driver. [AMD](https://www.amd.com/en/support) [NVIDIA](https://www.nvidia.co.kr/Download/index.aspx) [INTEL](https://downloadcenter.intel.com/product/80939/Graphics-Drivers) <br/>
+> 1. Install latest Graphics Driver. [AMD](https://www.amd.com/en/support) / [NVIDIA](https://www.nvidia.co.kr/Download/index.aspx) / [INTEL](https://downloadcenter.intel.com/product/80939/Graphics-Drivers) <br/>
 > 2. Put [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan/releases) to waifu2x-ncnn-vulkan folder. <br/>
 > 3. Select Converter to waifu2x-ncnn-vulkan. <br/>
 > 4. Set conversion mode on TTA menu. <br/>
