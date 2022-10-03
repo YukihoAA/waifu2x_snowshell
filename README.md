@@ -30,7 +30,7 @@ To change your conversion setting, select option at menu bar. <br/>
 
 ### To Use cunet model with included waifu2x-caffe:
 > 1. set model folder to models/cunet
-> 2. set Custom Option to -p cudnn
+> 2. set Custom Option to -p cudnn <br/>
 > ![image](https://user-images.githubusercontent.com/20253131/71813700-aeede580-30bd-11ea-84a7-63d49a9fe6b6.png)
 
 ## To Change Model File
