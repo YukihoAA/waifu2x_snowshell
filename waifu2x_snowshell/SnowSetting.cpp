@@ -992,7 +992,7 @@ void SnowSetting::checkTTA(HMENU hMenu, int sel)
 	if (sel != -1)
 		setTTA(sel);
 
-	for (int i = 0; i < TTA_MAX; i++)
+	for (int i = 0; i <= TTA_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getTTA(), MF_BYPOSITION | MF_CHECKED);
 }
@@ -1053,7 +1053,7 @@ void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
 	if (sel != -1)
 		setConverterNum(sel);
 
-	for (int i = 0; i < CONVERTER_NUM_MAX; i++)
+	for (int i = 0; i <= CONVERTER_NUM_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getConverterNum(), MF_BYPOSITION | MF_CHECKED);
 }
