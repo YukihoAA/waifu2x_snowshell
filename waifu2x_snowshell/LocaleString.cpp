@@ -45,12 +45,6 @@ wstring STRING_TEXT_NOISE_HIGH = L"높음";
 wstring STRING_TEXT_NOISE_VERY_HIGH = L"최대";
 
 wstring STRING_TEXT_SCALE = L"확대 비율";
-wstring STRING_TEXT_SCALE_x1_0 = L"x1.0";
-wstring STRING_TEXT_SCALE_x1_5 = L"x1.5";
-wstring STRING_TEXT_SCALE_x1_6 = L"x1.6";
-wstring STRING_TEXT_SCALE_x2_0 = L"x2.0";
-wstring STRING_TEXT_SCALE_PREFIX = L"x";
-wstring STRING_TEXT_SCALE_POSTFIX = L"";
 
 wstring STRING_TEXT_GPU = L"변환방식";
 wstring STRING_TEXT_GPU_CPU = L"CPU";

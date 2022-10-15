@@ -349,30 +349,6 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Zoom Scale", buf, 200, LangFileName.c_str());
 	STRING_TEXT_SCALE = buf;
 
-	Key = L"STRING_TEXT_SCALE_x1_0";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.0", buf, 200, LangFileName.c_str());
-	STRING_TEXT_SCALE_x1_0 = buf;
-
-	Key = L"STRING_TEXT_SCALE_x1_5";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.5", buf, 200, LangFileName.c_str());
-	STRING_TEXT_SCALE_x1_5 = buf;
-
-	Key = L"STRING_TEXT_SCALE_x1_6";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x1.6", buf, 200, LangFileName.c_str());
-	STRING_TEXT_SCALE_x1_6 = buf;
-
-	Key = L"STRING_TEXT_SCALE_x2_0";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x2.0", buf, 200, LangFileName.c_str());
-	STRING_TEXT_SCALE_x2_0 = buf;
-
-	Key = L"STRING_TEXT_SCALE_PREFIX";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"x", buf, 200, LangFileName.c_str());
-	STRING_TEXT_SCALE_PREFIX = buf;
-
-	Key = L"STRING_TEXT_SCALE_POSTFIX";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"", buf, 200, LangFileName.c_str());
-	STRING_TEXT_SCALE_POSTFIX = buf;
-
 
 	Key = L"STRING_TEXT_GPU";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Converter", buf, 200, LangFileName.c_str());
@@ -1132,23 +1108,9 @@ wstring * SnowSetting::getNoiseText()
 
 wstring * SnowSetting::getScaleText()
 {
-	static std::wstring scaleRatioString;
-
-	switch (getScale()) {
-	case SCALE_x1_0:
-		return &STRING_TEXT_SCALE_x1_0;
-	case SCALE_x1_5:
-		return &STRING_TEXT_SCALE_x1_5;
-	case SCALE_x1_6:
-		return &STRING_TEXT_SCALE_x1_6;
-	case SCALE_x2_0:
-		return &STRING_TEXT_SCALE_x2_0;
-	case SCALE_CUSTOM:
-		scaleRatioString = STRING_TEXT_SCALE_PREFIX +
-			SnowSetting::getScaleRatio() + STRING_TEXT_SCALE_POSTFIX;
-		return &scaleRatioString;
-	}
-	return nullptr;
+	static std::wstring scaleRatioString = L"x1.0";
+	scaleRatioString = L"x" + SnowSetting::getScaleRatio();
+	return &scaleRatioString;
 }
 
 wstring * SnowSetting::getGPUText()

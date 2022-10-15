@@ -50,12 +50,6 @@ extern wstring STRING_TEXT_NOISE_HIGH;
 extern wstring STRING_TEXT_NOISE_VERY_HIGH;
 
 extern wstring STRING_TEXT_SCALE;
-extern wstring STRING_TEXT_SCALE_x1_0;
-extern wstring STRING_TEXT_SCALE_x1_5;
-extern wstring STRING_TEXT_SCALE_x1_6;
-extern wstring STRING_TEXT_SCALE_x2_0;
-extern wstring STRING_TEXT_SCALE_PREFIX;
-extern wstring STRING_TEXT_SCALE_POSTFIX;
 
 extern wstring STRING_TEXT_GPU;
 extern wstring STRING_TEXT_GPU_CPU;
