@@ -110,6 +110,7 @@ protected:
 public:
 	static LPWSTR VulkanScale[];
 	const static int VulkanScaleNum;
+	const static int CuganScaleNum;
 	static std::wstring OutputDirName;
 	static std::wstring CurrPath;
 

@@ -19,8 +19,9 @@ wstring SnowSetting::LangName[LangNum] = { L"한국어", L"English", L"日本語
 wstring SnowSetting::LangFile[LangNum] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini", L"German.ini", L"Swedish.ini", L"Portuguese.ini", L"Ukrainian.ini" };
 
 
-const int SnowSetting::VulkanScaleNum = 6;
-LPWSTR SnowSetting::VulkanScale[6] = { L"1.0", L"2.0", L"4.0", L"8.0", L"16.0", L"32.0" };
+const int SnowSetting::VulkanScaleNum = 4;
+const int SnowSetting::CuganScaleNum = 1;
+LPWSTR SnowSetting::VulkanScale[VulkanScaleNum] = { L"4.0", L"8.0", L"16.0", L"32.0" };
 
 SnowSetting::SnowSetting()
 {
@@ -802,7 +803,7 @@ void SnowSetting::setScale(int Scale)
 
 	if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
-	else if (CurrentConverter == &CONVERTER_CUGAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0)
+	else if (CurrentConverter == &CONVERTER_CUGAN && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
 
 	Singletone->Scale = Scale;
@@ -895,6 +896,10 @@ void SnowSetting::setConverterNum(int ConverterNum)
 		if (CONVERTER_CUGAN.getAvailable()) {
 			Singletone->CurrentConverter = &CONVERTER_CUGAN;
 			Singletone->ConverterNum = ConverterNum;
+			for (int i = 0; i < CuganScaleNum; i++) {
+				if (!wcscmp(VulkanScale[i], Singletone->ScaleRatio.c_str()))
+					return;
+			}
 			Singletone->ScaleRatio = L"2.0";
 		}
 		break;
@@ -962,7 +967,7 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
 
-		if (getScale() != SCALE_x2_0)
+		if (getScale() == SCALE_x1_5 || getScale() == SCALE_x1_6)
 			setScale(SCALE_x2_0);
 	}
 	else if (CurrentConverter == &CONVERTER_CUGAN) {
@@ -970,7 +975,7 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
 
-		if (getScale() != SCALE_x2_0)
+		if (getScale() != SCALE_x2_0 && getScale() != SCALE_CUSTOM)
 			setScale(SCALE_x2_0);
 	}
 	else {
@@ -1109,7 +1114,18 @@ wstring * SnowSetting::getNoiseText()
 wstring * SnowSetting::getScaleText()
 {
 	static std::wstring scaleRatioString = L"x1.0";
-	scaleRatioString = L"x" + SnowSetting::getScaleRatio();
+	switch (getScale()) {
+	case SCALE_x1_0:
+		return &STRING_TEXT_SCALE_x1_0;
+	case SCALE_x1_5:
+		return &STRING_TEXT_SCALE_x1_5;
+	case SCALE_x1_6:
+		return &STRING_TEXT_SCALE_x1_6;
+	case SCALE_x2_0:
+		return &STRING_TEXT_SCALE_x2_0;
+	case SCALE_CUSTOM:
+		scaleRatioString = L"x" + SnowSetting::getScaleRatio();
+	}
 	return &scaleRatioString;
 }
 
