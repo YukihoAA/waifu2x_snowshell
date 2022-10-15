@@ -253,6 +253,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_LANG_DE:
 		case ID_MENU_LANG_SV:
 		case ID_MENU_LANG_PT:
+		case ID_MENU_LANG_UKR:
 			SnowSetting::checkLang(hMenu, LOWORD(wParam) - ID_MENU_LANG_KO);
 			SnowSetting::getTexts(&UITitleText, &UIText);
 			SetMenu(hWnd, NULL);

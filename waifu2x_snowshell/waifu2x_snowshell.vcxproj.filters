@@ -84,5 +84,6 @@
     <None Include="Lang\Swedish.ini" />
     <None Include="Lang\German.ini" />
     <None Include="Lang\Portuguese.ini" />
+    <None Include="Lang\Ukrainian.ini" />
   </ItemGroup>
 </Project>
