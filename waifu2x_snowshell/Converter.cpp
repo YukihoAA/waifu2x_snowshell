@@ -486,3 +486,68 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
 }
 
+
+bool Converter_Cugan::execute(ConvertOption* convertOption, bool noLabel) {
+	size_t last;
+	std::wstring ExportName;
+	std::wstring InputName = convertOption->getInputFilePath();
+	std::wstringstream ExportNameStream;
+	std::wstringstream ParamStream;
+
+	last = InputName.find_last_of(L'\\');
+	if (last == std::wstring::npos)
+		return false;
+
+	ParamStream << L"-i \"" << InputName << L"\" ";
+
+	ExportNameStream << InputName.substr(0, InputName.find_last_of(L".")) << L"_cugan";
+
+	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
+	if (this->CustomOption != L"")
+		ParamStream << this->CustomOption << L" ";
+
+	// set noise_level
+	ParamStream << L"-n " << convertOption->getNoiseLevel() << L" ";
+	if (!noLabel)
+		ExportNameStream << L"_noise" << convertOption->getNoiseLevel();
+
+	// set scale_ratio
+	ParamStream << L"-s ";
+	ParamStream << convertOption->getScaleRatio() << L" ";
+
+	std::wstring ScaleRatio = convertOption->getScaleRatio();
+
+	if (!noLabel && (convertOption->getScaleRatio() != L"1" || convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE))
+		ExportNameStream << L"_scale_x" << ScaleRatio;
+
+	// set tta mode
+	if (convertOption->getTTAEnabled())
+	{
+		ParamStream << L"-x ";
+		if (!noLabel)
+			ExportNameStream << L"_tta_1";
+	}
+
+	ExportName = ExportNameStream.str();
+
+	// add extension
+	if (!IsDirectory(InputName.c_str()))
+		ExportName += L"." + convertOption->getOutputFileExtension();
+
+	// create folder for folder conversion
+	if (convertOption->getOutputFolderName() != L"") {
+		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+	}
+
+	// set model directory
+	if (this->ModelDir != L"")
+		ParamStream << L"-m \"" << this->ModelDir << L"\" ";
+
+	// set output name
+	ParamStream << L"-o \"" << ExportName << L"\"";
+
+	// Execute
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
+}
+

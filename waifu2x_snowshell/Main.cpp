@@ -278,6 +278,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_CONVERTER_CPP:
 		case ID_MENU_CONVERTER_CAFFE:
 		case ID_MENU_CONVERTER_VULKAN:
+		case ID_MENU_CONVERTER_CUGAN:
 			SnowSetting::checkConverterNum(hMenu, LOWORD(wParam) - ID_MENU_CONVERTER_CPP);
 			SetMenu(hWnd, NULL);
 			DestroyMenu(hMenu);
@@ -333,8 +334,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			prtTextBorder(hMemDC, 375, 2, L"waifu2x-converter-cpp", 21, RGB(0x21, 0x21, 0x21), 1);
 		else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE)
 			prtTextBorder(hMemDC, 430, 2, L"waifu2x-caffe", 13, RGB(0x21, 0x21, 0x21), 1);
-		else
+		else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
 			prtTextBorder(hMemDC, 385, 2, L"waifu2x-ncnn-vulkan", 19, RGB(0x21, 0x21, 0x21), 1);
+		else
+			prtTextBorder(hMemDC, 405, 2, L"realcugan-vulkan", 16, RGB(0x21, 0x21, 0x21), 1);
 
 		prtTextBorder(hMemDC, 410, 288, L" =▶", 3, RGB(0x21, 0x21, 0x21), 1);
 

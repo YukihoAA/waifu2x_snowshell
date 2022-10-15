@@ -73,3 +73,11 @@ public:
 	Converter_Vulkan(std::wstring exePath) : Converter(exePath) {};
 	virtual bool execute(ConvertOption* convertOption, bool noLabel = false) override;
 };
+
+
+class Converter_Cugan : public Converter {
+public:
+	Converter_Cugan() : Converter() {};
+	Converter_Cugan(std::wstring exePath) : Converter(exePath) {};
+	virtual bool execute(ConvertOption* convertOption, bool noLabel = false) override;
+};

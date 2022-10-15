@@ -70,8 +70,9 @@ using namespace std;
 #define CONVERTER_NUM_CPP 0
 #define CONVERTER_NUM_CAFFE 1
 #define CONVERTER_NUM_VULKAN 2
+#define CONVERTER_NUM_CUGAN 3
 
-#define CONVERTER_NUM_MAX 2
+#define CONVERTER_NUM_MAX 3
 
 
 #undef MAX_PATH
@@ -115,6 +116,7 @@ public:
 	static Converter_Cpp CONVERTER_CPP;
 	static Converter_Caffe CONVERTER_CAFFE;
 	static Converter_Vulkan CONVERTER_VULKAN;
+	static Converter_Cugan CONVERTER_CUGAN;
 	static Converter* CurrentConverter;
 
 	static SnowSetting *Init();
