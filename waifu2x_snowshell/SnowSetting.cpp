@@ -375,31 +375,6 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Converter", buf, 200, LangFileName.c_str());
 	STRING_TEXT_GPU = buf;
 
-	Key = L"STRING_TEXT_GPU_CPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CPU", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_CPU = buf;
-
-	Key = L"STRING_TEXT_GPU_CPU_TTA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"CPU (TTA)", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_CPU_TTA = buf;
-
-	Key = L"STRING_TEXT_GPU_GPU";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_GPU = buf;
-
-	Key = L"STRING_TEXT_GPU_GPU_TTA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"GPU (TTA)", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_GPU_TTA = buf;
-
-	Key = L"STRING_TEXT_GPU_VULKAN";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"VULKAN", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_VULKAN = buf;
-
-	Key = L"STRING_TEXT_GPU_VULKAN_TTA";
-	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"VULKAN (TTA)", buf, 200, LangFileName.c_str());
-	STRING_TEXT_GPU_VULKAN_TTA = buf;
-
-
 	Key = L"STRING_TEXT_EXPORT";
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Export Dir", buf, 200, LangFileName.c_str());
 	STRING_TEXT_EXPORT = buf;
