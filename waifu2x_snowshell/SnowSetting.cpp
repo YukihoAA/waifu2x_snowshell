@@ -600,12 +600,12 @@ bool SnowSetting::loadSetting()
 			setConverterNum(CONVERTER_NUM_CUGAN);
 			setScale(getScale());
 		}
-		else if (checkVulkan() && CONVERTER_ESRGAN.getAvailable()) {
-			setConverterNum(CONVERTER_NUM_ESRGAN);
-			setScale(getScale());
-		}
 		else if (checkCuda() && CONVERTER_CAFFE.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CAFFE);
+		}
+		else if (checkVulkan() && CONVERTER_ESRGAN.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_ESRGAN);
+			setScale(SCALE_CUSTOM);
 		}
 		else if (CONVERTER_CPP.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CPP);
@@ -846,10 +846,12 @@ void SnowSetting::setScale(int Scale)
 
 	if (Scale > SCALE_MAX || Scale < 0)
 		Scale = SCALE_x2_0;
-
-	if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
+	else if (CurrentConverter == &CONVERTER_ESRGAN) {
+		Scale = SCALE_CUSTOM;	
+	}
+	else if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
-	else if ((CurrentConverter == &CONVERTER_CUGAN || CurrentConverter == &CONVERTER_ESRGAN) && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
+	else if (CurrentConverter == &CONVERTER_CUGAN&& Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
 
 	Singletone->Scale = Scale;
@@ -934,7 +936,7 @@ void SnowSetting::setConverterNum(int ConverterNum)
 				if (!wcscmp(VulkanScale[i], Singletone->ScaleRatio.c_str()))
 					return;
 			}
-			Singletone->ScaleRatio = L"2.0";
+			Singletone->ScaleRatio = L"4.0";
 		}
 		break;
 	case CONVERTER_NUM_CUGAN:
@@ -946,7 +948,7 @@ void SnowSetting::setConverterNum(int ConverterNum)
 				if (!wcscmp(VulkanScale[i], Singletone->ScaleRatio.c_str()))
 					return;
 			}
-			Singletone->ScaleRatio = L"2.0";
+			Singletone->ScaleRatio = L"4.0";
 		}
 		break;
 	case CONVERTER_NUM_ESRGAN:
@@ -954,11 +956,7 @@ void SnowSetting::setConverterNum(int ConverterNum)
 		if (CONVERTER_ESRGAN.getAvailable()) {
 			Singletone->CurrentConverter = &CONVERTER_ESRGAN;
 			Singletone->ConverterNum = ConverterNum;
-			for (int i = 0; i < CuganScaleNum; i++) {
-				if (!wcscmp(VulkanScale[i], Singletone->ScaleRatio.c_str()))
-					return;
-			}
-			Singletone->ScaleRatio = L"2.0";
+			Singletone->ScaleRatio = L"4.0";
 		}
 		break;
 	}
@@ -1010,8 +1008,17 @@ void SnowSetting::checkNoise(HMENU hMenu, int sel)
 		EnableMenuItem(hMenu, MENU_NOISE, MF_BYPOSITION | MF_GRAYED);
 		return;
 	}
+	else if (CurrentConverter == &CONVERTER_CUGAN && getScale() == SCALE_CUSTOM) {
+		EnableMenuItem(hSubMenu, NOISE_MID, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(hSubMenu, NOISE_HIGH, MF_BYPOSITION | MF_GRAYED);
+
+		if (getNoise() == NOISE_MID || getNoise() == NOISE_HIGH)
+			setNoise(NOISE_LOW);
+	}
 	else {
 		EnableMenuItem(hMenu, MENU_NOISE, MF_BYPOSITION | MF_ENABLED);
+		EnableMenuItem(hSubMenu, NOISE_MID, MF_BYPOSITION | MF_ENABLED);
+		EnableMenuItem(hSubMenu, NOISE_HIGH, MF_BYPOSITION | MF_ENABLED);
 	}
 
 	for (int i = 0; i <= NOISE_MAX; i++)
@@ -1026,6 +1033,15 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 	if (sel != -1)
 		setScale(sel);
 
+	if (CurrentConverter == &CONVERTER_ESRGAN) {
+		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_GRAYED);
+		setScale(SCALE_CUSTOM);
+		return;
+	}
+	else {
+		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_ENABLED);
+	}
+
 	for (int i = 0; i <= SCALE_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 
@@ -1036,7 +1052,7 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 		if (getScale() == SCALE_x1_5 || getScale() == SCALE_x1_6)
 			setScale(SCALE_x2_0);
 	}
-	else if (CurrentConverter == &CONVERTER_CUGAN || CurrentConverter == &CONVERTER_ESRGAN) {
+	else if (CurrentConverter == &CONVERTER_CUGAN) {
 		EnableMenuItem(hSubMenu, SCALE_x1_0, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);

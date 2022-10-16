@@ -209,7 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				return TRUE;
 			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcVulkan);
-			else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_ESRGAN)
+			else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN)
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcCugan);
 			else
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
@@ -219,6 +219,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_SCALE_x2_0:
 			SnowSetting::checkScale(hMenu, LOWORD(wParam) - ID_MENU_SCALE_x1_0);
 			UIText[1] = SnowSetting::getScaleText();
+
+			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN) {
+				SnowSetting::checkNoise(hMenu, SnowSetting::getNoise());
+				UIText[0] = SnowSetting::getNoiseText();
+			}
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
 		case ID_MENU_GPU_CPU:
@@ -339,8 +344,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			prtTextBorder(hMemDC, 430, 2, L"waifu2x-caffe", 13, RGB(0x21, 0x21, 0x21), 1);
 		else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
 			prtTextBorder(hMemDC, 385, 2, L"waifu2x-ncnn-vulkan", 19, RGB(0x21, 0x21, 0x21), 1);
-		else
+		else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN)
 			prtTextBorder(hMemDC, 405, 2, L"realcugan-vulkan", 16, RGB(0x21, 0x21, 0x21), 1);
+		else
+		prtTextBorder(hMemDC, 400, 2, L"realesrgan-vulkan", 17, RGB(0x21, 0x21, 0x21), 1);
 
 		prtTextBorder(hMemDC, 410, 288, L" =▶", 3, RGB(0x21, 0x21, 0x21), 1);
 
