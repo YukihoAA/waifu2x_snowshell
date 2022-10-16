@@ -587,7 +587,7 @@ bool SnowSetting::loadSetting()
 	GetPrivateProfileStringW(Section.c_str(), L"realcugan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CUGAN.setOptionString(buf);
 
-	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
+	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", L"-n realesrgan-x4plus-anime", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_ESRGAN.setOptionString(buf);
 
 	// Set Converter
