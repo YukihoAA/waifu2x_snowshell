@@ -1,11 +1,17 @@
 # waifu2x - Snowshell [![apm](https://img.shields.io/apm/l/vim-mode.svg)]( [![apm](https://img.shields.io/apm/dm/vim-mode.svg)](https://github.com/YukihoAA/waifu2x_snowshell)) [![Github Releases](https://img.shields.io/github/downloads/YukihoAA/waifu2x_snowshell/total.svg)](https://github.com/YukihoAA/waifu2x_snowshell/releases)
 
-This is GUI Shell for [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp), [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe), [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan) and [RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) <br/> <br/>
+This is GUI Shell for [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp), [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe), [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan), [Real-CUGAN](https://github.com/nihui/realcugan-ncnn-vulkan) and [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) <br/> <br/>
 ![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) ![Example](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Example.PNG) <br /> <br/>
-| Original | Waifu2x |
-| --- | --- |
-|  ![origin](https://user-images.githubusercontent.com/20253131/196035794-a5da8b46-7fc1-498a-a35b-12fdb92c60ae.PNG)  | ![waifu2x](https://user-images.githubusercontent.com/20253131/196035799-86897dbe-5535-4b87-a246-3720913644e4.PNG)
-| R-CUGAN | R-ESRGAN |
+| Original |
+| :---: |
+| ![inazuma_(kancolle), blush, smile, blue archive(style), highres, classroom, xd s-4008249648](https://user-images.githubusercontent.com/20253131/196036227-386859a3-7a47-4224-ba46-a6e084a22fb6.png) |
+
+| Original-Magnified | Waifu2x |
+| :---: | :---: |
+|  ![origin](https://user-images.githubusercontent.com/20253131/196035794-a5da8b46-7fc1-498a-a35b-12fdb92c60ae.PNG)  | ![waifu2x](https://user-images.githubusercontent.com/20253131/196035799-86897dbe-5535-4b87-a246-3720913644e4.PNG) | <br/>
+
+| Real-CUGAN | Real-ESRGAN |
+| :---: | :---: |
 | ![cugan](https://user-images.githubusercontent.com/20253131/196035811-a5194833-f572-43ac-b03f-52b4626c3121.PNG) | ![esrgan](https://user-images.githubusercontent.com/20253131/196035813-31796abe-0bfe-4824-a406-60e01de5c8fd.PNG) |
 
  <br/>
@@ -16,11 +22,12 @@ Snowshell uses C++ and Win32API.
 Just drag & drop your image files (or folder) in to Snowshell! (multiple image supports) <br/>
 To change your conversion setting, select option at menu bar. <br/>
 
-## To Use waifu2x or RealCUGAN-ncnn-vulkan (Supported GPU Only)
+## To Use Vulkan Based Converters (Supported GPU Only)
 > 1. Install latest Graphics Driver. [AMD](https://www.amd.com/en/support) / [NVIDIA](https://www.nvidia.co.kr/Download/index.aspx) / [INTEL](https://www.intel.com/content/www/us/en/support/detect.html) <br/>
 > 2. Select Converter to download <br/>
 > 2-1. Download [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan/releases) to waifu2x-ncnn-vulkan folder. <br/>
-> 2-2. Download [RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) to realcugan-vulkan folder. <br/>
+> 2-2. Download [Real-CUGAN](https://github.com/nihui/realcugan-ncnn-vulkan) to realcugan-vulkan folder. <br/>
+> 2-3. Download [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) to realesrgan-vulkan folder. <br/>
 > 3. Select Converter to waifu2x-ncnn-vulkan/realcugan-vulkan. <br/>
 > 4. Set conversion mode on TTA menu. <br/>
 > 4-1. TTA convert mode is slower but higher quality conversion. <br/>
