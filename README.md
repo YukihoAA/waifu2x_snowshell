@@ -1,6 +1,6 @@
 # waifu2x - Snowshell [![apm](https://img.shields.io/apm/l/vim-mode.svg)]( [![apm](https://img.shields.io/apm/dm/vim-mode.svg)](https://github.com/YukihoAA/waifu2x_snowshell)) [![Github Releases](https://img.shields.io/github/downloads/YukihoAA/waifu2x_snowshell/total.svg)](https://github.com/YukihoAA/waifu2x_snowshell/releases)
 
-This is GUI Shell for [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp), [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe) and [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan) <br/> <br/>
+This is GUI Shell for [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp), [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe), [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan) and [RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) <br/> <br/>
 ![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) ![Example](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Example.PNG) <br /> <br/>
 You can use Snowshell to make your image better. <br/>
 Snowshell uses C++ and Win32API. 
@@ -9,13 +9,13 @@ Snowshell uses C++ and Win32API.
 Just drag & drop your image files (or folder) in to Snowshell! (multiple image supports) <br/>
 To change your conversion setting, select option at menu bar. <br/>
 
-## To Use waifu2x-ncnn-vulkan (Supported GPU Only)
+## To Use waifu2x/RealCUGAN-ncnn-vulkan (Supported GPU Only)
 > 1. Install latest Graphics Driver. [AMD](https://www.amd.com/en/support) / [NVIDIA](https://www.nvidia.co.kr/Download/index.aspx) / [INTEL](https://www.intel.com/content/www/us/en/support/detect.html) <br/>
-> 2. Put [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan/releases) to waifu2x-ncnn-vulkan folder. <br/>
-> 3. Select Converter to waifu2x-ncnn-vulkan. <br/>
+> 2. Put [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)/[RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) to waifu2x-ncnn-vulkan/realcugan-vulkan folder. <br/>
+> 3. Select Converter to waifu2x-ncnn-vulkan/realcugan-vulkan. <br/>
 > 4. Set conversion mode on TTA menu. <br/>
 > 4-1. TTA convert mode is slower but higher quality conversion. <br/>
-> 5. Snowshell will start conversion using waifu2x-ncnn-vulkan.
+> 5. Snowshell will start conversion using waifu2x-ncnn-vulkan/realcuan-vulkan.
 
 ### Notice For waifu2x-ncnn-vulkan:
 > You cannot use upconv_7 models for x1 mode. please use cunet instead (default)
