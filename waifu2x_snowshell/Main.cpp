@@ -393,6 +393,7 @@ INT_PTR CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 
 INT_PTR CALLBACK SettingDlgProcVulkan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HWND hCombo, hText, hButton;
+	int sel;
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
@@ -412,7 +413,10 @@ INT_PTR CALLBACK SettingDlgProcVulkan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 		switch (LOWORD(wParam))
 		{
 		case IDOK:
-			SnowSetting::setScaleRatio(SnowSetting::VulkanScale[SendMessage(hCombo, CB_GETCURSEL, 0, 0)]);
+			sel = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+
+			if (sel != CB_ERR)
+				SnowSetting::setScaleRatio(SnowSetting::VulkanScale[sel]);
 
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
@@ -427,6 +431,7 @@ INT_PTR CALLBACK SettingDlgProcVulkan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 
 INT_PTR CALLBACK SettingDlgProcCugan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 	static HWND hCombo, hText, hButton;
+	int sel;
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
@@ -446,7 +451,10 @@ INT_PTR CALLBACK SettingDlgProcCugan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 		switch (LOWORD(wParam))
 		{
 		case IDOK:
-			SnowSetting::setScaleRatio(SnowSetting::VulkanScale[SendMessage(hCombo, CB_GETCURSEL, 0, 0)]);
+			sel = SendMessage(hCombo, CB_GETCURSEL, 0, 0);
+
+			if(sel != CB_ERR)
+				SnowSetting::setScaleRatio(SnowSetting::VulkanScale[sel]);
 
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
