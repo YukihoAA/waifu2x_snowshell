@@ -2,6 +2,13 @@
 
 This is GUI Shell for [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp), [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe), [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan) and [RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) <br/> <br/>
 ![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) ![Example](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Example.PNG) <br /> <br/>
+| Original | Waifu2x |
+| --- | --- |
+|  ![origin](https://user-images.githubusercontent.com/20253131/196035794-a5da8b46-7fc1-498a-a35b-12fdb92c60ae.PNG)  | ![waifu2x](https://user-images.githubusercontent.com/20253131/196035799-86897dbe-5535-4b87-a246-3720913644e4.PNG)
+| R-CUGAN | R-ESRGAN |
+| ![cugan](https://user-images.githubusercontent.com/20253131/196035811-a5194833-f572-43ac-b03f-52b4626c3121.PNG) | ![esrgan](https://user-images.githubusercontent.com/20253131/196035813-31796abe-0bfe-4824-a406-60e01de5c8fd.PNG) |
+
+ <br/>
 You can use Snowshell to make your image better. <br/>
 Snowshell uses C++ and Win32API. 
 
