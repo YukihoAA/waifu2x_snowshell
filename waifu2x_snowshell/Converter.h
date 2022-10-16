@@ -81,3 +81,11 @@ public:
 	Converter_Cugan(std::wstring exePath) : Converter(exePath) {};
 	virtual bool execute(ConvertOption* convertOption, bool noLabel = false) override;
 };
+
+
+class Converter_Esrgan : public Converter {
+public:
+	Converter_Esrgan() : Converter() {};
+	Converter_Esrgan(std::wstring exePath) : Converter(exePath) {};
+	virtual bool execute(ConvertOption* convertOption, bool noLabel = false) override;
+};

@@ -9,6 +9,7 @@ Converter_Cpp SnowSetting::CONVERTER_CPP;
 Converter_Caffe SnowSetting::CONVERTER_CAFFE;
 Converter_Vulkan SnowSetting::CONVERTER_VULKAN;
 Converter_Cugan SnowSetting::CONVERTER_CUGAN;
+Converter_Esrgan SnowSetting::CONVERTER_ESRGAN;
 Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCPU;
@@ -36,6 +37,7 @@ SnowSetting::SnowSetting()
 	CONVERTER_CAFFE = Converter_Caffe(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe");
 	CONVERTER_VULKAN = Converter_Vulkan(CurrPath + L"\\waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe");
 	CONVERTER_CUGAN = Converter_Cugan(CurrPath + L"\\realcugan-vulkan\\realcugan-ncnn-vulkan.exe");
+	CONVERTER_ESRGAN = Converter_Esrgan(CurrPath + L"\\realesrgan-vulkan\\realesrgan-ncnn-vulkan.exe");
 	CoreNum = thread::hardware_concurrency();
 	CurrentConverter = nullptr;
 	OutputExt = L"png";
@@ -549,6 +551,10 @@ bool SnowSetting::loadSetting()
 	CONVERTER_CUGAN.setExePath(buf);
 	CONVERTER_CUGAN.checkAvailable();
 
+	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", CONVERTER_ESRGAN.getExePath().c_str(), buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_ESRGAN.setExePath(buf);
+	CONVERTER_ESRGAN.checkAvailable();
+
 
 	Section = L"Model";
 
@@ -564,6 +570,9 @@ bool SnowSetting::loadSetting()
 	GetPrivateProfileStringW(Section.c_str(), L"realcugan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CUGAN.setModelDir(buf);
 
+	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_ESRGAN.setModelDir(buf);
+
 	Section = L"CustomOption";
 
 	GetPrivateProfileStringW(Section.c_str(), L"waifu2x-caffe", L"", buf, MAX_PATH, INIPath.c_str());
@@ -578,6 +587,9 @@ bool SnowSetting::loadSetting()
 	GetPrivateProfileStringW(Section.c_str(), L"realcugan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CUGAN.setOptionString(buf);
 
+	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
+	CONVERTER_ESRGAN.setOptionString(buf);
+
 	// Set Converter
 	if (CurrentConverter == nullptr) {
 		if (checkVulkan() && CONVERTER_VULKAN.getAvailable()) {
@@ -586,6 +598,10 @@ bool SnowSetting::loadSetting()
 		}
 		else if (checkVulkan() && CONVERTER_CUGAN.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CUGAN);
+			setScale(getScale());
+		}
+		else if (checkVulkan() && CONVERTER_ESRGAN.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_ESRGAN);
 			setScale(getScale());
 		}
 		else if (checkCuda() && CONVERTER_CAFFE.getAvailable()) {
@@ -656,6 +672,8 @@ bool SnowSetting::saveSetting()
 
 	WritePrivateProfileString(Section.c_str(), L"realcugan-vulkan", CONVERTER_CUGAN.getExePath().c_str(), INIPath.c_str());
 
+	WritePrivateProfileString(Section.c_str(), L"realesrgan-vulkan", CONVERTER_ESRGAN.getExePath().c_str(), INIPath.c_str());
+
 
 	Section = L"Model";
 
@@ -667,6 +685,8 @@ bool SnowSetting::saveSetting()
 
 	WritePrivateProfileString(Section.c_str(), L"realcugan-vulkan", CONVERTER_CUGAN.getModelDir().c_str(), INIPath.c_str());
 
+	WritePrivateProfileString(Section.c_str(), L"realesrgan-vulkan", CONVERTER_ESRGAN.getModelDir().c_str(), INIPath.c_str());
+
 
 	Section = L"CustomOption";
 
@@ -677,6 +697,8 @@ bool SnowSetting::saveSetting()
 	WritePrivateProfileString(Section.c_str(), L"waifu2x-ncnn-vulkan", CONVERTER_VULKAN.getOptionString().c_str(), INIPath.c_str());
 
 	WritePrivateProfileString(Section.c_str(), L"realcugan-vulkan", CONVERTER_CUGAN.getOptionString().c_str(), INIPath.c_str());
+
+	WritePrivateProfileString(Section.c_str(), L"realesrgan-vulkan", CONVERTER_ESRGAN.getOptionString().c_str(), INIPath.c_str());
 
 	return true;
 }
@@ -827,7 +849,7 @@ void SnowSetting::setScale(int Scale)
 
 	if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
-	else if (CurrentConverter == &CONVERTER_CUGAN && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
+	else if ((CurrentConverter == &CONVERTER_CUGAN || CurrentConverter == &CONVERTER_ESRGAN) && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
 
 	Singletone->Scale = Scale;
@@ -927,6 +949,18 @@ void SnowSetting::setConverterNum(int ConverterNum)
 			Singletone->ScaleRatio = L"2.0";
 		}
 		break;
+	case CONVERTER_NUM_ESRGAN:
+		CONVERTER_ESRGAN.checkAvailable();
+		if (CONVERTER_ESRGAN.getAvailable()) {
+			Singletone->CurrentConverter = &CONVERTER_ESRGAN;
+			Singletone->ConverterNum = ConverterNum;
+			for (int i = 0; i < CuganScaleNum; i++) {
+				if (!wcscmp(VulkanScale[i], Singletone->ScaleRatio.c_str()))
+					return;
+			}
+			Singletone->ScaleRatio = L"2.0";
+		}
+		break;
 	}
 }
 
@@ -972,6 +1006,14 @@ void SnowSetting::checkNoise(HMENU hMenu, int sel)
 	if (sel != -1)
 		setNoise(sel);
 
+	if (CurrentConverter == &CONVERTER_ESRGAN) {
+		EnableMenuItem(hMenu, MENU_NOISE, MF_BYPOSITION | MF_GRAYED);
+		return;
+	}
+	else {
+		EnableMenuItem(hMenu, MENU_NOISE, MF_BYPOSITION | MF_ENABLED);
+	}
+
 	for (int i = 0; i <= NOISE_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
 	CheckMenuItem(hSubMenu, getNoise(), MF_BYPOSITION | MF_CHECKED);
@@ -994,7 +1036,7 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 		if (getScale() == SCALE_x1_5 || getScale() == SCALE_x1_6)
 			setScale(SCALE_x2_0);
 	}
-	else if (CurrentConverter == &CONVERTER_CUGAN) {
+	else if (CurrentConverter == &CONVERTER_CUGAN || CurrentConverter == &CONVERTER_ESRGAN) {
 		EnableMenuItem(hSubMenu, SCALE_x1_0, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
@@ -1018,7 +1060,7 @@ void SnowSetting::checkGPU(HMENU hMenu, int sel)
 	if (sel != -1)
 		setGPU(sel);
 
-	if (CurrentConverter == &CONVERTER_VULKAN || CurrentConverter == &CONVERTER_CUGAN) {
+	if (CurrentConverter == &CONVERTER_VULKAN || CurrentConverter == &CONVERTER_CUGAN || CurrentConverter == &CONVERTER_ESRGAN) {
 		EnableMenuItem(hMenu, MENU_GPU, MF_BYPOSITION | MF_GRAYED);
 		return;
 	}
@@ -1104,18 +1146,28 @@ void SnowSetting::checkConverterNum(HMENU hMenu, int sel)
 	CheckMenuItem(hSubMenu, getConverterNum(), MF_BYPOSITION | MF_CHECKED);
 }
 
-void SnowSetting::getTexts(wstring*(*UITitleText)[5], wstring*(*UIText)[5]) {
-	(*UITitleText)[0] = &STRING_TEXT_NOISE;
-	(*UITitleText)[1] = &STRING_TEXT_SCALE;
-	(*UITitleText)[2] = &STRING_TEXT_GPU;
-	(*UITitleText)[3] = &STRING_TEXT_EXPORT;
-	(*UITitleText)[4] = &STRING_TEXT_CONFIRM;
+void SnowSetting::getTexts(wstring* (*UITitleText)[5], wstring* (*UIText)[5]) {
+	if (CurrentConverter == &CONVERTER_ESRGAN) {
+		(*UITitleText)[0] = &STRING_EMPTY;
+		(*UIText)[0] = &STRING_EMPTY;
+	}
+	else {
+		(*UITitleText)[0] = &STRING_TEXT_NOISE;
+		(*UIText)[0] = getNoiseText();
+	}
 
-	(*UIText)[0] = getNoiseText();
+	(*UITitleText)[1] = &STRING_TEXT_SCALE;
 	(*UIText)[1] = getScaleText();
+
+	(*UITitleText)[2] = &STRING_TEXT_GPU;
 	(*UIText)[2] = getGPUText();
+
+	(*UITitleText)[3] = &STRING_TEXT_EXPORT;
 	(*UIText)[3] = getExportText();
+
+	(*UITitleText)[4] = &STRING_TEXT_CONFIRM;
 	(*UIText)[4] = getConfirmText();
+
 }
 
 wstring * SnowSetting::getNoiseText()
@@ -1169,6 +1221,14 @@ wstring * SnowSetting::getGPUText()
 		}
 		else {
 			return &STRING_TEXT_GPU_CUGAN_TTA;
+		}
+	}
+	else if (CurrentConverter == &CONVERTER_ESRGAN) {
+		if (getTTA() == TTA_DISABLED) {
+			return &STRING_TEXT_GPU_ESRGAN;
+		}
+		else {
+			return &STRING_TEXT_GPU_ESRGAN_TTA;
 		}
 	}
 	else if (getGPU() == GPU_CPU_MODE) {

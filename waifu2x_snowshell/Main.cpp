@@ -33,7 +33,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	if (!bIsWow64)
 		MessageBox(NULL, L"This program only works on 64bit system", L"Error", MB_OK | MB_ICONERROR);
 
-	hWnd = CreateWindow(lpszClass, L"Snowshell v2.5 - Waifu2x Image Upscaler", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"Snowshell v2.6 - Waifu2x Image Upscaler", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -209,7 +209,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 				return TRUE;
 			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcVulkan);
-			else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN)
+			else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_ESRGAN)
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcCugan);
 			else
 				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
@@ -281,6 +281,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_CONVERTER_CAFFE:
 		case ID_MENU_CONVERTER_VULKAN:
 		case ID_MENU_CONVERTER_CUGAN:
+		case ID_MENU_CONVERTER_ESRGAN:
 			SnowSetting::checkConverterNum(hMenu, LOWORD(wParam) - ID_MENU_CONVERTER_CPP);
 			SetMenu(hWnd, NULL);
 			DestroyMenu(hMenu);
