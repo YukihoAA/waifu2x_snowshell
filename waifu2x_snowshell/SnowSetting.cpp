@@ -11,7 +11,6 @@ Converter_Vulkan SnowSetting::CONVERTER_VULKAN;
 Converter_Cugan SnowSetting::CONVERTER_CUGAN;
 Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
-bool SnowSetting::IsCudaAvailable;
 bool SnowSetting::IsCPU;
 
 const int SnowSetting::LangNum = 8;
@@ -38,7 +37,6 @@ SnowSetting::SnowSetting()
 	CONVERTER_VULKAN = Converter_Vulkan(CurrPath + L"\\waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe");
 	CONVERTER_CUGAN = Converter_Cugan(CurrPath + L"\\realcugan-vulkan\\realcugan-ncnn-vulkan.exe");
 	CoreNum = thread::hardware_concurrency();
-	IsCudaAvailable = checkCuda();
 	CurrentConverter = nullptr;
 	OutputExt = L"png";
 	delete[] path;
@@ -67,8 +65,8 @@ SnowSetting *SnowSetting::Init()
 	}
 	return Singletone;
 }
-
-bool SnowSetting::checkCuda() {
+	/*
+bool checkCuda_p() {
 	bool cuda = false;
 	IsCPU = false;
 	HANDLE hRead, hWrite;
@@ -137,9 +135,37 @@ bool SnowSetting::checkCuda() {
 
 	return cuda;
 }
+*/
 
-bool SnowSetting::getCudaAvailable() {
-	return IsCudaAvailable;
+bool SnowSetting::checkCuda() {
+	static int result = 0;
+	
+	if (result != 0)
+		return result == 1;
+
+	HMODULE cu = LoadLibraryW(L"nvcuda.dll");
+	if (!cu) {
+		result = -1;
+		return false;
+	}
+	FreeLibrary(cu);
+	result = 1;
+	return true;
+}
+bool SnowSetting::checkVulkan() {
+	static int result = 0;
+
+	if (result != 0)
+		return result == 1;
+
+	HMODULE vk = LoadLibraryA("vulkan-1.dll");
+	if (!vk) {
+		result = -1;
+		return false;
+	}
+	FreeLibrary(vk);
+	result = 1;
+	return true;
 }
 
 bool SnowSetting::getIsCPU() {
@@ -551,8 +577,6 @@ bool SnowSetting::loadSetting()
 
 	GetPrivateProfileStringW(Section.c_str(), L"realcugan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CUGAN.setOptionString(buf);
-
-	IsCudaAvailable = checkCuda();
 
 	// Set Converter
 	if (CurrentConverter == nullptr) {

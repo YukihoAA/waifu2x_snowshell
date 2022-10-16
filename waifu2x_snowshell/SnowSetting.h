@@ -87,7 +87,6 @@ private:
 	static std::wstring INIPath;
 	static int CoreNum;
 	const static int LangNum;
-	static bool IsCudaAvailable;
 	static bool IsCPU;
 
 	int Noise;
@@ -122,7 +121,7 @@ public:
 
 	static SnowSetting *Init();
 	static bool checkCuda();
-	static bool getCudaAvailable();
+	static bool checkVulkan();
 	static bool getIsCPU();
 	static int getCoreNum();
 	static bool loadSetting();
