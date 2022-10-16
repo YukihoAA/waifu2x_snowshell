@@ -33,7 +33,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	if (!bIsWow64)
 		MessageBox(NULL, L"This program only works on 64bit system", L"Error", MB_OK | MB_ICONERROR);
 
-	hWnd = CreateWindow(lpszClass, L"Snowshell v2.5 - AI Image Upscaler", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
+	hWnd = CreateWindow(lpszClass, L"Snowshell v2.5 - Waifu2x Image Upscaler", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
 	ShowWindow(hWnd, nCmdShow);
 
@@ -505,7 +505,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	}
 
 	convertOption->setTTAEnabled(SnowSetting::getTTA());
-	convertOption->setForceCPU(SnowSetting::getGPU() == GPU_CPU_MODE || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE && !SnowSetting::getCudaAvailable());
+	convertOption->setForceCPU(SnowSetting::getGPU() == GPU_CPU_MODE || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE && !SnowSetting::checkCuda());
 	convertOption->setOutputFileExtension(SnowSetting::getOutputExt());
 
 	DWORD FileAttribute = GetFileAttributes(fileName);
