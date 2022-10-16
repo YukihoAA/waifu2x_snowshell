@@ -580,19 +580,19 @@ bool SnowSetting::loadSetting()
 
 	// Set Converter
 	if (CurrentConverter == nullptr) {
-		if (IsCudaAvailable && CONVERTER_CAFFE.getAvailable()) {
+		if (checkVulkan() && CONVERTER_VULKAN.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_VULKAN);
+			setScale(getScale());
+		}
+		else if (checkVulkan() && CONVERTER_CUGAN.getAvailable()) {
+			setConverterNum(CONVERTER_NUM_CUGAN);
+			setScale(getScale());
+		}
+		else if (checkCuda() && CONVERTER_CAFFE.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CAFFE);
 		}
 		else if (CONVERTER_CPP.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CPP);
-		}
-		else if (CONVERTER_VULKAN.getAvailable()) {
-			setConverterNum(CONVERTER_NUM_VULKAN);
-			setScale(getScale());
-		}
-		else if (CONVERTER_CUGAN.getAvailable()) {
-			setConverterNum(CONVERTER_NUM_CUGAN);
-			setScale(getScale());
 		}
 	}
 
