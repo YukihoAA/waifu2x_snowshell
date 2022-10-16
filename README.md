@@ -9,13 +9,15 @@ Snowshell uses C++ and Win32API.
 Just drag & drop your image files (or folder) in to Snowshell! (multiple image supports) <br/>
 To change your conversion setting, select option at menu bar. <br/>
 
-## To Use waifu2x/RealCUGAN-ncnn-vulkan (Supported GPU Only)
+## To Use waifu2x or RealCUGAN-ncnn-vulkan (Supported GPU Only)
 > 1. Install latest Graphics Driver. [AMD](https://www.amd.com/en/support) / [NVIDIA](https://www.nvidia.co.kr/Download/index.aspx) / [INTEL](https://www.intel.com/content/www/us/en/support/detect.html) <br/>
-> 2. Put [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan/releases)/[RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) to waifu2x-ncnn-vulkan/realcugan-vulkan folder. <br/>
+> 2. Select Converter to download <br/>
+> 2-1. Download [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan/releases) to waifu2x-ncnn-vulkan folder. <br/>
+> 2-2. Download [RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) to realcugan-vulkan folder. <br/>
 > 3. Select Converter to waifu2x-ncnn-vulkan/realcugan-vulkan. <br/>
 > 4. Set conversion mode on TTA menu. <br/>
 > 4-1. TTA convert mode is slower but higher quality conversion. <br/>
-> 5. Snowshell will start conversion using waifu2x-ncnn-vulkan/realcuan-vulkan.
+> 5. Snowshell will start conversion using waifu2x-ncnn-vulkan / realcuan-vulkan.
 
 ### Notice For waifu2x-ncnn-vulkan:
 > You cannot use upconv_7 models for x1 mode. please use cunet instead (default)
@@ -42,6 +44,7 @@ To change your conversion setting, select option at menu bar. <br/>
 > 3-1. waifu2x_converter_cpp = models_rgb <br/>
 > 3-2. waifu2x_caffe = models\\\\upconv_7_anime_style_art_rgb <br/>
 > 3-3. waifu2x_ncnn-vulkan = models-cunet <br/>
+> 3-4. realcugan-vulkan = model-se <br/>
 
 ## To Change Output Extension
 > 1. Open config.ini file (if there is no config.ini, launch Snowshell once and close it) <br/>
@@ -55,5 +58,6 @@ To change your conversion setting, select option at menu bar. <br/>
 > 3-1. waifu2x_converter_cpp: [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp) <br/>
 > 3-2. waifu2x_caffe: [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe) <br/>
 > 3-3. waifu2x_ncnn-vulkan: [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan) <br/>
+> 3-4. realcugan-vulkan: [RealCUGAN-ncnn-vulkan](https://github.com/nihui/realcugan-ncnn-vulkan) <br/>
 > 4. If you want to ignore/override settings that Snowshell supports, add -- to end of optionstring to ignore all settings.<br/>
 > 4-1. you cannot override input file name because it is nessesory to make Snowshell works.
