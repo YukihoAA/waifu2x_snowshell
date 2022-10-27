@@ -1,4 +1,5 @@
 #include "Converter.h"
+#include "SnowSetting.h"
 
 Converter::Converter() {
 	this->Available = false;
@@ -147,6 +148,10 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 		_wfopen_s(&fp, L"error.log", L"wt+,ccs=UTF-16LE");
 
 		if (fp) {
+			fwprintf(fp, L"Info: Converter: %s (File Exists: %s)\n", This->getExePath().c_str(), This->getAvailable() == true ? L"True" : L"False");
+			fwprintf(fp, L"Info: Cuda: %s\n", SnowSetting::checkCuda() ? L"True" : L"False");
+			fwprintf(fp, L"Info: Vulkan: %s\n", SnowSetting::checkVulkan() ? L"True" : L"False");
+
 			while (!ErrorQueue.empty()) {
 				fwprintf(fp, L"Error: %s\n", ErrorQueue.front().getInputFilePath().c_str());
 				ErrorQueue.pop();

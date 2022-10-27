@@ -126,8 +126,8 @@ bool checkCuda_p() {
 			if (st.find("FMA") != string::npos || st.find("AVX") != string::npos)
 				IsCPU = true;
 
-			CloseHandle(pi.hProcess);
 			CloseHandle(pi.hThread);
+			CloseHandle(pi.hProcess);
 		}
 	}
 
@@ -488,7 +488,7 @@ bool SnowSetting::loadSetting()
 	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), SCALE_x1_6, INIPath.c_str()));
 
 	Key = L"GPU";
-	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), GPU_GPU_MODE, INIPath.c_str()));
+	setGPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), GPU_GPU_MODE, INIPath.c_str()));
 
 	Key = L"TTA";
 	setTTA(GetPrivateProfileInt(Section.c_str(), Key.c_str(), TTA_DISABLED, INIPath.c_str()));
