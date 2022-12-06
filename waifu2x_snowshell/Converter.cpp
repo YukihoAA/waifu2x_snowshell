@@ -321,7 +321,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.')) + L'.' + convertOption->getOutputFileExtension();
 	}
 
 	// set model directory
@@ -412,7 +412,7 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.')) + L'.' + convertOption->getOutputFileExtension();
 	}
 
 	// set model directory
@@ -477,7 +477,7 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.')) + L'.' + convertOption->getOutputFileExtension();
 	}
 
 	// set model directory
@@ -542,7 +542,7 @@ bool Converter_Cugan::execute(ConvertOption* convertOption, bool noLabel) {
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.')) + L'.' + convertOption->getOutputFileExtension();
 	}
 
 	// set model directory
@@ -602,7 +602,7 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 	// create folder for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
-		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.'));
+		ExportName = convertOption->getOutputFolderName() + InputName.substr(last, InputName.find_last_of(L'.')) + L'.' + convertOption->getOutputFileExtension();
 	}
 
 	// set model directory
