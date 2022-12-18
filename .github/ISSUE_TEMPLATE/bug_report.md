@@ -19,7 +19,8 @@ The image that cannot converts.
 
 **Screenshots**
 Add screenshots of thoese files to find out your problem.
-- "config.ini", "error.log" and "pl.log"
+- `config.ini`
+- `error.log`
 
 **Hardware Info (please complete the following information):**
  - CPU: [e.g. Intel i7-4770]
