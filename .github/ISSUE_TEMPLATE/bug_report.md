@@ -10,23 +10,19 @@ assignees: ''
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. See error
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+
+
+
+**Input Image**
+The image that cannot converts.
 
 **Screenshots**
-If applicable, add screenshots to help explain your problem.
+Add screenshots of thoese files to find out your problem.
+- "config.ini", "error.log" and "pl.log"
 
 **Hardware Info (please complete the following information):**
  - CPU: [e.g. Intel i7-4770]
  - GPU: [e.g. NVIDIA GTX 2070 SUPER]
  - OS: [e.g. Windows 7 SP1,  Windows 10]
  - Converter: [e.g. waifu2x-converter-cpp, waifu2x-caffe, waifu2x-ncnn-vulkan]
-
-**Additional context**
-Add any other context about the problem here.
