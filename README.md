@@ -1,4 +1,4 @@
-# waifu2x - Snowshell [![apm](https://img.shields.io/apm/l/vim-mode.svg)]( [![apm](https://img.shields.io/apm/dm/vim-mode.svg)](https://github.com/YukihoAA/waifu2x_snowshell)) [![Github Releases](https://img.shields.io/github/downloads/YukihoAA/waifu2x_snowshell/total.svg)](https://github.com/YukihoAA/waifu2x_snowshell/releases)
+# waifu2x - Snowshell ![apm](https://img.shields.io/github/license/YukihoAA/waifu2x_snowshell) [![Github Releases](https://img.shields.io/github/downloads/YukihoAA/waifu2x_snowshell/total.svg)](https://github.com/YukihoAA/waifu2x_snowshell/releases)
 
 This is GUI Shell for [waifu2x-converter-cpp](https://github.com/DeadSix27/waifu2x-converter-cpp), [waifu2x-caffe](https://github.com/lltcggie/waifu2x-caffe), [waifu2x-ncnn-vulkan](https://github.com/nihui/waifu2x-ncnn-vulkan), [Real-CUGAN](https://github.com/nihui/realcugan-ncnn-vulkan) and [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan) <br/> <br/>
 ![Preview](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Preview.PNG) ![Example](https://github.com/YukihoAA/waifu2x_snowshell/blob/master/Example.PNG) <br /> <br/>
