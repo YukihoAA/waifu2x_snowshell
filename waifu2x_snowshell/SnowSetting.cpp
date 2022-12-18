@@ -14,9 +14,9 @@ Converter* SnowSetting::CurrentConverter;
 int SnowSetting::CoreNum;
 bool SnowSetting::IsCPU;
 
-const int SnowSetting::LangNum = 8;
-wstring SnowSetting::LangName[LangNum] = { L"한국어", L"English", L"日本語", L"中文", L"Deutsch", L"Svenska" , L"Portuguese", L"Ukrainian" };
-wstring SnowSetting::LangFile[LangNum] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini", L"German.ini", L"Swedish.ini", L"Portuguese.ini", L"Ukrainian.ini" };
+const int SnowSetting::LangNum = 9;
+wstring SnowSetting::LangName[LangNum] = { L"한국어", L"English", L"日本語", L"中文", L"Deutsch", L"Svenska" , L"Portuguese", L"Ukrainian", L"Svenska"};
+wstring SnowSetting::LangFile[LangNum] = { L"Korean.ini", L"English.ini", L"Japanese.ini", L"Chinese.ini", L"German.ini", L"Swedish.ini", L"Portuguese.ini", L"Ukrainian.ini", L"Swedish.ini"};
 
 
 const int SnowSetting::VulkanScaleNum = 4;
@@ -186,6 +186,7 @@ void SnowSetting::loadLocale()
 		else if (LangFileName.find(L"Swedish") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_SV), L"LANG");
 		else if (LangFileName.find(L"Portuguese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_PT), L"LANG");
 		else if (LangFileName.find(L"Ukrainian") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_UKR), L"LANG");
+		else if (LangFileName.find(L"Swedish") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_SW), L"LANG");
 		else {
 			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
 			setLang(1);
