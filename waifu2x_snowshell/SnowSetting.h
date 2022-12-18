@@ -122,6 +122,7 @@ public:
 	static Converter* CurrentConverter;
 
 	static SnowSetting *Init();
+	static bool checkProcessor(FILE*);
 	static bool checkCuda();
 	static bool checkVulkan();
 	static bool getIsCPU();

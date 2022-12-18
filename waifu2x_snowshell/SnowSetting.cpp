@@ -67,22 +67,18 @@ SnowSetting *SnowSetting::Init()
 	}
 	return Singletone;
 }
-	/*
-bool checkCuda_p() {
-	bool cuda = false;
-	IsCPU = false;
+
+bool SnowSetting::checkProcessor(FILE* fp) {
 	HANDLE hRead, hWrite;
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
 	LPWSTR param;
-	const static size_t bufferSize = 128;
+	const static size_t bufferSize = 1024;
 
 
 	if (!CONVERTER_CPP.getAvailable()){
-		if (CONVERTER_CAFFE.getAvailable())
-			return true;
-		else
-			return false;
+		
+		return false;	// cannot read processor list
 	}
 
 	CreatePipe(&hRead, &hWrite, NULL, bufferSize);
@@ -101,7 +97,7 @@ bool checkCuda_p() {
 	lstrcat(param, L" --list-processor");
 
 	BOOL isExecuted = CreateProcess(NULL, param, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, CurrPath.c_str(), &si, &pi);
-	
+
 	CloseHandle(hWrite);
 
 	if (isExecuted)
@@ -109,35 +105,27 @@ bool checkCuda_p() {
 		DWORD len;
 		char s[bufferSize] = "";
 		string st;
+		wstring ws;
 
-		if (ReadFile(hRead, s, bufferSize - 1, &len, 0) != 0) {
+		fwprintf(fp, L"\n[proc]\n");
+
+		while (ReadFile(hRead, s, bufferSize - 1, &len, 0) != 0 || len < 0) {
 			st = s;
-			size_t firstLF = st.find_first_of('\n');
+			ws.assign(st.begin(), st.end());
+			fwprintf(fp, ws.c_str());
 
-			if (firstLF != string::npos)
-				st[firstLF] = '\0';
-
-			if (st.find_last_of('=') != string::npos)
-				CoreNum = atoi(st.substr(st.find_last_of('=') + 1).c_str());
-
-			if (st.find("CUDA") != string::npos)
-				cuda = true;
-
-			if (st.find("FMA") != string::npos || st.find("AVX") != string::npos)
-				IsCPU = true;
-
-			CloseHandle(pi.hThread);
-			CloseHandle(pi.hProcess);
 		}
+		fwprintf(fp, L"\n\n");
+		CloseHandle(pi.hThread);
+		CloseHandle(pi.hProcess);
 	}
 
 	CloseHandle(hRead);
 
 	delete[] param;
 
-	return cuda;
+	return true;
 }
-*/
 
 bool SnowSetting::checkCuda() {
 	static int result = 0;
