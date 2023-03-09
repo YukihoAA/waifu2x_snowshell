@@ -145,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Lang\Chinese.ini" />
+    <None Include="Lang\Dutch.ini" />
     <None Include="Lang\English.ini" />
     <None Include="Lang\German.ini" />
     <None Include="Lang\Japanese.ini" />
