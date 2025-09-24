@@ -122,7 +122,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	std::queue<ConvertOption> ErrorQueue;
 
 	for (int i = 0; !This->ConvertQueue.empty(); i++) {
-		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE, NULL, MAKELPARAM(0, 10 * (This->ConvertQueue.size() + i + 1)));
+		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_SETRANGE32, 0, 10 * (This->ConvertQueue.size() + i + 1));
 		SendDlgItemMessage(This->hProgressDlg, IDC_PROGRESS1, PBM_STEPIT, 0, 0);
 		wsprintf(InQueueText, L"In queue: %d/%d", i, This->ConvertQueue.size() + i);
 		SetDlgItemText(This->hProgressDlg, IDC_TEXT1, InQueueText);
@@ -182,7 +182,7 @@ INT_PTR CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 	case WM_INITDIALOG:
 		hText = GetDlgItem(hDlg, IDC_TEXT1);
 		hProgress = GetDlgItem(hDlg, IDC_PROGRESS1);
-		SendMessage(hProgress, PBM_SETRANGE, NULL, MAKELPARAM(0, 100));
+		SendMessage(hProgress, PBM_SETRANGE32, 0, 100);
 		SendMessage(hProgress, PBM_SETSTEP, (WPARAM)10, NULL);
 		SetWindowText(hText, L"In queue: 0");
 		return TRUE;
