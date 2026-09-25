@@ -13,6 +13,7 @@ private:
 	bool NoLabel;
 	bool ForceCPU;
 	bool IsTTAEnabled;
+	int TileSize;
 	std::wstring ScaleRatio;
 	std::wstring InputFilePath;
 	std::wstring OutputFolderName;
@@ -34,6 +35,7 @@ public:
 	void setNoLabel(bool noLabel);
 	void setForceCPU(bool forceCPU);
 	void setTTAEnabled(bool ttaEnabled);
+	void setTileSize(int tileSize);
 	void setScaleRatio(std::wstring scaleRatio);
 	void setInputFilePath(std::wstring inputFile);
 	void setOutputFolderName(std::wstring OutputFolderName);
@@ -45,6 +47,7 @@ public:
 	bool getNoLabel();
 	bool getForceCPU();
 	bool getTTAEnabled();
+	int getTileSize();
 	std::wstring getScaleRatio();
 	std::wstring getInputFilePath();
 	std::wstring getOutputFolderName();

@@ -47,6 +47,7 @@ SnowSetting::SnowSetting()
 	Scale = SCALE_x1_6;
 	GPU = GPU_GPU_MODE;
 	TTA = TTA_DISABLED;
+	TileSize = 0;
 	Export = 0;
 	Confirm = 0;
 	Lang = 1;
@@ -483,6 +484,9 @@ bool SnowSetting::loadSetting()
 	Key = L"TTA";
 	setTTA(GetPrivateProfileInt(Section.c_str(), Key.c_str(), TTA_DISABLED, INIPath.c_str()));
 
+	Key = L"TileSize";
+	setTileSize(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+
 	Key = L"Export";
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), EXPORT_SAME, INIPath.c_str()));
 
@@ -630,6 +634,9 @@ bool SnowSetting::saveSetting()
 	Key = L"TTA";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getTTA()).c_str(), INIPath.c_str());
 
+	Key = L"TileSize";
+	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getTileSize()).c_str(), INIPath.c_str());
+
 	Key = L"Export";
 	WritePrivateProfileString(Section.c_str(), Key.c_str(), itos(getExport()).c_str(), INIPath.c_str());
 
@@ -757,6 +764,14 @@ int SnowSetting::getTTA()
 		Init();
 
 	return Singletone->TTA;
+}
+
+int SnowSetting::getTileSize()
+{
+	if (Singletone == nullptr)
+		Init();
+
+	return Singletone->TileSize;
 }
 
 int SnowSetting::getExport()
@@ -972,6 +987,14 @@ void SnowSetting::setTTA(int tta)
 		Init();
 
 	Singletone->TTA = tta;
+}
+
+void SnowSetting::setTileSize(int tileSize)
+{
+	if (Singletone == nullptr)
+		Init();
+
+	Singletone->TileSize = tileSize;
 }
 
 void SnowSetting::checkMenuAll(HMENU hMenu)

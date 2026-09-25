@@ -275,6 +275,9 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	if (this->CustomOption != L"")
 		ParamStream << this->CustomOption << L" ";
 
+	if (convertOption->getTileSize() > 0)
+		ParamStream << L"--block-size " << convertOption->getTileSize() << L" ";
+
 	// set convert mode
 	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
 		ParamStream << L"-m scale ";
@@ -365,6 +368,9 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (this->CustomOption != L"")
 		ParamStream << this->CustomOption << L" ";
+
+	if (convertOption->getTileSize() > 0)
+		ParamStream << L"-c " << convertOption->getTileSize() << L" ";
 
 	// set convert mode
 	if (convertOption->getNoiseLevel() == ConvertOption::CO_NOISE_NONE) {
@@ -457,6 +463,9 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 	if (this->CustomOption != L"")
 		ParamStream << this->CustomOption << L" ";
 
+	if (convertOption->getTileSize() > 0)
+		ParamStream << L"-t " << convertOption->getTileSize() << L" ";
+
 	// set noise_level
 	ParamStream << L"-n " << convertOption->getNoiseLevel() << L" ";
 	if (!noLabel)
@@ -522,6 +531,9 @@ bool Converter_Cugan::execute(ConvertOption* convertOption, bool noLabel) {
 	if (this->CustomOption != L"")
 		ParamStream << this->CustomOption << L" ";
 
+	if (convertOption->getTileSize() > 0)
+		ParamStream << L"-t " << convertOption->getTileSize() << L" ";
+
 	// set noise_level
 	ParamStream << L"-n " << convertOption->getNoiseLevel() << L" ";
 	if (!noLabel)
@@ -586,6 +598,9 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (this->CustomOption != L"")
 		ParamStream << this->CustomOption << L" ";
+
+	if (convertOption->getTileSize() > 0)
+		ParamStream << L"-t " << convertOption->getTileSize() << L" ";
 
 	// set scale_ratio
 	ParamStream << L"-s ";

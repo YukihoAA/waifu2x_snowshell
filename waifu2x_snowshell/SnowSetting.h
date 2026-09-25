@@ -94,6 +94,7 @@ private:
 	int Scale;
 	int GPU;
 	int TTA;
+	int TileSize;
 	int Export;
 	int Confirm;
 	int Lang;
@@ -135,6 +136,7 @@ public:
 	static int getScale();
 	static int getGPU();
 	static int getTTA();
+	static int getTileSize();
 	static int getExport();
 	static BOOL getConfirm();
 	static BOOL getDebug();
@@ -148,6 +150,7 @@ public:
 	static void setScale(int Scale);
 	static void setGPU(int GPU);
 	static void setTTA(int tta);
+	static void setTileSize(int tileSize);
 	static void setExport(int Export);
 	static void setConfirm(BOOL Confirm);
 	static void setLang(int Lang);

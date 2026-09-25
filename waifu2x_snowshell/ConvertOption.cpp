@@ -7,6 +7,7 @@ ConvertOption::ConvertOption() {
 	NoLabel = false;
 	ForceCPU = false;
 	IsTTAEnabled = false;
+	TileSize = 0;
 	ScaleRatio = L"1.0";
 	InputFilePath = L"";
 	OutputFolderName = L"";
@@ -20,6 +21,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->NoLabel = false;
 	this->ForceCPU = false;
 	this->IsTTAEnabled = ttaEnabled;
+	this->TileSize = 0;
 	this->ScaleRatio = scaleRatio;
 	this->InputFilePath = inputFile;
 	this->OutputFolderName = OutputFolderName;
@@ -48,6 +50,10 @@ void ConvertOption::setForceCPU(bool forceCPU) {
 
 void ConvertOption::setTTAEnabled(bool ttaEnabled) {
 	this->IsTTAEnabled = ttaEnabled;
+}
+
+void ConvertOption::setTileSize(int tileSize) {
+	this->TileSize = tileSize;
 }
 
 void ConvertOption::setScaleRatio(std::wstring scaleRatio) {
@@ -89,6 +95,10 @@ bool ConvertOption::getForceCPU() {
 
 bool ConvertOption::getTTAEnabled() {
 	return this->IsTTAEnabled;
+}
+
+int ConvertOption::getTileSize() {
+	return this->TileSize;
 }
 
 std::wstring ConvertOption::getScaleRatio() {
