@@ -62,9 +62,43 @@ jobs:
           wait-for-completion: true
           output-artifact-directory: signed
 
-      - name: Upload test-signed EXE
+      - name: Create test-signed ZIP
+        shell: pwsh
+        run: |
+          $exe = (Resolve-Path -LiteralPath 'signed/waifu2x_snowshell.exe').Path
+          $version = (Get-Item -LiteralPath $exe).VersionInfo.ProductVersion
+          if ($version -notmatch '^\d+\.\d+\.\d+\.\d+$') {
+            throw "Unexpected product version: $version"
+          }
+
+          $archiveName = "waifu2x-snowshell_v$($version -replace '\.0$', '').zip"
+          $packageDirectory = (New-Item -ItemType Directory -Path 'package').FullName
+          Add-Type -AssemblyName System.IO.Compression
+          $archive = [System.IO.Compression.ZipFile]::Open(
+            (Join-Path $packageDirectory $archiveName),
+            [System.IO.Compression.ZipArchiveMode]::Create
+          )
+          try {
+            [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile(
+              $archive, $exe, 'waifu2x_snowshell.exe',
+              [System.IO.Compression.CompressionLevel]::Optimal
+            ) | Out-Null
+            foreach ($directory in @(
+              'realcugan-vulkan',
+              'realesrgan-vulkan',
+              'waifu2x-caffe',
+              'waifu2x-converter',
+              'waifu2x-ncnn-vulkan'
+            )) {
+              $archive.CreateEntry("$directory/") | Out-Null
+            }
+          } finally {
+            $archive.Dispose()
+          }
+
+      - name: Upload test-signed ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: snowshell-test-signed
-          path: signed/waifu2x_snowshell.exe
+          name: snowshell-test-signed-package
+          path: package/*.zip
           if-no-files-found: error
