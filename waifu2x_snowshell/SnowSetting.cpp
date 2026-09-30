@@ -47,7 +47,7 @@ SnowSetting::SnowSetting()
 	Scale = SCALE_x1_6;
 	GPU = GPU_GPU_MODE;
 	TTA = TTA_DISABLED;
-	TileSize = 0;
+	TileSize = 128;
 	Export = 0;
 	Confirm = 0;
 	Lang = 1;
@@ -485,7 +485,7 @@ bool SnowSetting::loadSetting()
 	setTTA(GetPrivateProfileInt(Section.c_str(), Key.c_str(), TTA_DISABLED, INIPath.c_str()));
 
 	Key = L"TileSize";
-	setTileSize(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
+	setTileSize(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 128, INIPath.c_str()));
 
 	Key = L"Export";
 	setExport(GetPrivateProfileInt(Section.c_str(), Key.c_str(), EXPORT_SAME, INIPath.c_str()));

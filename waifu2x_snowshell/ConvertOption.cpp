@@ -7,7 +7,7 @@ ConvertOption::ConvertOption() {
 	NoLabel = false;
 	ForceCPU = false;
 	IsTTAEnabled = false;
-	TileSize = 0;
+	TileSize = 128;
 	ScaleRatio = L"1.0";
 	InputFilePath = L"";
 	OutputFolderName = L"";
@@ -21,7 +21,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->NoLabel = false;
 	this->ForceCPU = false;
 	this->IsTTAEnabled = ttaEnabled;
-	this->TileSize = 0;
+	this->TileSize = 128;
 	this->ScaleRatio = scaleRatio;
 	this->InputFilePath = inputFile;
 	this->OutputFolderName = OutputFolderName;
