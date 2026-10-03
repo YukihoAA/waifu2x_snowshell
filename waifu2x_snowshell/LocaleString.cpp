@@ -49,6 +49,7 @@ wstring STRING_TEXT_SCALE_x1_0 = L"x1.0";
 wstring STRING_TEXT_SCALE_x1_5 = L"x1.5";
 wstring STRING_TEXT_SCALE_x1_6 = L"x1.6";
 wstring STRING_TEXT_SCALE_x2_0 = L"x2.0";
+wstring STRING_TEXT_SCALE_x4_0 = L"x4.0";
 
 wstring STRING_TEXT_GPU = L"변환방식";
 wstring STRING_TEXT_GPU_CPU = L"CPU";

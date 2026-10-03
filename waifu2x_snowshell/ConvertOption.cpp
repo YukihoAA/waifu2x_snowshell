@@ -41,7 +41,7 @@ void ConvertOption::setDebugMode(int DebugMode) {
 }
 
 void ConvertOption::setNoLabel(bool noLabel) {
-	this->NoLabel = NoLabel;
+	this->NoLabel = noLabel;
 }
 
 void ConvertOption::setForceCPU(bool forceCPU) {

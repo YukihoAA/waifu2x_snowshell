@@ -9,7 +9,6 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 	MSG msg;
 	BOOL bIsWow64 = FALSE;
 	LPWSTR lpszClass = L"Snowshell";
-	ConvertOption convertOption;
 
 	WNDCLASS wc;
 	wc.style = CS_HREDRAW | CS_VREDRAW;
@@ -35,11 +34,16 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 
 	hWnd = CreateWindow(lpszClass, L"Snowshell v2.6.2 - Waifu2x Image Upscaler", WS_OVERLAPPED | WS_CAPTION | WS_SYSMENU | WS_BORDER, CW_USEDEFAULT, CW_USEDEFAULT, 530, 370, NULL, NULL, hInstance, NULL);
 
+	if (hWnd == nullptr) {
+		LocalFree(argv);
+		return 1;
+	}
 	ShowWindow(hWnd, nCmdShow);
 
 	if (wcscmp(lpCmdLine, L"")) {
 		for (int i = 0; i < argc; i++) {
-			Execute(hWnd, &convertOption, argv[i]);
+			ConvertOption inputOption;
+			Execute(hWnd, &inputOption, argv[i]);
 		}
 	}
 
@@ -47,6 +51,7 @@ int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 		TranslateMessage(&msg);
 		DispatchMessage(&msg);
 	}
+	LocalFree(argv);
 	return (int)msg.wParam;
 }
 
@@ -79,8 +84,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		// Check Converter
 		if (SnowSetting::CurrentConverter == nullptr) {
 			MessageBox(hWnd, STRING_TEXT_NOCONVERTER_MESSAGE.c_str(), STRING_TEXT_NOCONVERTER_TITLE.c_str(), MB_OK | MB_ICONEXCLAMATION | MB_SYSTEMMODAL);
-			SendMessage(hWnd, WM_DESTROY, NULL, NULL);
-			return TRUE;
+			PostQuitMessage(0);
+			return -1;
 		}
 
 		SnowSetting::getTexts(&UITitleText, &UIText);
@@ -147,9 +152,11 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		}
 
 		for (unsigned i = 0; i < dragFiles.size(); i++) {
-			Execute(hWnd, &convertOption, dragFiles.at(i).c_str());
+			ConvertOption inputOption;
+			Execute(hWnd, &inputOption, dragFiles.at(i).c_str());
 		}
 
+		DragFinish(hDrop);
 		DragAcceptFiles(hWnd, TRUE);
 	}
 		return TRUE;
@@ -215,6 +222,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_SCALE_x1_5:
 		case ID_MENU_SCALE_x1_6:
 		case ID_MENU_SCALE_x2_0:
+		case ID_MENU_SCALE_x4_0:
 			SnowSetting::checkScale(hMenu, LOWORD(wParam) - ID_MENU_SCALE_x1_0);
 			UIText[1] = SnowSetting::getScaleText();
 
@@ -354,15 +362,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		BitBlt(hdc, 0, 0, rt.right, rt.bottom, hMemDC, 0, 0, SRCCOPY);
 
 		SelectObject(hMemDC, hOldFont);
+		SelectObject(hMemDC, hOldBitmap);
+		DeleteObject(hBitmap);
 		DeleteDC(hMemDC);
 
 		EndPaint(hWnd, &ps);
 		return TRUE;
+	case WM_CONVERT_ERROR:
+		MessageBox(hWnd, wParam ? L"Failed to start conversion thread." : L"Failed to convert some files.\nCheck \"error.log\"", L"Error", MB_ICONWARNING | MB_OK);
+		return TRUE;
 	case WM_DESTROY:
+		SnowSetting::CONVERTER_CPP.shutdown();
+		SnowSetting::CONVERTER_CAFFE.shutdown();
+		SnowSetting::CONVERTER_VULKAN.shutdown();
+		SnowSetting::CONVERTER_CUGAN.shutdown();
+		SnowSetting::CONVERTER_ESRGAN.shutdown();
 		SnowSetting::saveSetting();
 		DestroyMenu(hMenu);
 		DeleteObject(hBGBitmap);
 		DeleteObject(hFont);
+		DeleteObject(hSFont);
 		PostQuitMessage(0);
 		return TRUE;
 	}
@@ -505,6 +524,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 	if (SnowSetting::getConfirm() == CONFIRM_SHOW && convertOption->getOutputFolderName() == L"" && MessageBox(hWnd, STRING_TEXT_CONFIRM_MESSAGE.c_str(), STRING_TEXT_CONFIRM_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 		return FALSE;
 
+	convertOption->setNoLabel(noLabel);
 	convertOption->setDebugMode(SnowSetting::getDebug());
 
 	convertOption->setInputFilePath(fileName);
@@ -525,6 +545,9 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		break;
 	case SCALE_x2_0:
 		convertOption->setScaleRatio(L"2.0");
+		break;
+	case SCALE_x4_0:
+		convertOption->setScaleRatio(L"4.0");
 		break;
 	case SCALE_CUSTOM:
 		convertOption->setScaleRatio(SnowSetting::getScaleRatio());

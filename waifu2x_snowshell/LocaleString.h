@@ -54,6 +54,7 @@ extern wstring STRING_TEXT_SCALE_x1_0;
 extern wstring STRING_TEXT_SCALE_x1_5;
 extern wstring STRING_TEXT_SCALE_x1_6;
 extern wstring STRING_TEXT_SCALE_x2_0;
+extern wstring STRING_TEXT_SCALE_x4_0;
 
 extern wstring STRING_TEXT_GPU;
 extern wstring STRING_TEXT_GPU_CPU;

@@ -5,12 +5,17 @@
 #include <string>
 #include <sstream>
 #include <queue>
+#include <mutex>
+#include <condition_variable>
 
 #include "LocaleString.h"
 #include "ConvertOption.h"
 #include "resource.h"
 
 #define WM_SET_CONVERTER WM_USER+1000
+#define WM_CONVERT_PROGRESS (WM_USER+1001)
+#define WM_CONVERT_FINISHED (WM_USER+1002)
+#define WM_CONVERT_ERROR (WM_USER+1003)
 
 extern BOOL FileExists(LPCWSTR file);
 extern BOOL IsDirectory(LPCWSTR path);
@@ -26,6 +31,13 @@ protected:
 	HANDLE hConvertProcess;
 	HWND hProgressDlg;
 
+	std::mutex QueueMutex;
+	std::condition_variable QueueReady;
+	bool Stopping = false;
+	bool CancelRequested = false;
+	bool Converting = false;
+	unsigned ProgressGeneration = 0;
+	size_t CompletedCount = 0;
 	std::queue<ConvertOption> ConvertQueue;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
 	static INT_PTR CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
@@ -33,7 +45,10 @@ protected:
 public:
 	Converter();
 	Converter(std::wstring exePath);
-	~Converter();
+	virtual ~Converter();
+	Converter(const Converter&) = delete;
+	Converter& operator=(const Converter&) = delete;
+	void shutdown();
 	bool checkAvailable();
 	void setAvailable(bool available);
 	void setExePath(std::wstring exePath);

@@ -32,8 +32,9 @@ using namespace std;
 #define SCALE_x1_6 2
 #define SCALE_x2_0 3
 #define SCALE_CUSTOM 4
+#define SCALE_x4_0 5
 
-#define SCALE_MAX 4
+#define SCALE_MAX 5
 
 
 #define MENU_GPU 3

@@ -33,11 +33,16 @@ SnowSetting::SnowSetting()
 	OutputDirName = L"output";
 	INIPath = CurrPath + L"\\config.ini";
 	LangPath = CurrPath + L"\\Lang";
-	CONVERTER_CPP = Converter_Cpp(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
-	CONVERTER_CAFFE = Converter_Caffe(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe");
-	CONVERTER_VULKAN = Converter_Vulkan(CurrPath + L"\\waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe");
-	CONVERTER_CUGAN = Converter_Cugan(CurrPath + L"\\realcugan-vulkan\\realcugan-ncnn-vulkan.exe");
-	CONVERTER_ESRGAN = Converter_Esrgan(CurrPath + L"\\realesrgan-vulkan\\realesrgan-ncnn-vulkan.exe");
+	CONVERTER_CPP.setExePath(CurrPath + L"\\waifu2x-converter\\waifu2x-converter-cpp.exe");
+	CONVERTER_CPP.checkAvailable();
+	CONVERTER_CAFFE.setExePath(CurrPath + L"\\waifu2x-caffe\\waifu2x-caffe-cui.exe");
+	CONVERTER_CAFFE.checkAvailable();
+	CONVERTER_VULKAN.setExePath(CurrPath + L"\\waifu2x-ncnn-vulkan\\waifu2x-ncnn-vulkan.exe");
+	CONVERTER_VULKAN.checkAvailable();
+	CONVERTER_CUGAN.setExePath(CurrPath + L"\\realcugan-vulkan\\realcugan-ncnn-vulkan.exe");
+	CONVERTER_CUGAN.checkAvailable();
+	CONVERTER_ESRGAN.setExePath(CurrPath + L"\\realesrgan-vulkan\\realesrgan-ncnn-vulkan.exe");
+	CONVERTER_ESRGAN.checkAvailable();
 	CoreNum = thread::hardware_concurrency();
 	CurrentConverter = nullptr;
 	OutputExt = L"png";
@@ -70,62 +75,53 @@ SnowSetting *SnowSetting::Init()
 }
 
 bool SnowSetting::checkProcessor(FILE* fp) {
-	HANDLE hRead, hWrite;
-	STARTUPINFO si;
-	PROCESS_INFORMATION pi;
-	LPWSTR param;
-	const static size_t bufferSize = 1024;
-
-
-	if (!CONVERTER_CPP.getAvailable()){
-		
-		return false;	// cannot read processor list
+	if (fp == nullptr || !CONVERTER_CPP.getAvailable()) return false;
+	HANDLE read = nullptr, write = nullptr;
+	SECURITY_ATTRIBUTES security = { sizeof(security), nullptr, TRUE };
+	if (!CreatePipe(&read, &write, &security, 0)) return false;
+	if (!SetHandleInformation(read, HANDLE_FLAG_INHERIT, 0)) {
+		CloseHandle(read); CloseHandle(write); return false;
 	}
-
-	CreatePipe(&hRead, &hWrite, NULL, bufferSize);
-	SetHandleInformation(hWrite, HANDLE_FLAG_INHERIT, HANDLE_FLAG_INHERIT);
-
-	memset(&si, 0, sizeof(STARTUPINFO));
-
-	si.cb = sizeof(si);
-	si.hStdOutput = hWrite;
-	si.hStdError = hWrite;
-	si.dwFlags = STARTF_USESTDHANDLES;
-
-	param = new WCHAR[MAX_PATH];
-
-	lstrcpy(param, CONVERTER_CPP.getExePath().c_str());
-	lstrcat(param, L" --list-processor");
-
-	BOOL isExecuted = CreateProcess(NULL, param, NULL, NULL, TRUE, NORMAL_PRIORITY_CLASS | CREATE_NO_WINDOW, NULL, CurrPath.c_str(), &si, &pi);
-
-	CloseHandle(hWrite);
-
-	if (isExecuted)
-	{
-		DWORD len;
-		char s[bufferSize] = "";
-		string st;
-		wstring ws;
-
-		fwprintf(fp, L"\n[proc]\n");
-
-		while (ReadFile(hRead, s, bufferSize - 1, &len, 0) != 0 || len < 0) {
-			st = s;
-			ws.assign(st.begin(), st.end());
-			fwprintf(fp, ws.c_str());
-
-		}
-		fwprintf(fp, L"\n\n");
-		CloseHandle(pi.hThread);
-		CloseHandle(pi.hProcess);
+	STARTUPINFOW startup = {};
+	PROCESS_INFORMATION process = {};
+	startup.cb = sizeof(startup);
+	startup.dwFlags = STARTF_USESTDHANDLES;
+	startup.hStdOutput = write;
+	startup.hStdError = write;
+	startup.hStdInput = GetStdHandle(STD_INPUT_HANDLE);
+	std::wstring exe = CONVERTER_CPP.getExePath();
+	std::wstring command = L"\"" + exe + L"\" --list-processor";
+	std::wstring directory = CONVERTER_CPP.getWorkingDir();
+	bool launched = CreateProcessW(exe.c_str(), &command[0], nullptr, nullptr, TRUE, CREATE_NO_WINDOW,
+		nullptr, directory.empty() ? nullptr : directory.c_str(), &startup, &process) != FALSE;
+	CloseHandle(write);
+	if (!launched) { CloseHandle(read); return false; }
+	CloseHandle(process.hThread);
+	fwprintf(fp, L"\n[proc]\n");
+	bool success = false;
+	ULONGLONG started = GetTickCount64();
+	for (;;) {
+		DWORD available = 0;
+		if (!PeekNamedPipe(read, nullptr, 0, nullptr, &available, nullptr)) break;
+		if (available != 0) {
+			char buffer[1024]; DWORD length = 0;
+			if (!ReadFile(read, buffer, (std::min)(available, (DWORD)sizeof(buffer)), &length, nullptr)) break;
+			std::wstring output(buffer, buffer + length);
+			fwprintf(fp, L"%ls", output.c_str());
+		} else if (WaitForSingleObject(process.hProcess, 0) == WAIT_OBJECT_0) break;
+		else Sleep(10);
+		if (GetTickCount64() - started >= 10000) break;
 	}
-
-	CloseHandle(hRead);
-
-	delete[] param;
-
-	return true;
+	if (WaitForSingleObject(process.hProcess, 0) == WAIT_OBJECT_0) {
+		DWORD exitCode = 1;
+		success = GetExitCodeProcess(process.hProcess, &exitCode) && exitCode == 0;
+	} else {
+		TerminateProcess(process.hProcess, 1);
+		WaitForSingleObject(process.hProcess, INFINITE);
+	}
+	fwprintf(fp, L"\n\n");
+	CloseHandle(read); CloseHandle(process.hProcess);
+	return success;
 }
 
 bool SnowSetting::checkCuda() {
@@ -176,47 +172,27 @@ void SnowSetting::loadLocale()
 	wstring Key, Value, Section;
 	wstring LangFileName = LangPath + L"\\" + LangFile[getLang()];
 
-	if (!FileExists(LangFileName.c_str())) {
-		CreateDirectory(L"Lang", NULL);
-		HRSRC hSrc = NULL;
-		if (LangFileName.find(L"Korean") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_KO), L"LANG");
-		else if (LangFileName.find(L"Japanese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_JP), L"LANG");
-		else if (LangFileName.find(L"Chinese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_CN), L"LANG");
-		else if (LangFileName.find(L"English") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_EN), L"LANG");
-		else if (LangFileName.find(L"German") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_DE), L"LANG");
-		else if (LangFileName.find(L"Swedish") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_SV), L"LANG");
-		else if (LangFileName.find(L"Portuguese") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_PT), L"LANG");
-		else if (LangFileName.find(L"Ukrainian") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_UKR), L"LANG");
-		else if (LangFileName.find(L"Swedish") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_SW), L"LANG");
-		else if (LangFileName.find(L"Russian") != std::string::npos) hSrc = FindResource(g_hInst, MAKEINTRESOURCE(IDR_LANG_RUS), L"LANG");
-		else {
-			MessageBox(NULL, L"No Lang File", L"Error", MB_ICONWARNING | MB_OK);
-			setLang(1);
+	// At most one extraction attempt; failed writes use the existing string defaults.
+	INT_SETTING_VER = GetPrivateProfileIntW(L"Snowshell", L"INT_SETTING_VER", 0, LangFileName.c_str());
+	if (!FileExists(LangFileName.c_str()) || INT_SETTING_VER < SETTING_VER_MINIMUM) {
+		const int resources[] = { IDR_LANG_KO, IDR_LANG_EN, IDR_LANG_JP, IDR_LANG_CN, IDR_LANG_DE,
+			IDR_LANG_SV, IDR_LANG_PT, IDR_LANG_UKR, IDR_LANG_SW, IDR_LANG_RUS };
+		bool directoryReady = CreateDirectoryW(LangPath.c_str(), nullptr) != FALSE || GetLastError() == ERROR_ALREADY_EXISTS;
+		HRSRC resource = FindResourceW(g_hInst, MAKEINTRESOURCEW(resources[getLang()]), L"LANG");
+		HGLOBAL loaded = resource ? LoadResource(g_hInst, resource) : nullptr;
+		void* bytes = loaded ? LockResource(loaded) : nullptr;
+		DWORD size = resource ? SizeofResource(g_hInst, resource) : 0;
+		bool saved = false;
+		if (directoryReady && bytes != nullptr && size != 0) {
+			HANDLE file = CreateFileW(LangFileName.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
+			if (file != INVALID_HANDLE_VALUE) {
+				DWORD written = 0;
+				saved = WriteFile(file, bytes, size, &written, nullptr) != FALSE && written == size;
+				CloseHandle(file);
+			}
 		}
-		if (hSrc != NULL) {
-			HGLOBAL hRes = LoadResource(g_hInst, hSrc);
-			LPVOID memRes = LockResource(hRes);
-			DWORD sizeRes = SizeofResource(g_hInst, hSrc);
-			HANDLE hFile = CreateFile(LangFileName.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
-			DWORD dwWritten = 0;
-
-			WriteFile(hFile, memRes, sizeRes, &dwWritten, NULL);
-			if (hFile != NULL)
-				CloseHandle(hFile);
-		}
-	}
-
-	Section = L"Snowshell";
-
-	Key = L"INT_SETTING_VER";
-	INT_SETTING_VER = GetPrivateProfileIntW(Section.c_str(), Key.c_str(), 0, LangFileName.c_str());
-
-	if (INT_SETTING_VER < SETTING_VER_MINIMUM) {
-		for (wstring iLangFileName : LangFile) {
-			DeleteFile((LangPath + L"\\" + iLangFileName).c_str());
-		}
-		loadSetting();
-		return;
+		if (!saved) LangFileName.clear();
+		INT_SETTING_VER = GetPrivateProfileIntW(L"Snowshell", L"INT_SETTING_VER", 0, LangFileName.c_str());
 	}
 
 	Section = L"Menu";
@@ -500,10 +476,10 @@ bool SnowSetting::loadSetting()
 	Key = L"Lang";
 	int langsel = GetPrivateProfileInt(Section.c_str(), Key.c_str(), -1, INIPath.c_str());
 	if (langsel == -1) {
-		WCHAR lbuf[40];
+		WCHAR lbuf[40] = {};
 		GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_SENGLANGUAGE, lbuf, 40);
 		for (int i = 0; i < LangNum; i++)
-			if (LangFile[i].find(lbuf) >= 0)
+			if (LangFile[i].find(lbuf) != wstring::npos)
 			{
 				langsel = i;
 				break;
@@ -515,8 +491,6 @@ bool SnowSetting::loadSetting()
 
 	Key = L"Debug";
 	setDebug(GetPrivateProfileInt(Section.c_str(), Key.c_str(), 0, INIPath.c_str()));
-
-	loadLocale();
 
 	GetPrivateProfileStringW(Section.c_str(), L"ScaleRatio", L"1.6", buf, MAX_PATH, INIPath.c_str());
 	SnowSetting::setScaleRatio(buf);
@@ -599,7 +573,7 @@ bool SnowSetting::loadSetting()
 		}
 		else if (checkVulkan() && CONVERTER_ESRGAN.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_ESRGAN);
-			setScale(SCALE_CUSTOM);
+			setScale(SCALE_x4_0);
 		}
 		else if (CONVERTER_CPP.getAvailable()) {
 			setConverterNum(CONVERTER_NUM_CPP);
@@ -849,14 +823,14 @@ void SnowSetting::setScale(int Scale)
 	if (Singletone == nullptr)
 		Init();
 
-	if (Scale > SCALE_MAX || Scale < 0)
-		Scale = SCALE_x2_0;
-	else if (CurrentConverter == &CONVERTER_ESRGAN) {
-		Scale = SCALE_CUSTOM;	
+	if (CurrentConverter == &CONVERTER_ESRGAN) {
+		Scale = SCALE_x4_0;
 	}
-	else if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
+	else if (Scale > SCALE_MAX || Scale < 0)
 		Scale = SCALE_x2_0;
-	else if (CurrentConverter == &CONVERTER_CUGAN&& Scale != SCALE_x2_0 && Scale != SCALE_CUSTOM)
+	else if (CurrentConverter == &CONVERTER_VULKAN && Scale != SCALE_x1_0 && Scale != SCALE_x2_0 && Scale != SCALE_x4_0 && Scale != SCALE_CUSTOM)
+		Scale = SCALE_x2_0;
+	else if (CurrentConverter == &CONVERTER_CUGAN&& Scale != SCALE_x2_0 && Scale != SCALE_x4_0 && Scale != SCALE_CUSTOM)
 		Scale = SCALE_x2_0;
 
 	Singletone->Scale = Scale;
@@ -962,6 +936,7 @@ void SnowSetting::setConverterNum(int ConverterNum)
 			Singletone->CurrentConverter = &CONVERTER_ESRGAN;
 			Singletone->ConverterNum = ConverterNum;
 			Singletone->ScaleRatio = L"4.0";
+			setScale(SCALE_x4_0);
 		}
 		break;
 	}
@@ -1021,7 +996,7 @@ void SnowSetting::checkNoise(HMENU hMenu, int sel)
 		EnableMenuItem(hMenu, MENU_NOISE, MF_BYPOSITION | MF_GRAYED);
 		return;
 	}
-	else if (CurrentConverter == &CONVERTER_CUGAN && getScale() == SCALE_CUSTOM) {
+	else if (CurrentConverter == &CONVERTER_CUGAN && (getScale() == SCALE_CUSTOM || getScale() == SCALE_x4_0)) {
 		EnableMenuItem(hSubMenu, NOISE_MID, MF_BYPOSITION | MF_GRAYED);
 		EnableMenuItem(hSubMenu, NOISE_HIGH, MF_BYPOSITION | MF_GRAYED);
 
@@ -1046,40 +1021,43 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 	if (sel != -1)
 		setScale(sel);
 
+	for (int i = 0; i <= SCALE_MAX; i++)
+		CheckMenuItem(hSubMenu, ID_MENU_SCALE_x1_0 + i, MF_BYCOMMAND | MF_UNCHECKED);
+
 	if (CurrentConverter == &CONVERTER_ESRGAN) {
 		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_GRAYED);
-		setScale(SCALE_CUSTOM);
+		setScale(SCALE_x4_0);
+		CheckMenuItem(hSubMenu, ID_MENU_SCALE_x4_0, MF_BYCOMMAND | MF_CHECKED);
 		return;
 	}
 	else {
 		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_ENABLED);
 	}
 
-	for (int i = 0; i <= SCALE_MAX; i++)
-		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
+	EnableMenuItem(hSubMenu, ID_MENU_SCALE_x4_0, MF_BYCOMMAND | MF_ENABLED);
 
 	if (CurrentConverter == &CONVERTER_VULKAN) {
-		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
-		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_GRAYED);
 
 		if (getScale() == SCALE_x1_5 || getScale() == SCALE_x1_6)
 			setScale(SCALE_x2_0);
 	}
 	else if (CurrentConverter == &CONVERTER_CUGAN) {
-		EnableMenuItem(hSubMenu, SCALE_x1_0, MF_BYPOSITION | MF_GRAYED);
-		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_GRAYED);
-		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_GRAYED);
 
-		if (getScale() != SCALE_x2_0 && getScale() != SCALE_CUSTOM)
+		if (getScale() != SCALE_x2_0 && getScale() != SCALE_x4_0 && getScale() != SCALE_CUSTOM)
 			setScale(SCALE_x2_0);
 	}
 	else {
-		EnableMenuItem(hSubMenu, SCALE_x1_0, MF_BYPOSITION | MF_ENABLED);
-		EnableMenuItem(hSubMenu, SCALE_x1_5, MF_BYPOSITION | MF_ENABLED);
-		EnableMenuItem(hSubMenu, SCALE_x1_6, MF_BYPOSITION | MF_ENABLED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_ENABLED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_ENABLED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_ENABLED);
 	}
 
-	CheckMenuItem(hSubMenu, getScale(), MF_BYPOSITION | MF_CHECKED);
+	CheckMenuItem(hSubMenu, ID_MENU_SCALE_x1_0 + getScale(), MF_BYCOMMAND | MF_CHECKED);
 }
 
 void SnowSetting::checkGPU(HMENU hMenu, int sel)
@@ -1228,6 +1206,8 @@ wstring * SnowSetting::getScaleText()
 		return &STRING_TEXT_SCALE_x1_6;
 	case SCALE_x2_0:
 		return &STRING_TEXT_SCALE_x2_0;
+	case SCALE_x4_0:
+		return &STRING_TEXT_SCALE_x4_0;
 	case SCALE_CUSTOM:
 		scaleRatioString = L"x" + SnowSetting::getScaleRatio();
 	}
@@ -1322,7 +1302,8 @@ BOOL FileExists(LPCWSTR file) {
 }
 
 BOOL IsDirectory(LPCWSTR path) {
-	return FILE_ATTRIBUTE_DIRECTORY & GetFileAttributes(path);
+	DWORD attributes = GetFileAttributesW(path);
+	return attributes != INVALID_FILE_ATTRIBUTES && (attributes & FILE_ATTRIBUTE_DIRECTORY);
 }
 
 int contain(wstring str, wstring find) {
