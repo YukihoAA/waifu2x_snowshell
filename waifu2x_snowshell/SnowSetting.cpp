@@ -434,6 +434,37 @@ void SnowSetting::loadLocale()
 	GetPrivateProfileStringW(Section.c_str(), Key.c_str(), L"Do you want to stop the converting process?", buf, 200, LangFileName.c_str());
 	STRING_TEXT_ABORT_CONVERT_MESSAGE = buf;
 
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_TITLE", getLang() == 0 ? L"\uBCC0\uD658 \uC624\uB958" : L"Conversion error", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_TITLE = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_MESSAGE", getLang() == 0 ? L"\uAC1C \uD30C\uC77C\uC744 \uBCC0\uD658\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4." : L"file(s) could not be converted.", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_MESSAGE = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_INPUT", getLang() == 0 ? L"\uCCAB \uBC88\uC9F8 \uC2E4\uD328 \uD30C\uC77C" : L"First failed file", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_INPUT = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_MODEL", getLang() == 0 ? L"\uBAA8\uB378" : L"Model", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_MODEL = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_REASON", getLang() == 0 ? L"\uC6D0\uC778" : L"Reason", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_REASON = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_LOG", getLang() == 0 ? L"\uC0C1\uC138 \uB85C\uADF8 \uC800\uC7A5 \uC704\uCE58" : L"Details saved to", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_LOG = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_ERROR_LOG_FAILED", getLang() == 0 ? L"\uC624\uB958 \uB85C\uADF8\uB97C \uC800\uC7A5\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4" : L"Could not save the error log", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_ERROR_LOG_FAILED = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_PROCESS_FAILED", getLang() == 0 ? L"\uBCC0\uD658\uAE30\uAC00 \uC624\uB958\uB85C \uC885\uB8CC\uB418\uC5C8\uC2B5\uB2C8\uB2E4." : L"The converter exited with an error.", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_PROCESS_FAILED = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_OUTPUT_FAILED", getLang() == 0 ? L"\uCD9C\uB825 \uD30C\uC77C\uC744 \uB9CC\uB4E4\uAC70\uB098 \uC800\uC7A5\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4." : L"The output could not be created or saved.", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_OUTPUT_FAILED = buf;
+
+	GetPrivateProfileStringW(Section.c_str(), L"STRING_TEXT_CONVERT_THREAD_FAILED", getLang() == 0 ? L"\uBCC0\uD658 \uC791\uC5C5\uC744 \uC2DC\uC791\uD558\uC9C0 \uBABB\uD588\uC2B5\uB2C8\uB2E4." : L"Failed to start the conversion thread.", buf, 200, LangFileName.c_str());
+	STRING_TEXT_CONVERT_THREAD_FAILED = buf;
+
 }
 
 bool SnowSetting::loadSetting()
@@ -452,7 +483,8 @@ bool SnowSetting::loadSetting()
 	setNoise(GetPrivateProfileInt(Section.c_str(), Key.c_str(), NOISE_MID, INIPath.c_str()));
 
 	Key = L"Scale";
-	setScale(GetPrivateProfileInt(Section.c_str(), Key.c_str(), SCALE_x1_6, INIPath.c_str()));
+	const int savedScale = GetPrivateProfileInt(Section.c_str(), Key.c_str(), SCALE_x1_6, INIPath.c_str());
+	setScale(savedScale);
 
 	Key = L"GPU";
 	setGPU(GetPrivateProfileInt(Section.c_str(), Key.c_str(), GPU_GPU_MODE, INIPath.c_str()));
@@ -555,7 +587,7 @@ bool SnowSetting::loadSetting()
 	GetPrivateProfileStringW(Section.c_str(), L"realcugan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_CUGAN.setOptionString(buf);
 
-	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", L"-n realesrgan-x4plus-anime", buf, MAX_PATH, INIPath.c_str());
+	GetPrivateProfileStringW(Section.c_str(), L"realesrgan-vulkan", L"", buf, MAX_PATH, INIPath.c_str());
 	CONVERTER_ESRGAN.setOptionString(buf);
 
 	// Set Converter
@@ -579,6 +611,10 @@ bool SnowSetting::loadSetting()
 			setConverterNum(CONVERTER_NUM_CPP);
 		}
 	}
+
+	// Restore the ESRGAN preset after converter selection, which may normalize the scale.
+	if (CurrentConverter == &CONVERTER_ESRGAN)
+		setScale(savedScale);
 
 	delete[] buf;
 
@@ -824,7 +860,8 @@ void SnowSetting::setScale(int Scale)
 		Init();
 
 	if (CurrentConverter == &CONVERTER_ESRGAN) {
-		Scale = SCALE_x4_0;
+		if (Scale != SCALE_x2_0 && Scale != SCALE_x4_0)
+			Scale = SCALE_x4_0;
 	}
 	else if (Scale > SCALE_MAX || Scale < 0)
 		Scale = SCALE_x2_0;
@@ -936,7 +973,7 @@ void SnowSetting::setConverterNum(int ConverterNum)
 			Singletone->CurrentConverter = &CONVERTER_ESRGAN;
 			Singletone->ConverterNum = ConverterNum;
 			Singletone->ScaleRatio = L"4.0";
-			setScale(SCALE_x4_0);
+			setScale(getScale());
 		}
 		break;
 	}
@@ -1025,18 +1062,27 @@ void SnowSetting::checkScale(HMENU hMenu, int sel)
 		CheckMenuItem(hSubMenu, ID_MENU_SCALE_x1_0 + i, MF_BYCOMMAND | MF_UNCHECKED);
 
 	if (CurrentConverter == &CONVERTER_ESRGAN) {
-		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_GRAYED);
-		setScale(SCALE_x4_0);
-		CheckMenuItem(hSubMenu, ID_MENU_SCALE_x4_0, MF_BYCOMMAND | MF_CHECKED);
+		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_ENABLED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_CUSTOM, MF_BYCOMMAND | MF_GRAYED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_ENABLED);
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x4_0, MF_BYCOMMAND | MF_ENABLED);
+		setScale(getScale());
+		CheckMenuItem(hSubMenu, ID_MENU_SCALE_x1_0 + getScale(), MF_BYCOMMAND | MF_CHECKED);
 		return;
 	}
 	else {
 		EnableMenuItem(hMenu, MENU_SCALE, MF_BYPOSITION | MF_ENABLED);
 	}
 
+	EnableMenuItem(hSubMenu, ID_MENU_SCALE_x2_0, MF_BYCOMMAND | MF_ENABLED);
 	EnableMenuItem(hSubMenu, ID_MENU_SCALE_x4_0, MF_BYCOMMAND | MF_ENABLED);
+	EnableMenuItem(hSubMenu, ID_MENU_SCALE_CUSTOM, MF_BYCOMMAND | MF_ENABLED);
 
 	if (CurrentConverter == &CONVERTER_VULKAN) {
+		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_0, MF_BYCOMMAND | MF_ENABLED);
 		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_5, MF_BYCOMMAND | MF_GRAYED);
 		EnableMenuItem(hSubMenu, ID_MENU_SCALE_x1_6, MF_BYCOMMAND | MF_GRAYED);
 
@@ -1083,13 +1129,15 @@ void SnowSetting::checkGPU(HMENU hMenu, int sel)
 void SnowSetting::checkTTA(HMENU hMenu, int sel)
 {
 	HMENU hSubMenu = GetSubMenu(hMenu, MENU_TTA);
+	const bool forceTTA = CurrentConverter == &CONVERTER_ESRGAN && getScale() == SCALE_x2_0;
 
-	if (sel != -1)
+	if (sel != -1 && !forceTTA)
 		setTTA(sel);
 
+	EnableMenuItem(hMenu, MENU_TTA, MF_BYPOSITION | (forceTTA ? MF_GRAYED : MF_ENABLED));
 	for (int i = 0; i <= TTA_MAX; i++)
 		CheckMenuItem(hSubMenu, i, MF_BYPOSITION | MF_UNCHECKED);
-	CheckMenuItem(hSubMenu, getTTA(), MF_BYPOSITION | MF_CHECKED);
+	CheckMenuItem(hSubMenu, forceTTA ? TTA_ENABLED : getTTA(), MF_BYPOSITION | MF_CHECKED);
 }
 
 void SnowSetting::checkExport(HMENU hMenu, int sel)
@@ -1233,7 +1281,7 @@ wstring * SnowSetting::getGPUText()
 		}
 	}
 	else if (CurrentConverter == &CONVERTER_ESRGAN) {
-		if (getTTA() == TTA_DISABLED) {
+		if (getTTA() == TTA_DISABLED && getScale() != SCALE_x2_0) {
 			return &STRING_TEXT_GPU_ESRGAN;
 		}
 		else {

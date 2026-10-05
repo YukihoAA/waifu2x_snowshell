@@ -10,6 +10,7 @@
 
 #include "LocaleString.h"
 #include "ConvertOption.h"
+#include "ConversionLog.h"
 #include "resource.h"
 
 #define WM_SET_CONVERTER WM_USER+1000
@@ -39,6 +40,8 @@ protected:
 	unsigned ProgressGeneration = 0;
 	size_t CompletedCount = 0;
 	std::queue<ConvertOption> ConvertQueue;
+	std::mutex DiagnosticMutex;
+	ConversionFailure LastFailure;
 	static DWORD WINAPI ConvertPorc(PVOID lParam);
 	static INT_PTR CALLBACK ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -62,7 +65,8 @@ public:
 	std::wstring getOptionString();
 	void addQueue(ConvertOption *convertOption);
 	void emptyQueue();
-	bool convert(std::wstring param, std::wstring exportName, int debug);
+	bool convert(std::wstring param, std::wstring exportName, int debug, ConvertOption* option = nullptr);
+	ConversionFailure getLastFailure();
 
 	virtual bool execute(ConvertOption *convertOption, bool noLabel = false)=0;
 };

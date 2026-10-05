@@ -51,7 +51,7 @@ To change your conversion setting, select option at menu bar. <br/>
 
 ## To Change Model File
 > 1. Open config.ini file (if there is no config.ini, launch Snowshell once and close it) <br/>
-> 2. Set your model file directory with absolute path or relative path. <br/>
+> 2. Set the model file directory in the `[Model]` section with an absolute or relative path (`-m` for Real-ESRGAN). This is a folder path, not a model name. <br/>
 > 2-1 You have to use \\\\ instead of \ <br/>
 > 2-2. When you use relative path, path is relative to converter's directory. <br/>
 > 3. Converters default model directory (relative) <br/>
@@ -59,7 +59,14 @@ To change your conversion setting, select option at menu bar. <br/>
 > 3-2. waifu2x_caffe = models\\\\upconv_7_anime_style_art_rgb <br/>
 > 3-3. waifu2x_ncnn-vulkan = models-cunet <br/>
 > 3-4. realcugan-vulkan = model-se <br/>
-> 3-5. realesrgan-vulkan = realesrgan-x4plus-anime <br/>
+> 3-5. realesrgan-vulkan = models <br/>
+
+### Real-ESRGAN x2 and x4 scaling
+
+> With no `-n` in `[CustomOption]`, select `x2.0` to automatically use `realesr-animevideov3`, or `x4.0` to use `realesrgan-x4plus-anime`. The default Real-ESRGAN custom option is empty.
+> An explicit `-n model-name` in `[CustomOption]` takes priority over automatic model selection. Existing config.ini files containing `-n` retain that override; clear it to enable automatic selection.
+> For automatic selection, the model directory must contain `realesr-animevideov3-x2.param` and `.bin` for x2, and `realesrgan-x4plus-anime.param` and `.bin` for x4.
+> Other scale presets and custom scaling remain disabled for Real-ESRGAN.
 
 ## To Change Output Extension
 > 1. Open config.ini file (if there is no config.ini, launch Snowshell once and close it) <br/>

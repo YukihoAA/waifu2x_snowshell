@@ -1,8 +1,30 @@
 #include "Converter.h"
 #include "SnowSetting.h"
 #include <vector>
+#include <shellapi.h>
 
 namespace {
+bool HasEsrganModelOption(const std::wstring& options) {
+	const std::wstring command = L"realesrgan " + options;
+	int argc = 0;
+	LPWSTR* argv = CommandLineToArgvW(command.c_str(), &argc);
+	if (!argv) return false;
+	bool hasModel = false;
+	for (int i = 1; i < argc; ++i) {
+		if (!wcscmp(argv[i], L"--")) break;
+		if (!wcsncmp(argv[i], L"-n", 2)) {
+			hasModel = true;
+			break;
+		}
+		// Skip values of other options, which may contain text resembling -n.
+		if (argv[i][0] == L'-' && argv[i][1] && !argv[i][2]
+			&& wcschr(L"iostmgjf", argv[i][1]) && i + 1 < argc)
+			++i;
+	}
+	LocalFree(argv);
+	return hasModel;
+}
+
 std::wstring InputNameWithoutExtension(const std::wstring& inputName) {
 	const size_t separator = inputName.find_last_of(L"\\/");
 	const size_t extension = inputName.find_last_of(L'.');
@@ -175,7 +197,7 @@ void Converter::emptyQueue() {
 
 DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 	Converter* This = (Converter*)lParam;
-	std::queue<ConvertOption> ErrorQueue;
+	ConversionErrorLog errors;
 	for (;;) {
 		ConvertOption option;
 		HWND dialog;
@@ -192,6 +214,7 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 			generation = This->ProgressGeneration;
 		}
 		PostMessage(dialog, WM_CONVERT_PROGRESS, generation, 0);
+		{ std::lock_guard<std::mutex> lock(This->DiagnosticMutex); This->LastFailure = ConversionFailure(); }
 		bool success = This->execute(&option, option.getNoLabel());
 		bool idle, cancelled;
 		{
@@ -203,42 +226,25 @@ DWORD WINAPI Converter::ConvertPorc(PVOID lParam) {
 			dialog = This->hProgressDlg;
 			generation = This->ProgressGeneration;
 		}
-		if (cancelled) {
-			while (!ErrorQueue.empty()) ErrorQueue.pop();
-		} else if (!success) ErrorQueue.push(option);
-		PostMessage(dialog, WM_CONVERT_PROGRESS, generation, 0);
-		if (idle) {
-			if (!ErrorQueue.empty())
-			{
-				FILE *fp;
-				_wfopen_s(&fp, L"error.log", L"wt+,ccs=UTF-16LE");
-
-				if (fp) {
-					fwprintf(fp, L"[Converter] \nCurrent: %s\n", This->getExePath().c_str());
-					fwprintf(fp, L"Model: %s\n", This->getModelDir().c_str());
-					fwprintf(fp, L"Option: %s\n", This->getOptionString().c_str());
-					fwprintf(fp, L"WorkDir: %s\n", This->getWorkingDir().c_str());
-
-					fwprintf(fp, L"\n[System] \nCuda: %s\n", SnowSetting::checkCuda() ? L"OK" : L"Fail");
-					fwprintf(fp, L"Vulkan: %s\n", SnowSetting::checkVulkan() ? L"OK" : L"Fail");
-
-					fwprintf(fp, L"waifu2x-converter-cpp: %s\n", SnowSetting::CONVERTER_CPP.getAvailable() == true ? L"OK" : L"Fail");
-					fwprintf(fp, L"waifu2x-caffe: %s\n", SnowSetting::CONVERTER_CAFFE.getAvailable() == true ? L"OK" : L"Fail");
-					fwprintf(fp, L"waifu2x-vulkan: %s\n", SnowSetting::CONVERTER_VULKAN.getAvailable() == true ? L"OK" : L"Fail");
-					fwprintf(fp, L"waifu2x-CUGan: %s\n", SnowSetting::CONVERTER_CUGAN.getAvailable() == true ? L"OK" : L"Fail");
-					fwprintf(fp, L"waifu2x-ESRGan: %s\n", SnowSetting::CONVERTER_ESRGAN.getAvailable() == true ? L"OK" : L"Fail");
-					fwprintf(fp, L"\n\n%s\n\n", SnowSetting::checkProcessor(fp) ? L"" : L"Get processor list: Fail");
-
-					while (!ErrorQueue.empty()) {
-						fwprintf(fp, L"Error: %s\n", ErrorQueue.front().getInputFilePath().c_str());
-						ErrorQueue.pop();
-					}
-					fclose(fp);
-				}
-				PostMessage(hWnd, WM_CONVERT_ERROR, 0, 0);
-			}
-			PostMessage(dialog, WM_CONVERT_FINISHED, generation, 0);
-		}
+		if (cancelled) errors.reset();
+        else if (!success) {
+            ConversionFailure failure = This->getLastFailure();
+            if (failure.stage.empty()) {
+                GetLocalTime(&failure.time);
+                failure.stage = L"prepare_arguments";
+                failure.input = option.getInputFilePath();
+                failure.scale = option.getScaleRatio();
+                failure.executable = This->getExePath();
+                failure.workDir = This->getWorkingDir();
+            }
+            errors.add(failure);
+        }
+        PostMessage(dialog, WM_CONVERT_PROGRESS, generation, 0);
+        if (idle) {
+            ConversionErrorNotice notice = errors.finish();
+            if (notice.failedCount) PostConversionError(hWnd, std::move(notice));
+            PostMessage(dialog, WM_CONVERT_FINISHED, generation, 0);
+        }
 	}
 }
 
@@ -291,63 +297,98 @@ INT_PTR CALLBACK Converter::ProgressDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam,
 	return FALSE;
 }
 
-bool Converter::convert(std::wstring param, std::wstring exportName, int debug) {
-	// All five converters append this output argument after their custom options.
-	std::wstring outputArgument = L"-o \"" + exportName + L"\"";
-	size_t outputPosition = param.rfind(outputArgument);
-	if (outputPosition == std::wstring::npos || outputPosition + outputArgument.size() != param.size()) return false;
-	size_t separator = exportName.find_last_of(L"\\/");
-	if (separator == std::wstring::npos) return false;
-	std::wstring folder = exportName.substr(0, separator);
-	if (!EnsureOutputDirectory(folder)) return false;
-	std::vector<WCHAR> reserved(MAX_PATH, L'\0');
-	if (!GetTempFileNameW(folder.c_str(), L"snw", 0, reserved.data())) return false;
-	size_t extension = exportName.find_last_of(L'.');
-	std::wstring temporary = reserved.data();
-	temporary += extension != std::wstring::npos && extension > separator ? exportName.substr(extension) : L".tmp";
-	HANDLE output = CreateFileW(temporary.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
-	if (output == INVALID_HANDLE_VALUE) {
-		DeleteFileW(reserved.data());
-		return false;
-	}
-	CloseHandle(output);
-	param.replace(outputPosition, outputArgument.size(), L"-o \"" + temporary + L"\"");
-	PROCESS_INFORMATION process = {};
-	STARTUPINFOW startup = {};
-	startup.cb = sizeof(startup);
-	startup.dwFlags = STARTF_USESHOWWINDOW;
-	startup.wShowWindow = debug == 0 ? SW_HIDE : SW_SHOW;
-	bool launched = false;
-	{
-		std::lock_guard<std::mutex> lock(QueueMutex);
-		if (!CancelRequested && !Stopping) {
-			std::wstring command = L"\"" + ExePath + L"\" " + param;
-			launched = CreateProcessW(ExePath.c_str(), &command[0], nullptr, nullptr, FALSE,
-				debug == 0 ? CREATE_NO_WINDOW : 0, nullptr, WorkingDir.empty() ? nullptr : WorkingDir.c_str(), &startup, &process) != FALSE;
-			if (launched) hConvertProcess = process.hProcess;
-		}
-	}
-	bool success = false;
-	if (launched) {
-		CloseHandle(process.hThread);
-		DWORD wait = WaitForSingleObject(process.hProcess, INFINITE);
-		DWORD exitCode = 1;
-		WIN32_FILE_ATTRIBUTE_DATA attributes = {};
-		bool valid = wait == WAIT_OBJECT_0 && GetExitCodeProcess(process.hProcess, &exitCode) && exitCode == 0
-			&& GetFileAttributesExW(temporary.c_str(), GetFileExInfoStandard, &attributes)
-			&& !(attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-			&& (attributes.nFileSizeHigh != 0 || attributes.nFileSizeLow != 0);
-		{
-			std::lock_guard<std::mutex> lock(QueueMutex);
-			hConvertProcess = nullptr;
-			if (valid && !CancelRequested && !Stopping)
-				success = MoveFileExW(temporary.c_str(), exportName.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE;
-		}
-		CloseHandle(process.hProcess);
-	}
-	DeleteFileW(temporary.c_str());
-	DeleteFileW(reserved.data());
-	return success;
+ConversionFailure Converter::getLastFailure() {
+    std::lock_guard<std::mutex> lock(DiagnosticMutex);
+    return LastFailure;
+}
+
+bool Converter::convert(std::wstring param, std::wstring exportName, int debug, ConvertOption* option) {
+    ConversionFailure failure;
+    failure.output = exportName;
+    { std::lock_guard<std::mutex> lock(QueueMutex); failure.executable = ExePath; failure.workDir = WorkingDir; failure.modelDirectory = ModelDir; }
+    if (option) { failure.input = option->getInputFilePath(); failure.scale = option->getScaleRatio(); }
+    DescribeConversion(failure, param, dynamic_cast<Converter_Esrgan*>(this) != nullptr);
+    failure.command = L"\"" + failure.executable + L"\" " + param;
+    auto failed = [&](const wchar_t* stage, DWORD error = 0) {
+        failure.stage = stage; failure.windowsError = error; GetLocalTime(&failure.time);
+        std::lock_guard<std::mutex> lock(DiagnosticMutex); LastFailure = failure; return false;
+    };
+    std::wstring outputArgument = L"-o \"" + exportName + L"\"";
+    size_t outputPosition = param.rfind(outputArgument);
+    if (outputPosition == std::wstring::npos || outputPosition + outputArgument.size() != param.size()) return failed(L"prepare_arguments", ERROR_INVALID_PARAMETER);
+    size_t separator = exportName.find_last_of(L"\\/");
+    if (separator == std::wstring::npos) return failed(L"prepare_output", ERROR_INVALID_NAME);
+    std::wstring folder = exportName.substr(0, separator);
+    if (!EnsureOutputDirectory(folder)) return failed(L"create_output_directory", GetLastError());
+    std::vector<WCHAR> reserved(MAX_PATH, L'\0');
+    if (!GetTempFileNameW(folder.c_str(), L"snw", 0, reserved.data())) return failed(L"create_temporary_file", GetLastError());
+    size_t extension = exportName.find_last_of(L'.');
+    std::wstring temporary = reserved.data();
+    temporary += extension != std::wstring::npos && extension > separator ? exportName.substr(extension) : L".tmp";
+    HANDLE output = CreateFileW(temporary.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, nullptr);
+    if (output == INVALID_HANDLE_VALUE) {
+        DWORD error = GetLastError(); DeleteFileW(reserved.data()); return failed(L"create_temporary_file", error);
+    }
+    CloseHandle(output);
+    param.replace(outputPosition, outputArgument.size(), L"-o \"" + temporary + L"\"");
+    failure.command = L"\"" + failure.executable + L"\" " + param;
+    PROCESS_INFORMATION process = {};
+    ProcessOutputCapture capture;
+    bool launched = false;
+    DWORD error = 0;
+    {
+        std::lock_guard<std::mutex> lock(QueueMutex);
+        if (!CancelRequested && !Stopping) {
+            launched = capture.launch(failure.executable, failure.command, failure.workDir, debug, process, error);
+            if (launched) hConvertProcess = process.hProcess;
+        } else failure.stage = L"cancelled";
+    }
+    bool success = false, captured = false;
+    if (launched && process.hProcess && process.hThread) {
+        CloseHandle(process.hThread);
+        DWORD wait;
+        HANDLE console = capture.consoleProcess();
+        if (console) {
+            HANDLE processes[] = { process.hProcess, console };
+            wait = WaitForMultipleObjects(2, processes, FALSE, INFINITE);
+            if (wait == WAIT_OBJECT_0 + 1) {
+                // Closing the Debug console retains the former backend-console close behavior.
+                TerminateProcess(process.hProcess, 1);
+                wait = WaitForSingleObject(process.hProcess, INFINITE);
+                failure.stage = L"debug_console_closed";
+            }
+        } else wait = WaitForSingleObject(process.hProcess, INFINITE);
+        DWORD waitError = wait != WAIT_OBJECT_0 ? GetLastError() : 0;
+        capture.finish(failure); captured = true;
+        if (wait != WAIT_OBJECT_0) { failure.stage = L"wait_process"; failure.windowsError = waitError; }
+        else if (!GetExitCodeProcess(process.hProcess, &failure.exitCode)) { failure.stage = L"read_exit_code"; failure.windowsError = GetLastError(); }
+        else {
+            failure.hasExitCode = true;
+            if (failure.exitCode != 0) { if (failure.stage.empty()) failure.stage = L"exit_code"; }
+            else if (!failure.backendError.empty()) failure.stage = L"backend_error";
+            else {
+                WIN32_FILE_ATTRIBUTE_DATA attributes = {};
+                if (!GetFileAttributesExW(temporary.c_str(), GetFileExInfoStandard, &attributes)) { failure.stage = L"validate_output"; failure.windowsError = GetLastError(); }
+                else if ((attributes.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) || (!attributes.nFileSizeHigh && !attributes.nFileSizeLow)) failure.stage = L"empty_output";
+                else {
+                    std::lock_guard<std::mutex> lock(QueueMutex);
+                    if (!CancelRequested && !Stopping) {
+                        success = MoveFileExW(temporary.c_str(), exportName.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE;
+                        if (!success) { failure.stage = L"publish_output"; failure.windowsError = GetLastError(); }
+                    } else failure.stage = L"cancelled";
+                }
+            }
+        }
+        { std::lock_guard<std::mutex> lock(QueueMutex); hConvertProcess = nullptr; }
+        CloseHandle(process.hProcess);
+    } else if (failure.stage.empty()) { failure.stage = L"launch_process"; failure.windowsError = error; }
+    if (!captured) capture.finish(failure);
+    DeleteFileW(temporary.c_str()); DeleteFileW(reserved.data());
+    if (!success) {
+        GetLocalTime(&failure.time);
+        std::lock_guard<std::mutex> lock(DiagnosticMutex); LastFailure = std::move(failure);
+    }
+    return success;
 }
 
 bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
@@ -440,7 +481,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode(), convertOption);
 }
 
 
@@ -534,7 +575,7 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode(), convertOption);
 }
 
 
@@ -602,7 +643,7 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode(), convertOption);
 }
 
 
@@ -670,11 +711,18 @@ bool Converter_Cugan::execute(ConvertOption* convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode(), convertOption);
 }
 
 
 bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
+	const std::wstring scale = convertOption->getScaleRatio();
+	const bool forceTTA = scale == L"2.0" || scale == L"2";
+	// TTA avoids the bundled backend's RGBA x2 Vulkan failure; retain the caller's settings.
+	ConvertOption effectiveOption = *convertOption;
+	if (forceTTA)
+		effectiveOption.setTTAEnabled(true);
+	convertOption = &effectiveOption;
 	noLabel = noLabel || convertOption->getNoLabel();
 	size_t last;
 	std::wstring ExportName;
@@ -690,9 +738,20 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	ExportNameStream << InputNameWithoutExtension(InputName) << L"_esrgan";
 
+	const std::wstring customOption = getOptionString();
+	// Select a model for this queued job only when the user has not specified -n.
+	if (!HasEsrganModelOption(customOption)) {
+		ParamStream << L"-n " << (scale == L"2.0" || scale == L"2"
+			? L"realesr-animevideov3" : L"realesrgan-x4plus-anime") << L" ";
+	}
+
+	// Place forced TTA before custom options so -- cannot suppress it.
+	if (forceTTA)
+		ParamStream << L"-x ";
+
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
-	if (getOptionString() != L"")
-		ParamStream << getOptionString() << L" ";
+	if (!customOption.empty())
+		ParamStream << customOption << L" ";
 
 	if (convertOption->getTileSize() > 0)
 		ParamStream << L"-t " << convertOption->getTileSize() << L" ";
@@ -709,7 +768,8 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 	// set tta mode
 	if (convertOption->getTTAEnabled())
 	{
-		ParamStream << L"-x ";
+		if (!forceTTA)
+			ParamStream << L"-x ";
 		if (!noLabel)
 			ExportNameStream << L"_tta_1";
 	}
@@ -733,5 +793,5 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 	ParamStream << L"-o \"" << ExportName << L"\"";
 
 	// Execute
-	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode());
+	return convert(ParamStream.str(), ExportName, convertOption->getDebugMode(), convertOption);
 }

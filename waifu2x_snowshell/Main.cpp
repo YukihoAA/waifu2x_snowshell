@@ -6,6 +6,8 @@ HWND hWnd;
 int APIENTRY wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdLine, int nCmdShow) {
 	int argc = 0;
 	LPWSTR *argv = CommandLineToArgvW(lpCmdLine, &argc);
+	if (!argv) return 1;
+	if (argc == 1 && !wcscmp(argv[0], L"--snowshell-conversion-console")) { LocalFree(argv); return RunConversionLogConsole(); }
 	MSG msg;
 	BOOL bIsWow64 = FALSE;
 	LPWSTR lpszClass = L"Snowshell";
@@ -209,15 +211,20 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 			UIText[0] = SnowSetting::getNoiseText();
 			InvalidateRect(hWnd, NULL, TRUE);
 			return TRUE;
-		case ID_MENU_SCALE_CUSTOM:
+		case ID_MENU_SCALE_CUSTOM: {
 			if (SnowSetting::getConfirm() == CONFIRM_SHOW && MessageBox(hWnd, STRING_TEXT_CONFIRM_CUSTOM_SCALE_MESSAGE.c_str(), STRING_TEXT_CONFIRM_CUSTOM_SCALE_TITLE.c_str(), MB_YESNO | MB_ICONEXCLAMATION | MB_SYSTEMMODAL) == IDNO)
 				return TRUE;
+			INT_PTR result;
 			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_VULKAN)
-				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcVulkan);
+				result = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcVulkan);
 			else if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN)
-				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcCugan);
+				result = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG3), hWnd, SettingDlgProcCugan);
 			else
-				DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
+				result = DialogBox(g_hInst, MAKEINTRESOURCE(IDD_DIALOG1), hWnd, SettingDlgProc);
+			if (result != IDOK)
+				return TRUE;
+		}
+		// Apply the Custom selection only after the dialog was saved.
 		case ID_MENU_SCALE_x1_0:
 		case ID_MENU_SCALE_x1_5:
 		case ID_MENU_SCALE_x1_6:
@@ -225,6 +232,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 		case ID_MENU_SCALE_x4_0:
 			SnowSetting::checkScale(hMenu, LOWORD(wParam) - ID_MENU_SCALE_x1_0);
 			UIText[1] = SnowSetting::getScaleText();
+			SnowSetting::checkTTA(hMenu);
+			UIText[2] = SnowSetting::getGPUText();
 
 			if (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CUGAN) {
 				SnowSetting::checkNoise(hMenu, SnowSetting::getNoise());
@@ -368,9 +377,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
 
 		EndPaint(hWnd, &ps);
 		return TRUE;
-	case WM_CONVERT_ERROR:
-		MessageBox(hWnd, wParam ? L"Failed to start conversion thread." : L"Failed to convert some files.\nCheck \"error.log\"", L"Error", MB_ICONWARNING | MB_OK);
-		return TRUE;
+	case WM_CONVERT_ERROR: {
+        ConversionErrorNotice notice;
+        std::wstring message;
+        if (lParam && TakeConversionError((UINT_PTR)lParam, notice)) message = FormatConversionError(notice);
+        else message = wParam ? STRING_TEXT_CONVERT_THREAD_FAILED : STRING_TEXT_CONVERT_ERROR_MESSAGE;
+        MessageBoxW(hWnd, message.c_str(), STRING_TEXT_CONVERT_ERROR_TITLE.c_str(), MB_ICONWARNING | MB_OK);
+        return TRUE;
+    }
 	case WM_DESTROY:
 		SnowSetting::CONVERTER_CPP.shutdown();
 		SnowSetting::CONVERTER_CAFFE.shutdown();
@@ -402,11 +416,15 @@ INT_PTR CALLBACK SettingDlgProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lPar
 	case WM_COMMAND:
 		switch (LOWORD(wParam))
 		{
-		case IDOK:
+		case IDOK: {
 			WCHAR scaleText[6] = L"";
 			GetWindowText(hEdit, scaleText, 6);
 			SnowSetting::setScaleRatio(scaleText);
 
+			EndDialog(hDlg, IDOK);
+			return TRUE;
+		}
+		case IDCANCEL:
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
@@ -445,6 +463,9 @@ INT_PTR CALLBACK SettingDlgProcVulkan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARA
 			if (sel != CB_ERR)
 				SnowSetting::setScaleRatio(SnowSetting::VulkanScale[sel]);
 
+			EndDialog(hDlg, IDOK);
+			return TRUE;
+		case IDCANCEL:
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
@@ -483,6 +504,9 @@ INT_PTR CALLBACK SettingDlgProcCugan(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM
 			if(sel != CB_ERR)
 				SnowSetting::setScaleRatio(SnowSetting::VulkanScale[sel]);
 
+			EndDialog(hDlg, IDOK);
+			return TRUE;
+		case IDCANCEL:
 			EndDialog(hDlg, IDCANCEL);
 			return TRUE;
 		}
@@ -554,7 +578,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		break;
 	}
 
-	convertOption->setTTAEnabled(SnowSetting::getTTA());
+	convertOption->setTTAEnabled(SnowSetting::getTTA() == TTA_ENABLED
+		|| (SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_ESRGAN && SnowSetting::getScale() == SCALE_x2_0));
 	convertOption->setTileSize(SnowSetting::getTileSize());
 	convertOption->setForceCPU(SnowSetting::getGPU() == GPU_CPU_MODE || SnowSetting::CurrentConverter == &SnowSetting::CONVERTER_CAFFE && !SnowSetting::checkCuda());
 	convertOption->setOutputFileExtension(SnowSetting::getOutputExt());

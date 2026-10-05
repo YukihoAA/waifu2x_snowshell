@@ -119,6 +119,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Converter.cpp" />
+    <ClCompile Include="ConversionLog.cpp" />
     <ClCompile Include="ConvertOption.cpp" />
     <ClCompile Include="LocaleString.cpp" />
     <ClCompile Include="SnowSetting.cpp" />
@@ -126,6 +127,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Converter.h" />
+    <ClInclude Include="ConversionLog.h" />
     <ClInclude Include="ConvertOption.h" />
     <ClInclude Include="LocaleString.h" />
     <ClInclude Include="Main.h" />

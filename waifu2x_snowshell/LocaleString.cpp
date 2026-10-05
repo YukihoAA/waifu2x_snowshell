@@ -85,4 +85,15 @@ wstring STRING_TEXT_TOO_LONG_PATH_MESSAGE_COUNT = L"자";
 wstring STRING_TEXT_ABORT_CONVERT_TITLE = L"확인";
 wstring STRING_TEXT_ABORT_CONVERT_MESSAGE = L"변환을 중단하시겠습니까?";
 
+wstring STRING_TEXT_CONVERT_ERROR_TITLE = L"Conversion error";
+wstring STRING_TEXT_CONVERT_ERROR_MESSAGE = L"file(s) could not be converted.";
+wstring STRING_TEXT_CONVERT_ERROR_INPUT = L"First failed file";
+wstring STRING_TEXT_CONVERT_ERROR_MODEL = L"Model";
+wstring STRING_TEXT_CONVERT_ERROR_REASON = L"Reason";
+wstring STRING_TEXT_CONVERT_ERROR_LOG = L"Details saved to";
+wstring STRING_TEXT_CONVERT_ERROR_LOG_FAILED = L"Could not save the error log";
+wstring STRING_TEXT_CONVERT_PROCESS_FAILED = L"The converter exited with an error.";
+wstring STRING_TEXT_CONVERT_OUTPUT_FAILED = L"The output could not be created or saved.";
+wstring STRING_TEXT_CONVERT_THREAD_FAILED = L"Failed to start the conversion thread.";
+
 wstring STRING_EMPTY = L"";
