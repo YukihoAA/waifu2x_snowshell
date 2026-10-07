@@ -5,6 +5,7 @@ ConvertOption::ConvertOption() {
 	CoreNum = 0;
 	DebugMode = 0;
 	NoLabel = false;
+	PreserveExistingOutput = false;
 	ForceCPU = false;
 	IsTTAEnabled = false;
 	TileSize = 128;
@@ -19,6 +20,7 @@ ConvertOption::ConvertOption(std::wstring inputFile, int noiseLevel, std::wstrin
 	this->CoreNum = 0;
 	this->DebugMode = 0;
 	this->NoLabel = false;
+	this->PreserveExistingOutput = false;
 	this->ForceCPU = false;
 	this->IsTTAEnabled = ttaEnabled;
 	this->TileSize = 128;
@@ -42,6 +44,10 @@ void ConvertOption::setDebugMode(int DebugMode) {
 
 void ConvertOption::setNoLabel(bool noLabel) {
 	this->NoLabel = noLabel;
+}
+
+void ConvertOption::setPreserveExistingOutput(bool preserveExistingOutput) {
+	this->PreserveExistingOutput = preserveExistingOutput;
 }
 
 void ConvertOption::setForceCPU(bool forceCPU) {
@@ -87,6 +93,10 @@ int ConvertOption::getDebugMode() {
 
 bool ConvertOption::getNoLabel() {
 	return this->NoLabel;
+}
+
+bool ConvertOption::getPreserveExistingOutput() {
+	return this->PreserveExistingOutput;
 }
 
 bool ConvertOption::getForceCPU() {

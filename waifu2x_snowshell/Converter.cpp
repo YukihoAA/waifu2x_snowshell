@@ -2,6 +2,7 @@
 #include "SnowSetting.h"
 #include <vector>
 #include <shellapi.h>
+#include <cwctype>
 
 namespace {
 bool HasEsrganModelOption(const std::wstring& options) {
@@ -30,6 +31,41 @@ std::wstring InputNameWithoutExtension(const std::wstring& inputName) {
 	const size_t extension = inputName.find_last_of(L'.');
 	return extension != std::wstring::npos && (separator == std::wstring::npos || extension > separator)
 		? inputName.substr(0, extension) : inputName;
+}
+
+std::wstring InputNameWithSourceExtension(const std::wstring& inputName) {
+	const size_t separator = inputName.find_last_of(L"\\/");
+	const size_t extension = inputName.find_last_of(L'.');
+	std::wstring identifier = L"noext";
+	if (extension != std::wstring::npos && (separator == std::wstring::npos || extension > separator)
+		&& extension + 1 < inputName.size()) {
+		identifier = inputName.substr(extension + 1);
+		for (wchar_t& character : identifier) character = (wchar_t)towlower(character);
+	}
+	return InputNameWithoutExtension(inputName) + L"_" + identifier;
+}
+
+bool PublishOutput(const std::wstring& temporary, std::wstring& output, bool preserveExisting) {
+	if (!preserveExisting)
+		return MoveFileExW(temporary.c_str(), output.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE;
+
+	const size_t separator = output.find_last_of(L"\\/");
+	const size_t extension = output.find_last_of(L'.');
+	const bool hasExtension = extension != std::wstring::npos && (separator == std::wstring::npos || extension > separator);
+	const std::wstring stem = hasExtension ? output.substr(0, extension) : output;
+	const std::wstring suffix = hasExtension ? output.substr(extension) : L"";
+	for (ULONGLONG number = 0; ; ++number) {
+		output = stem + (number ? L"_" + std::to_wstring(number) : L"") + suffix;
+		// A no-replace move is the collision check, including between processes.
+		if (MoveFileExW(temporary.c_str(), output.c_str(), MOVEFILE_WRITE_THROUGH)) return true;
+		const DWORD error = GetLastError();
+		if (error != ERROR_FILE_EXISTS && error != ERROR_ALREADY_EXISTS
+			&& !(error == ERROR_ACCESS_DENIED && GetFileAttributesW(output.c_str()) != INVALID_FILE_ATTRIBUTES)) {
+			SetLastError(error);
+			return false;
+		}
+		if (number == MAXULONGLONG) { SetLastError(ERROR_FILE_EXISTS); return false; }
+	}
 }
 
 bool EnsureOutputDirectory(const std::wstring& directory) {
@@ -373,7 +409,8 @@ bool Converter::convert(std::wstring param, std::wstring exportName, int debug, 
                 else {
                     std::lock_guard<std::mutex> lock(QueueMutex);
                     if (!CancelRequested && !Stopping) {
-                        success = MoveFileExW(temporary.c_str(), exportName.c_str(), MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH) != FALSE;
+                        success = PublishOutput(temporary, exportName, option && option->getPreserveExistingOutput());
+                        failure.output = exportName;
                         if (!success) { failure.stage = L"publish_output"; failure.windowsError = GetLastError(); }
                     } else failure.stage = L"cancelled";
                 }
@@ -405,7 +442,7 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 
 	ParamStream << L"-i \"" << InputName << L"\" ";
 
-	ExportNameStream << InputNameWithoutExtension(InputName) << L"_waifu2x";
+	ExportNameStream << InputNameWithSourceExtension(InputName) << L"_waifu2x";
 
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (getOptionString() != L"")
@@ -470,7 +507,8 @@ bool Converter_Cpp::execute(ConvertOption *convertOption, bool noLabel) {
 
 	// set output path for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
-		ExportName = convertOption->getOutputFolderName() + InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension();
+		ExportName = convertOption->getOutputFolderName() + (convertOption->getPreserveExistingOutput()
+			? InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension() : ExportName.substr(last));
 	}
 
 	// set model directory
@@ -499,7 +537,7 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 
 	ParamStream << L"-i \"" << InputName << L"\" ";
 
-	ExportNameStream << InputNameWithoutExtension(InputName) << L"_waifu2x";
+	ExportNameStream << InputNameWithSourceExtension(InputName) << L"_waifu2x";
 
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (getOptionString() != L"")
@@ -564,7 +602,8 @@ bool Converter_Caffe::execute(ConvertOption *convertOption, bool noLabel) {
 
 	// set output path for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
-		ExportName = convertOption->getOutputFolderName() + InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension();
+		ExportName = convertOption->getOutputFolderName() + (convertOption->getPreserveExistingOutput()
+			? InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension() : ExportName.substr(last));
 	}
 
 	// set model directory
@@ -593,7 +632,7 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	ParamStream << L"-i \"" << InputName << L"\" ";
 
-	ExportNameStream << InputNameWithoutExtension(InputName) << L"_waifu2x";
+	ExportNameStream << InputNameWithSourceExtension(InputName) << L"_waifu2x";
 
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (getOptionString() != L"")
@@ -632,7 +671,8 @@ bool Converter_Vulkan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	// set output path for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
-		ExportName = convertOption->getOutputFolderName() + InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension();
+		ExportName = convertOption->getOutputFolderName() + (convertOption->getPreserveExistingOutput()
+			? InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension() : ExportName.substr(last));
 	}
 
 	// set model directory
@@ -661,7 +701,7 @@ bool Converter_Cugan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	ParamStream << L"-i \"" << InputName << L"\" ";
 
-	ExportNameStream << InputNameWithoutExtension(InputName) << L"_cugan";
+	ExportNameStream << InputNameWithSourceExtension(InputName) << L"_cugan";
 
 	// add custom option (user can use -- / --ignore_rest flag to ignore rest of parameter)
 	if (getOptionString() != L"")
@@ -700,7 +740,8 @@ bool Converter_Cugan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	// set output path for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
-		ExportName = convertOption->getOutputFolderName() + InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension();
+		ExportName = convertOption->getOutputFolderName() + (convertOption->getPreserveExistingOutput()
+			? InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension() : ExportName.substr(last));
 	}
 
 	// set model directory
@@ -736,7 +777,7 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	ParamStream << L"-i \"" << InputName << L"\" ";
 
-	ExportNameStream << InputNameWithoutExtension(InputName) << L"_esrgan";
+	ExportNameStream << InputNameWithSourceExtension(InputName) << L"_esrgan";
 
 	const std::wstring customOption = getOptionString();
 	// Select a model for this queued job only when the user has not specified -n.
@@ -782,7 +823,8 @@ bool Converter_Esrgan::execute(ConvertOption* convertOption, bool noLabel) {
 
 	// set output path for folder conversion
 	if (convertOption->getOutputFolderName() != L"") {
-		ExportName = convertOption->getOutputFolderName() + InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension();
+		ExportName = convertOption->getOutputFolderName() + (convertOption->getPreserveExistingOutput()
+			? InputNameWithoutExtension(InputName).substr(last) + L'.' + convertOption->getOutputFileExtension() : ExportName.substr(last));
 	}
 
 	// set model directory

@@ -528,6 +528,15 @@ static void ShowInputError(HWND hWnd, LPCWSTR fileName, DWORD errorCode) {
 }
 
 BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noLabel) {
+	const DWORD required = GetFullPathNameW(fileName, 0, nullptr, nullptr);
+	if (!required) { ShowInputError(hWnd, fileName, GetLastError()); return FALSE; }
+	std::vector<WCHAR> absolutePath(required);
+	const DWORD length = GetFullPathNameW(fileName, required, absolutePath.data(), nullptr);
+	if (!length || length >= required) {
+		ShowInputError(hWnd, fileName, length ? ERROR_INSUFFICIENT_BUFFER : GetLastError());
+		return FALSE;
+	}
+	fileName = absolutePath.data();
 	int FileNameLength;
 	int MaxInputLength;
 	DWORD FileAttribute = GetFileAttributesW(fileName);
@@ -549,6 +558,7 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		return FALSE;
 
 	convertOption->setNoLabel(noLabel);
+	convertOption->setPreserveExistingOutput(SnowSetting::getExport() == EXPORT_NEW);
 	convertOption->setDebugMode(SnowSetting::getDebug());
 
 	convertOption->setInputFilePath(fileName);
@@ -612,6 +622,8 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 		}
 		convertOption->setOutputFolderName(FolderNameStream.str());
 		CreateDirectory(convertOption->getOutputFolderName().c_str(), NULL);
+		convertOption->setNoLabel(true);
+		convertOption->setPreserveExistingOutput(true);
 
 		//TODO: Find all files to convert
 		queue<ConvertOption> FolderSearchQueue;
@@ -656,13 +668,11 @@ BOOL Execute(HWND hWnd, ConvertOption *convertOption, LPCWSTR fileName, bool noL
 					ConvertOption NewFolderConvertOption = FolderConvertOption;
 					NewFolderConvertOption.setInputFilePath(FoundFilePath.c_str());
 					NewFolderConvertOption.setOutputFolderName(NewFolderConvertOption.getOutputFolderName() + L"\\" + FileFindData.cFileName);
-					NewFolderConvertOption.setNoLabel(true);
 					FolderSearchQueue.push(NewFolderConvertOption);
 					continue;
 				}
 				else {
 					FolderConvertOption.setInputFilePath(FoundFilePath.c_str());
-					FolderConvertOption.setNoLabel(true);
 					SnowSetting::CurrentConverter->addQueue(&FolderConvertOption);
 				}
 
